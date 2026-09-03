@@ -1,5 +1,5 @@
 // Replace with actual Vercel URL once deployed
-export const VERCEL_URL = 'http://localhost:3000/api'; 
+export const VERCEL_URL = 'https://loop-app-iitd.vercel.app/api'; 
 
 export function httpsCallable(functionName: string) {
   return async (data: any = {}) => {

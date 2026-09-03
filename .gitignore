@@ -32,3 +32,6 @@ avatars_map.json
 .DS_Store
 Icon
 Icon?
+
+.vercel
+.env*

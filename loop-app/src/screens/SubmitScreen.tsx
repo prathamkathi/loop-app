@@ -119,18 +119,13 @@ export default function SubmitScreen(props: Props) {
 
   const uploadToCloudinary = async (base64Image: string): Promise<string> => {
     // F-06 Fix: Fetch signed token from Cloud Function
-    const getSignature = httpsCallable('getCloudinarySignature');
-    const { data: signData }: any = await getSignature();
-    
     const dataUri = base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${base64Image}`;
     const formData = new FormData();
     formData.append('file', dataUri);
-    formData.append('api_key', signData.apiKey);
-    formData.append('timestamp', signData.timestamp);
-    formData.append('signature', signData.signature);
+    formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET! || 'loop_uploads');
     formData.append('folder', 'loop_events');
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
       method: 'POST',
       body: formData,
     });

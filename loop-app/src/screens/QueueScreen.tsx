@@ -44,7 +44,8 @@ import {
   deleteDoc,
   limit,
 } from 'firebase/firestore';
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { onCoordinatorChange } from '../utils/session';
 import { db, auth } from '../config/firebase';
 import { httpsCallable } from '../utils/vercelClient';
 
@@ -70,15 +71,23 @@ export default function QueueScreen() {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Restore authenticated coordinator session via Firebase Auth
+  // Restore the coordinator session. Authorisation is the `coordinator` custom
+  // claim, not merely being signed in: the security rules gate on the claim, so
+  // trusting an email here would show the queue UI to someone whose every read
+  // and write is then denied.
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.email) {
-        setStudioUser(user.email);
+    const unsubscribe = onCoordinatorChange(({ isCoordinator }) => {
+      const user = auth.currentUser;
+      if (user && isCoordinator) {
+        setStudioUser(user.email || 'coordinator');
         setAuthenticated(true);
+        setAuthError('');
       } else {
         setAuthenticated(false);
         setStudioUser('');
+        if (user && !user.isAnonymous) {
+          setAuthError('This account is not registered as a club coordinator.');
+        }
       }
     });
     return unsubscribe;

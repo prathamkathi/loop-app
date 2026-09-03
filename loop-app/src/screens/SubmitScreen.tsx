@@ -21,7 +21,7 @@ import { enhanceEventDraft } from '../utils/geminiAI';
 import { db, auth } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { httpsCallable, apiErrorMessage } from '../utils/vercelClient';
-import { isCoordinator } from '../utils/session';
+import { onCoordinatorChange } from '../utils/session';
 
 type Props = {
   onNavigate?: (tab: string) => void;
@@ -50,9 +50,10 @@ export default function SubmitScreen(props: Props) {
   // F-34: Submit writes to Firestore under rules that require the coordinator
   // claim. Check up front so an unverified user gets an explanation instead of
   // a permission error after filling in the whole form.
-  React.useEffect(() => {
-    isCoordinator().then(setCoordinator).catch(() => setCoordinator(false));
-  }, []);
+  React.useEffect(
+    () => onCoordinatorChange(({ isCoordinator }) => setCoordinator(isCoordinator)),
+    [],
+  );
 
   const handleAIPolish = async () => {
     if (!title && !desc) return;

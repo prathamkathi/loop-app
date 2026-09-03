@@ -1,19 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import cors from 'cors';
-
-const runCors = (req: any, res: any) => new Promise((resolve, reject) => {
-  cors({ origin: true })(req, res, (result: any) => {
-    if (result instanceof Error) return reject(result);
-    return resolve(result);
-  });
-});
+import { guard } from './_lib/guard';
 
 const TEXT_MODELS = ['gemini-2.5-flash', 'gemini-flash-lite-latest'];
 
 export default async function handler(req: any, res: any) {
-  await runCors(req, res);
-  if (req.method !== 'POST' && req.method !== 'OPTIONS') return res.status(405).json({ error: 'Method not allowed' });
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  // Any signed-in user may ask the concierge (students sign in anonymously).
+  const caller = await guard(req, res);
+  if (!caller) return;
 
   try {
     const { prompt, systemInstruction } = req.body?.data || req.body || {};

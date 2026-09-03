@@ -50,13 +50,18 @@ import { httpsCallable } from '../utils/vercelClient';
 
 export default function QueueScreen() {
   const { colors, isDark } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
 
   const [queue, setQueue] = useState<ScrapedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [editableItem, setEditableItem] = useState<ScrapedItem | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -124,7 +129,7 @@ export default function QueueScreen() {
     pan.setValue({ x: 0, y: 0 });
   }, [pan]);
 
-  const remaining = queue.length - currentIndex;
+  const remaining = queue.length;
 
   const handleNext = useCallback(() => {
     setQueue((prev) => {
@@ -407,11 +412,6 @@ export default function QueueScreen() {
     );
   }
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
 
   return (
     <ScrollView

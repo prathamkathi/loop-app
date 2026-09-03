@@ -192,7 +192,7 @@ export default function StudentAuthModal({
                 <View style={[styles.inputWrap, { backgroundColor: colors.background, borderColor: colors.border }]}>
                   <User size={18} color={colors.muted} />
                   <TextInput
-                    placeholder="e.g. Aarav Sharma"
+                    placeholder="Your full name"
                     placeholderTextColor={colors.muted}
                     value={name}
                     onChangeText={setName}

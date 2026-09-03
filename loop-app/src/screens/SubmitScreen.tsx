@@ -11,7 +11,7 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import { ImageSquare, Clock, MapPin, Sparkle } from 'phosphor-react-native';
+import { ImageSquare, Clock, MapPin, Sparkle, ShieldWarning } from 'phosphor-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { BlurView } from 'expo-blur';
 import { useTheme, typography, radii, shadows } from '../theme';
@@ -20,7 +20,8 @@ import FloatingField from '../components/FloatingField';
 import { enhanceEventDraft } from '../utils/geminiAI';
 import { db, auth } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { httpsCallable } from '../utils/vercelClient';
+import { httpsCallable, apiErrorMessage } from '../utils/vercelClient';
+import { isCoordinator } from '../utils/session';
 
 type Props = {
   onNavigate?: (tab: string) => void;
@@ -44,6 +45,14 @@ export default function SubmitScreen(props: Props) {
   const [geminiCategory, setGeminiCategory] = useState<string>('Independent');
   const [geminiConfidence, setGeminiConfidence] = useState<number>(0);
   const [aspectRatio, setAspectRatio] = useState<number>(0.8);
+  const [coordinator, setCoordinator] = useState<boolean | null>(null);
+
+  // F-34: Submit writes to Firestore under rules that require the coordinator
+  // claim. Check up front so an unverified user gets an explanation instead of
+  // a permission error after filling in the whole form.
+  React.useEffect(() => {
+    isCoordinator().then(setCoordinator).catch(() => setCoordinator(false));
+  }, []);
 
   const handleAIPolish = async () => {
     if (!title && !desc) return;
@@ -53,7 +62,7 @@ export default function SubmitScreen(props: Props) {
       if (enhanced.polishedTitle) setTitle(enhanced.polishedTitle);
       if (enhanced.polishedBlurb) setDesc(enhanced.polishedBlurb);
     } catch (error) {
-      showAlert('AI Polish Unavailable', 'Our systems are currently busy. Please try again later.');
+      showAlert('AI Polish Unavailable', apiErrorMessage(error));
     } finally {
       setIsPolishing(false);
     }
@@ -118,14 +127,20 @@ export default function SubmitScreen(props: Props) {
   };
 
   const uploadToCloudinary = async (base64Image: string): Promise<string> => {
-    // F-06 Fix: Fetch signed token from Cloud Function
+    // F-06: signed upload. The API mints a short-lived signature server-side,
+    // so no unsigned preset is exposed in the client bundle.
+    const { data: sig } = await httpsCallable('getCloudinarySignature')({});
+    if (!sig?.signature) throw new Error('Could not authorise the upload.');
+
     const dataUri = base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${base64Image}`;
     const formData = new FormData();
     formData.append('file', dataUri);
-    formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET! || 'loop_uploads');
     formData.append('folder', 'loop_events');
+    formData.append('timestamp', String(sig.timestamp));
+    formData.append('signature', sig.signature);
+    formData.append('api_key', sig.apiKey);
 
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -244,6 +259,19 @@ export default function SubmitScreen(props: Props) {
     const match = date.match(/\d{1,2}/);
     return match ? match[0].padStart(2, '0') : '01';
   }, [date]);
+
+  if (coordinator === false) {
+    return (
+      <View style={styles.gateContainer}>
+        <ShieldWarning size={44} color={colors.primary} weight="duotone" />
+        <Text style={[styles.gateTitle, { color: colors.foreground }]}>Coordinator access required</Text>
+        <Text style={[styles.gateBody, { color: colors.muted }]}>
+          Publishing events is limited to verified club coordinators. Sign in from the
+          Queue tab with your club account to create an event.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -457,6 +485,24 @@ export default function SubmitScreen(props: Props) {
 }
 
 const styles = StyleSheet.create({
+  gateContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    padding: 32,
+  },
+  gateTitle: {
+    ...typography.titleLg,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  gateBody: {
+    ...typography.bodySm,
+    textAlign: 'center',
+    maxWidth: 340,
+    lineHeight: 20,
+  },
   scroll: {
     flex: 1,
   },

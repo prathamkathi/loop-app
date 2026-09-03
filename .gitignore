@@ -8,10 +8,10 @@ yarn-error.log
 dist/
 web-build/
 
-# Environments
+# Environments — broad on purpose: .env.bak, .env.save etc. must never be committed
 .env
-.env.local
-.env.*.local
+.env*
+!.env.example
 
 # Firebase
 serviceAccountKey.json
@@ -27,3 +27,8 @@ avatars_map.json
 
 # Vercel
 .vercel
+
+# macOS junk
+.DS_Store
+Icon
+Icon?

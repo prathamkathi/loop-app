@@ -1,14 +1,7 @@
 export const config = { api: { bodyParser: { sizeLimit: "10mb" } } };
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import cors from 'cors';
-
-const runCors = (req: any, res: any) => new Promise((resolve, reject) => {
-  cors({ origin: true })(req, res, (result: any) => {
-    if (result instanceof Error) return reject(result);
-    return resolve(result);
-  });
-});
+import { guard } from './_lib/guard';
 
 const ALLOWED_CATEGORIES = [
   'Cultural & Arts', 'Tech & Innovation', 'Fests & Major Events', 
@@ -30,9 +23,10 @@ OUTPUT SCHEMA (STRICT JSON ONLY):
 {"title": "String", "host": "String", "date": "YYYY-MM-DD", "startTime": "HH:MM", "endTime": "HH:MM", "venue": "String", "category": "String", "summary": "String", "confidenceScore": 0.0}`;
 
 export default async function handler(req: any, res: any) {
-  await runCors(req, res);
-  if (req.method !== 'POST' && req.method !== 'OPTIONS') return res.status(405).json({ error: 'Method not allowed' });
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  // Poster parsing is a Club Studio capability and is the most expensive
+  // call in the app — coordinators only.
+  const caller = await guard(req, res, { requireCoordinator: true });
+  if (!caller) return;
 
   try {
     // Vercel parses the JSON body automatically into req.body

@@ -126,7 +126,6 @@ def run_apify_pipeline():
     print(f"[Apify] Extracted {len(posts_to_process)} target posts from dataset.")
 
     events_queued = 0
-    MAX_EVENTS = 15
 
     for item in posts_to_process:
         if events_queued >= MAX_EVENTS:

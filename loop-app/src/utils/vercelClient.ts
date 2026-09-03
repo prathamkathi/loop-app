@@ -1,26 +1,70 @@
-// Replace with actual Vercel URL once deployed
-export const VERCEL_URL = 'https://loop-app-iitd.vercel.app/api'; 
+/**
+ * Client for the Loop serverless API.
+ *
+ * Every call carries the current Firebase ID token. The API rejects
+ * unauthenticated requests, so `ensureSignedIn()` runs first — students are
+ * signed in anonymously at app boot, coordinators upgrade to a real account
+ * through the Studio sign-in.
+ */
+
+import { auth } from '../config/firebase';
+import { ensureSignedIn } from './session';
+
+export const VERCEL_URL = 'https://loop-app-iitd.vercel.app/api';
+
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+/** Human-readable message for a failed call, safe to show in the UI. */
+export function apiErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.status === 401) return 'Your session expired. Please sign in again.';
+    if (error.status === 403) return 'This action needs a verified coordinator account.';
+    if (error.status === 429) return 'Too many requests right now. Please try again shortly.';
+    return error.message;
+  }
+  return 'Could not reach the campus servers. Check your connection and try again.';
+}
 
 export function httpsCallable(functionName: string) {
   return async (data: any = {}) => {
+    await ensureSignedIn();
+
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new ApiError(401, 'Sign in required');
+
+    let response: Response;
     try {
-      const response = await fetch(`${VERCEL_URL}/${functionName}`, {
+      response = await fetch(`${VERCEL_URL}/${functionName}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ data }), // wrap in data to match how Vercel extracts it
+        body: JSON.stringify({ data }),
       });
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
-      }
-      
-      const json = await response.json();
-      return { data: json.data };
-    } catch (error) {
-      console.error(`Error calling ${functionName}:`, error);
-      throw error;
+    } catch {
+      throw new ApiError(0, 'Network unavailable');
     }
+
+    if (!response.ok) {
+      let detail = response.statusText;
+      try {
+        const body = await response.json();
+        if (body?.error) detail = body.error;
+      } catch {
+        /* non-JSON error body — keep statusText */
+      }
+      throw new ApiError(response.status, detail);
+    }
+
+    const json = await response.json();
+    return { data: json.data };
   };
 }

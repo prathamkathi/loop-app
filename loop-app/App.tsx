@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { collection, query, where, getDocs, onSnapshot, limit } from "firebase/firestore";
 import { db } from './src/config/firebase';
+import { ensureSignedIn } from './src/utils/session';
 import { useCustomFonts } from "./src/utils/useFonts";
 import { ThemeProvider, useTheme } from './src/theme';
 import AppNavigator from './src/navigation/AppNavigator';
@@ -78,6 +79,7 @@ function AppContent() {
   }, []);
 
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [feedError, setFeedError] = useState<string | null>(null);
 
   // T-09: Offline persistence for feed
   useEffect(() => {
@@ -91,6 +93,13 @@ function AppContent() {
         }
       });
     });
+  }, []);
+
+  useEffect(() => {
+    // Every read and API call needs a Firebase identity; students get one
+    // anonymously. Fire-and-forget: the snapshot listener below retries on
+    // auth state change, and a failure surfaces through feedError.
+    ensureSignedIn().catch(() => setFeedError('Could not connect to campus servers.'));
   }, []);
 
   useEffect(() => {
@@ -114,6 +123,7 @@ function AppContent() {
       });
     }, (error) => {
       console.error('Failed to load live events:', error);
+      setFeedError("Couldn't load events. Pull to refresh or try again shortly.");
       setEventsLoading(false);
     });
 
@@ -173,6 +183,7 @@ function AppContent() {
             saved={saved}
             liveEvents={liveEvents}
             loading={eventsLoading}
+            error={feedError}
             onToggleSave={toggleSave}
             onOpenEvent={setActiveEvent}
             onResetFilters={resetFilters}
@@ -203,6 +214,7 @@ function AppContent() {
             saved={saved}
             liveEvents={liveEvents}
             loading={eventsLoading}
+            error={feedError}
             onToggleSave={toggleSave}
             onOpenEvent={setActiveEvent}
             onResetFilters={resetFilters}

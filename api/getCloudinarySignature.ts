@@ -1,17 +1,10 @@
 import { v2 as cloudinary } from 'cloudinary';
-import cors from 'cors';
-
-const runCors = (req: any, res: any) => new Promise((resolve, reject) => {
-  cors({ origin: true })(req, res, (result: any) => {
-    if (result instanceof Error) return reject(result);
-    return resolve(result);
-  });
-});
+import { guard } from './_lib/guard';
 
 export default async function handler(req: any, res: any) {
-  await runCors(req, res);
-  if (req.method !== 'POST' && req.method !== 'OPTIONS') return res.status(405).json({ error: 'Method not allowed' });
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  // Only coordinators may mint upload signatures.
+  const caller = await guard(req, res, { requireCoordinator: true });
+  if (!caller) return;
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

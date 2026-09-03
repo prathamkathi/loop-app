@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { MagnifyingGlass, X, BookmarkSimple } from 'phosphor-react-native';
+import { MagnifyingGlass, X, BookmarkSimple, WarningCircle } from 'phosphor-react-native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useTheme, typography, radii, shadows } from '../theme';
@@ -27,6 +27,7 @@ type Props = {
   saved: Set<string>;
   liveEvents: EventItem[];
   loading: boolean;
+  error?: string | null;
   onToggleSave: (id: string) => void;
   onOpenEvent: (event: EventItem) => void;
   onResetFilters: () => void;
@@ -38,12 +39,19 @@ export default function HomeScreen({
   saved,
   liveEvents,
   loading,
+  error,
   onToggleSave,
   onOpenEvent,
   onResetFilters,
   onEditInterests,
 }: Props) {
   const { colors, isDark } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
   const isWideDesktop = width >= 1120;
@@ -103,6 +111,19 @@ export default function HomeScreen({
   const featured = filtered.find((e) => e.featured) ?? filtered[0];
   const rest = filtered.filter((e) => e.id !== featured?.id);
 
+  // F-23: a failed load must not look like a campus with nothing on tonight.
+  if (error && liveEvents.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <View style={[styles.errorBox, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+          <WarningCircle size={40} color={colors.primary} weight="duotone" />
+          <Text style={[styles.errorTitle, { color: colors.foreground }]}>Couldn't load events</Text>
+          <Text style={[styles.errorBody, { color: colors.muted }]}>{error}</Text>
+        </View>
+      </View>
+    );
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -131,11 +152,6 @@ export default function HomeScreen({
     onResetFilters();
   };
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
 
   return (
     <ScrollView
@@ -401,6 +417,23 @@ const styles = StyleSheet.create({
   // Mobile (< 768px): 1 card full width
   gridItemMobile: {
     width: '100%',
+  },
+  errorBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    padding: 32,
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    maxWidth: 360,
+  },
+  errorTitle: {
+    ...typography.titleSm,
+    fontWeight: '700',
+  },
+  errorBody: {
+    ...typography.bodySm,
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,

@@ -34,11 +34,17 @@ cloudinary.config(
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 def upload_image_to_cloudinary(image_path: str) -> str:
+    """Upload a poster and return its secure URL, or None on failure.
+
+    Signed upload: this runs server-side with the API secret already in the
+    environment, so there is no reason to depend on an unsigned preset
+    existing in the Cloudinary account.
+    """
     try:
-        response = cloudinary.uploader.unsigned_upload(
+        response = cloudinary.uploader.upload(
             image_path,
-            upload_preset="loop_unsigned_preset",
-            folder="loop_events"
+            folder="loop_events",
+            resource_type="image",
         )
         return response.get("secure_url")
     except Exception as e:

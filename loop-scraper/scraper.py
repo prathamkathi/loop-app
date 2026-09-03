@@ -223,6 +223,15 @@ def run_apify_pipeline():
                 os.remove(temp_img_path)
             continue
 
+        # The helper reports failure by returning None rather than raising, so
+        # the except above never fires. Without this the event is queued with
+        # no poster and renders as a blank card.
+        if not public_url:
+            print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed.")
+            if temp_img_path and os.path.exists(temp_img_path):
+                os.remove(temp_img_path)
+            continue
+
         # 4. Write to Firestore with status 'pending' (Studio Staging Queue)
         print(f"[Firestore] Queuing event '{title}' into Staging Queue with status 'pending'...")
         try:

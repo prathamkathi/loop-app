@@ -1,3 +1,5 @@
+export const config = { api: { bodyParser: { sizeLimit: "10mb" } } };
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import cors from 'cors';
 

@@ -60,30 +60,14 @@ def get_avatar_for_handle(handle: str) -> str:
         "https://res.cloudinary.com/dnse1yvqq/image/upload/v1788420220/loop_avatars/avatar_iitdelhi.jpg"
     )
 
-# --- 1. FIREBASE INITIALIZATION ---
-if not firebase_admin._apps:
-    try:
-        cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
-        firebase_admin.initialize_app(cred)
-        print("[System] Firebase initialized successfully.")
-    except Exception as e:
-        print(f"[Error] Failed to initialize Firebase: {e}")
-        exit(1)
+# Firebase and Cloudinary are initialised once in shared.py, which exports the
+# Firestore client used below.
+if db is None:
+    print("[Error] Firestore is unavailable — check FIREBASE_CREDENTIALS_PATH.")
+    exit(1)
 
 
 
-
-# --- 3. GEMINI VISION EXTRACTION WITH CONTACTS & REORGANIZED TAXONOMY ---
-
-        # Mandated delay between Gemini calls
-        print("[Gemini] Request successful. Waiting 15s batch interval...")
-        time.sleep(15)
-
-        content_text = result_json['candidates'][0]['content']['parts'][0]['text']
-        return json.loads(content_text)
-    except Exception as e:
-        print(f"[Gemini Error] Parsing failed: {e}")
-        return None
 
 # --- 4. APIFY SCRAPING & STAGING QUEUE INGESTION ---
 def run_apify_pipeline():

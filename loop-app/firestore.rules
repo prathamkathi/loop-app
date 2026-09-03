@@ -15,15 +15,17 @@ service cloud.firestore {
                     && request.resource.data.time is string
                     && request.resource.data.venue is string;
                     
-      // Allow client-side status mutation for the Admin Cockpit (Approving/Rejecting)
-      // Ensures users can only transition a document from 'pending' to 'approved' or 'rejected'
+      // Allow client-side status mutation for the Admin Cockpit
       allow update: if request.auth != null 
                     && request.auth.token.coordinator == true
                     && resource.data.status == 'pending' 
                     && (request.resource.data.status == 'approved' || request.resource.data.status == 'rejected');
                     
-      // Deny direct deletion by clients
       allow delete: if false;
+    }
+
+    match /pulse/{document=**} {
+      allow read: if true;
     }
   }
 }

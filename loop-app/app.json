@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Loop IITD",
+    "slug": "loop-iitd",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.loop.iitd"
+    },
+    "android": {
+      "package": "com.loop.iitd",
+      "adaptiveIcon": {
+        "backgroundColor": "#8A1538",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0C"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Loop | IIT Delhi Events",
+      "shortName": "Loop"
+    },
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "835bebef-486c-47fe-9555-44556b83e351"
+      }
+    },
+    "scheme": "loop-iitd",
+    "owner": "prathamkathi"
+  }
+}

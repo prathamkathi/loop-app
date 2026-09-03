@@ -1,0 +1,334 @@
+{
+  "loop-app/App.tsx": {
+    "mtime": 1788424138550.5364,
+    "hash": "2dc4b35d0db4c15db3cf0a3e0fe25549"
+  },
+  "loop-app/index.ts": {
+    "mtime": 1788290652583.391,
+    "hash": "33caa6d28d87fc7e637c033d0d7124b1"
+  },
+  "loop-app/src/components/AICampusConcierge.tsx": {
+    "mtime": 1788424080374.9844,
+    "hash": "2cf6c5e9fb648f1fe8ca4cfdd1e80681"
+  },
+  "loop-app/src/components/EmptyState.tsx": {
+    "mtime": 1788424080375.91,
+    "hash": "1bb37f6547450a9e61ffdbfc47825e83"
+  },
+  "loop-app/src/components/EventCard.tsx": {
+    "mtime": 1788424080376.324,
+    "hash": "68509916104e89c8e98be7b08c190abb"
+  },
+  "loop-app/src/components/EventDetailModal.tsx": {
+    "mtime": 1788424080371.9924,
+    "hash": "07b246ee54011fb290c7dd8ca7dced60"
+  },
+  "loop-app/src/components/FeaturedCard.tsx": {
+    "mtime": 1788424080373.9934,
+    "hash": "144dcc8d948e4921abf4f038cfeef660"
+  },
+  "loop-app/src/components/FloatingField.tsx": {
+    "mtime": 1788424260891.0862,
+    "hash": "1410b4132486615a27c34ce8422136d9"
+  },
+  "loop-app/src/components/NotificationModal.tsx": {
+    "mtime": 1788424080372.3677,
+    "hash": "f6562562bf4ac676b48dacf94d882c8f"
+  },
+  "loop-app/src/components/SaveButton.tsx": {
+    "mtime": 1788424080375.5588,
+    "hash": "176e3a047abd2d5b3ce01b46c20afe76"
+  },
+  "loop-app/src/components/SectionLabel.tsx": {
+    "mtime": 1788290934755.3997,
+    "hash": "55bdbda6daadfbdba31450fa7f005422"
+  },
+  "loop-app/src/components/StudentAuthModal.tsx": {
+    "mtime": 1788424141595.7456,
+    "hash": "b6442f800b746dcb2225748ca746ff39"
+  },
+  "loop-app/src/components/TopBar.tsx": {
+    "mtime": 1788424080372.9763,
+    "hash": "009b6c90350a81559d28c83969585dcf"
+  },
+  "loop-app/src/config/firebase.ts": {
+    "mtime": 1788347559966.6438,
+    "hash": "a4c2d735dd2236e5756ea1735bc5f0cb"
+  },
+  "loop-app/src/data/avatars.ts": {
+    "mtime": 1788421293827.918,
+    "hash": "e2254e783b0eb7c2e43fca1afff25d3a"
+  },
+  "loop-app/src/data/categories.ts": {
+    "mtime": 1788420385899.223,
+    "hash": "440049d290cf24f9b5a5cc463c68d2e7"
+  },
+  "loop-app/src/data/clubs.ts": {
+    "mtime": 1788422725515.4473,
+    "hash": "4af13a66493db9fa4a2e3f1349691385"
+  },
+  "loop-app/src/data/directory.ts": {
+    "mtime": 1788421694374.6643,
+    "hash": "9e896bba936b9abf109da987b55c403c"
+  },
+  "loop-app/src/data/events.ts": {
+    "mtime": 1788420394931.86,
+    "hash": "3da72b096e5e79e7f7d0f9c411c083f1"
+  },
+  "loop-app/src/data/pulse.ts": {
+    "mtime": 1788420368139.5168,
+    "hash": "8a1ada0a84513cf86ccc4bfb356f35b3"
+  },
+  "loop-app/src/data/queue.ts": {
+    "mtime": 1788363195180.7175,
+    "hash": "0c10fc5680fa3cb113f41c9405b7c463"
+  },
+  "loop-app/src/navigation/AppNavigator.tsx": {
+    "mtime": 1788420185864.505,
+    "hash": "1d94ccf240ef5868005ce84b4b8e20da"
+  },
+  "loop-app/src/navigation/BottomTabBar.tsx": {
+    "mtime": 1788424080366.0273,
+    "hash": "7cc51bb0436e3b67a1915c60d851c864"
+  },
+  "loop-app/src/navigation/Sidebar.tsx": {
+    "mtime": 1788424080366.492,
+    "hash": "37748eb3f45c97343ecc6aeb3d841091"
+  },
+  "loop-app/src/screens/CurateScreen.tsx": {
+    "mtime": 1788424080369.4849,
+    "hash": "af56b724979b9b79198faa95654a735d"
+  },
+  "loop-app/src/screens/DirectoryScreen.tsx": {
+    "mtime": 1788424080370.0613,
+    "hash": "e05e9e81e5a53f3d4b83895f0d53af19"
+  },
+  "loop-app/src/screens/HomeScreen.tsx": {
+    "mtime": 1788424185526.289,
+    "hash": "346fa05b54247f175302787575e4854f"
+  },
+  "loop-app/src/screens/PulseScreen.tsx": {
+    "mtime": 1788424080368.9177,
+    "hash": "4be27b7196de747998f21fb0c46ead28"
+  },
+  "loop-app/src/screens/QueueScreen.tsx": {
+    "mtime": 1788424105461.184,
+    "hash": "9f896dcd2e83e356ecf674a15fd6b6e4"
+  },
+  "loop-app/src/screens/SubmitScreen.tsx": {
+    "mtime": 1788424080370.7827,
+    "hash": "1ff239297a595095a4af0063774c90e0"
+  },
+  "loop-app/src/theme/ThemeContext.tsx": {
+    "mtime": 1788292397724.4626,
+    "hash": "d6335863ee704b2d25aea8657500e36a"
+  },
+  "loop-app/src/theme/colors.ts": {
+    "mtime": 1788424323732.7495,
+    "hash": "7fac33791253634b7e86904b996cfbac"
+  },
+  "loop-app/src/theme/index.ts": {
+    "mtime": 1788290735369.0676,
+    "hash": "937ecd4d1a6b45204f6af3d5a37f2478"
+  },
+  "loop-app/src/theme/spacing.ts": {
+    "mtime": 1788290731547.9731,
+    "hash": "2890bbbfb680f80a1573fdae50a17115"
+  },
+  "loop-app/src/theme/typography.ts": {
+    "mtime": 1788421640581.919,
+    "hash": "bb2ac9d09433d2d57fe82898d672748e"
+  },
+  "loop-app/src/utils/auth.ts": {
+    "mtime": 1788421173279.7593,
+    "hash": "a68ffe339d6ad9e48846193705ca1e75"
+  },
+  "loop-app/src/utils/calendar.ts": {
+    "mtime": 1788368577546.53,
+    "hash": "446ba1d8d4783b515e13569d736ae371"
+  },
+  "loop-app/src/utils/geminiAI.ts": {
+    "mtime": 1788421320090.6763,
+    "hash": "56cbc5fad404250d572180083752e360"
+  },
+  "loop-app/src/utils/geminiParser.ts": {
+    "mtime": 1788423739564.6763,
+    "hash": "3ec953f9c53ce370ea8ef57d22d8fc60"
+  },
+  "loop-app/src/utils/linking.ts": {
+    "mtime": 1788368563549.8901,
+    "hash": "bb610bdf5b32ca5b1113b5f91ec89269"
+  },
+  "loop-app/src/utils/storage.ts": {
+    "mtime": 1788422709161.4695,
+    "hash": "a92c88081912b93960f6cb28779eb6e4"
+  },
+  "loop-scraper/gemini_parser.py": {
+    "mtime": 1788366236183.6667,
+    "hash": "bc59cc19a42c98ac8b1cca09be6465a5"
+  },
+  "loop-scraper/generate_events_offline.py": {
+    "mtime": 1788366435280.774,
+    "hash": "30da5b260fb378b3ed7315a2c6548284"
+  },
+  "loop-scraper/generate_real_events.py": {
+    "mtime": 1788366393354.1604,
+    "hash": "781b3710fcd0e958bbdad0dd9dd5fc18"
+  },
+  "loop-scraper/harvest_avatars.py": {
+    "mtime": 1788421144966.7268,
+    "hash": "32f4e399ec03c69851273c11c5adc04e"
+  },
+  "loop-scraper/puppeteer_scraper.js": {
+    "mtime": 1788365995986.5984,
+    "hash": "5b5b6061e058d2237e0bdfe19858b175"
+  },
+  "loop-scraper/purge_and_reset.py": {
+    "mtime": 1788420093370.306,
+    "hash": "0875c26163489662844fe0e967cb3e7e"
+  },
+  "loop-scraper/scraper.py": {
+    "mtime": 1788421139024.7935,
+    "hash": "a5fd0ae4cd556616129c0b63eaa5533d"
+  },
+  "loop-scraper/seed_data.py": {
+    "mtime": 1788368562798.1167,
+    "hash": "7d9727e12e89c85209456c4fbb5f4a7a"
+  },
+  "loop-scraper/stock_scraper.py": {
+    "mtime": 1788363846230.773,
+    "hash": "43db924bd952e5dbc08e8bbc388fc3c5"
+  },
+  "loop-scraper/wipe_db.py": {
+    "mtime": 1788369386470.927,
+    "hash": "a61e07c8febe5fdb5ff994bc8ac3846c"
+  },
+  "README.md": {
+    "mtime": 1788368371245.6682,
+    "hash": "c857a5e3a8fb7d0df41e300d69e1d995"
+  },
+  "docs/insta_ids.md": {
+    "mtime": 1788421116977.5786,
+    "hash": "388db4eb400158ca233c88679a45fe1f"
+  },
+  "loop-scraper/requirements.txt": {
+    "mtime": 1788370695573.4878,
+    "hash": "cdc7d729338ee16ecd2c20626d76646f"
+  },
+  "skills/frontend-skill.md": {
+    "mtime": 1787917445518.4116,
+    "hash": "852432786289ec423b759a10c121e7c9"
+  },
+  "skills/insta_ids.md": {
+    "mtime": 1788346352078.457,
+    "hash": "5d0819dc76d0356231839b2c7a2ac3b5"
+  },
+  "skills/ui-ux-skill.md": {
+    "mtime": 1787917598729.766,
+    "hash": "11fc697f81e2973080294bc5f8b7cabc"
+  },
+  "loop-app/assets/android-icon-background.png": {
+    "mtime": 1788290652580.0886,
+    "hash": "2d65569cc0e2afdcea0af9f9902d4173"
+  },
+  "loop-app/assets/android-icon-foreground.png": {
+    "mtime": 1788368429789.511,
+    "hash": "5e4eace3b65a7fd1869b5402a8128d9f"
+  },
+  "loop-app/assets/android-icon-monochrome.png": {
+    "mtime": 1788290652581.215,
+    "hash": "1e097dab989759fc0b69440092ca22cd"
+  },
+  "loop-app/assets/favicon.png": {
+    "mtime": 1788368429731.693,
+    "hash": "5bb0da42f727dd98223452739446f8dc"
+  },
+  "loop-app/assets/favicon.svg": {
+    "mtime": 1788368441428.2522,
+    "hash": "0d036ec13864481a2de3e3e4da0215ef"
+  },
+  "loop-app/assets/icon.png": {
+    "mtime": 1788368429721.3262,
+    "hash": "5e4eace3b65a7fd1869b5402a8128d9f"
+  },
+  "loop-app/assets/icon.svg": {
+    "mtime": 1788368441424.037,
+    "hash": "0d036ec13864481a2de3e3e4da0215ef"
+  },
+  "loop-app/assets/splash-icon.png": {
+    "mtime": 1788368429770.6055,
+    "hash": "592ec67eed1c9c17a69af9d3ef4fbf5d"
+  },
+  "loop-scraper/stock/images/ankahi_iitd_3962725682681240727_0.jpg": {
+    "mtime": 1788365430234.3198,
+    "hash": "df4fd23520a592c7521757fa286d03dc"
+  },
+  "loop-scraper/stock/images/ankahi_iitd_3976957802786563076_0.jpg": {
+    "mtime": 1788365452364.66,
+    "hash": "fbc5b717737cf6003c709225a316c3fb"
+  },
+  "loop-scraper/stock/images/axlr8r.formula.racing_3817576793755452511_0.jpg": {
+    "mtime": 1788365506715.6575,
+    "hash": "838943f2b39921e83c411778305c1b0b"
+  },
+  "loop-scraper/stock/images/axlr8r.formula.racing_3819959718325080505_0.jpg": {
+    "mtime": 1788365476873.416,
+    "hash": "f60d83ebdcdfee5d6c3c3652954cd90a"
+  },
+  "loop-scraper/stock/images/axlr8r.formula.racing_3819959718325080505_1.jpg": {
+    "mtime": 1788365477220.8433,
+    "hash": "712f3fb11f903a7c26f32058590052d8"
+  },
+  "loop-scraper/stock/images/axlr8r.formula.racing_3964430739479265182_0.jpg": {
+    "mtime": 1788365531476.6782,
+    "hash": "af1cd6b4f7b9a4f89b5dedfc861b203c"
+  },
+  "loop-scraper/stock/images/bhmiitd_3956920613322484312_0.jpg": {
+    "mtime": 1788365579633.04,
+    "hash": "d1bbba3414e389f706f8ecd69aab69d4"
+  },
+  "loop-scraper/stock/images/bhmiitd_3963736410905559532_0.jpg": {
+    "mtime": 1788365575459.2014,
+    "hash": "591eee393b19062995262964afbb3343"
+  },
+  "loop-scraper/stock/images/bhmiitd_3976815900372173736_0.jpg": {
+    "mtime": 1788365554069.0938,
+    "hash": "94abdf0f8b1c1216c3e566063698b8cf"
+  },
+  "loop-scraper/stock/images/brcaiitd_3879193897285622040_0.jpg": {
+    "mtime": 1788365600712.7964,
+    "hash": "4505de00d354b977e6fb1298b610ce24"
+  },
+  "loop-scraper/stock/images/brcaiitd_3879306774829947265_0.jpg": {
+    "mtime": 1788365597240.4185,
+    "hash": "8500388ff36d3f3a8fed60192bff4f8c"
+  },
+  "loop-scraper/stock/images/brcaiitd_3894005702428143773_0.jpg": {
+    "mtime": 1788365593094.5896,
+    "hash": "b3e7c1a629b352306ee7961e7d14af3d"
+  },
+  "loop-scraper/stock/images/brcaiitd_3894005702428143773_1.jpg": {
+    "mtime": 1788365593432.5444,
+    "hash": "8e22377b1dc644923a2c75ccb8179a98"
+  },
+  "loop-scraper/stock/images/bsa.iitd_3965111609382675393_0.jpg": {
+    "mtime": 1788365623052.2012,
+    "hash": "c636240598829b911f7f66cab75383d4"
+  },
+  "loop-scraper/stock/images/bsa.iitd_3973563624194572950_0.jpg": {
+    "mtime": 1788365618548.2344,
+    "hash": "11e25be16024f8455364e2adabc4405c"
+  },
+  "loop-scraper/stock/images/bsa.iitd_3973563624194572950_1.jpg": {
+    "mtime": 1788365619363.9263,
+    "hash": "ce3e9a8aefb5dc9af5b02a00a3019ea7"
+  },
+  "loop-scraper/stock/images/bsa.iitd_3973566775517824145_0.jpg": {
+    "mtime": 1788365614914.6265,
+    "hash": "ab6b9ef2d4cb3a36ff452f6e5b648433"
+  },
+  "loop-scraper/stock/images/bsa.iitd_3973566775517824145_1.jpg": {
+    "mtime": 1788365615267.3406,
+    "hash": "614ec834c3aafb209c7591f902a192d4"
+  }
+}

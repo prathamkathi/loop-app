@@ -1,0 +1,546 @@
+{
+  "nodes": [
+    {
+      "id": "readme_loop_platform",
+      "label": "Loop — Campus Concierge",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Centralized event discovery for IIT Delhi: students otherwise track ~39 club Instagram accounts manually."
+    },
+    {
+      "id": "readme_monorepo_split",
+      "label": "Two-subsystem monorepo (app + scraper)",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Frontend and ingestion are decoupled; Firestore is the only contract between them."
+    },
+    {
+      "id": "readme_ingestion_pipeline",
+      "label": "Instagram → Gemini → Firestore ingestion pipeline",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Flyers are images, so OCR/vision extraction is required to obtain structured event fields."
+    },
+    {
+      "id": "readme_scheduled_scraper",
+      "label": "Scheduled autonomous scraper (every 6h)",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "GitHub Actions cron avoids running any always-on server."
+    },
+    {
+      "id": "readme_crimson_onyx",
+      "label": "Crimson & Onyx design system",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Strict theme tokens instead of ad-hoc styles keeps mobile and web visually identical."
+    },
+    {
+      "id": "docs_insta_ids_directory",
+      "label": "IIT Delhi club & board Instagram directory",
+      "file_type": "document",
+      "source_file": "docs/insta_ids.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Canonical seed list of scrape targets, grouped by Boards / Clubs / Fests / Admin / Technical."
+    },
+    {
+      "id": "skills_insta_ids_copy",
+      "label": "insta_ids duplicate (skills/)",
+      "file_type": "document",
+      "source_file": "skills/insta_ids.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Second, drifted copy of the handle directory (41 handles vs 45 in docs/; @enactus_iitd vs @enactus_iitdelhi)."
+    },
+    {
+      "id": "concept_target_handles",
+      "label": "TARGET_HANDLES scrape list",
+      "file_type": "concept",
+      "source_file": "loop-scraper/scraper.py",
+      "source_location": "L24",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hardcoded 27-handle subset curated by hand from the 45-entry docs directory."
+    },
+    {
+      "id": "concept_gemini_vision_extraction",
+      "label": "Gemini flyer→structured-event extraction",
+      "file_type": "concept",
+      "source_file": "loop-scraper/gemini_parser.py",
+      "source_location": "L10",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "responseSchema + temperature 0.0 forces deterministic JSON with a confidenceScore for downstream triage."
+    },
+    {
+      "id": "concept_confidence_score",
+      "label": "Event confidenceScore triage",
+      "file_type": "concept",
+      "source_file": "loop-scraper/gemini_parser.py",
+      "source_location": "L38",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Low-confidence extractions are queued for human curation rather than published blindly."
+    },
+    {
+      "id": "concept_firestore_contract",
+      "label": "Firestore events collection (system contract)",
+      "file_type": "concept",
+      "source_file": "loop-app/src/config/firebase.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Only integration point between the Python/Node scraper and the Expo client."
+    },
+    {
+      "id": "concept_client_side_gemini",
+      "label": "Client-side Gemini concierge calls",
+      "file_type": "concept",
+      "source_file": "loop-app/src/utils/geminiAI.ts",
+      "source_location": "L4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No backend server exists, so the app calls the Gemini REST API directly with an EXPO_PUBLIC_ key and a three-model fallback chain."
+    },
+    {
+      "id": "concept_local_first_identity",
+      "label": "Local-first student identity (AsyncStorage)",
+      "file_type": "concept",
+      "source_file": "loop-app/src/utils/auth.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Kerberos ID profile is stored on-device only; no Firebase Auth, so it is claimed, not verified."
+    },
+    {
+      "id": "skills_frontend_design",
+      "label": "ck:frontend-design skill (vendored)",
+      "file_type": "document",
+      "source_file": "skills/frontend-skill.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "claudekit",
+      "contributor": null,
+      "rationale": "Anti-'AI slop' aesthetic rules the app's theme layer is meant to satisfy."
+    },
+    {
+      "id": "skills_ui_ux_pro_max",
+      "label": "ck:ui-ux-pro-max skill (vendored)",
+      "file_type": "document",
+      "source_file": "skills/ui-ux-skill.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "claudekit",
+      "contributor": null,
+      "rationale": "Design-system generator guidance (palettes, font pairings, React Native stack rules) used to derive the theme tokens."
+    },
+    {
+      "id": "deps_scraper_stack",
+      "label": "Scraper dependency stack (apify, firebase-admin, google-generativeai, cloudinary)",
+      "file_type": "document",
+      "source_file": "loop-scraper/requirements.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Apify supplies Instagram access, Cloudinary hosts flyer/avatar images so Firestore stores only URLs."
+    }
+  ],
+  "edges": [
+    {
+      "source": "readme_loop_platform",
+      "target": "readme_monorepo_split",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_monorepo_split",
+      "target": "loop_app_app",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_monorepo_split",
+      "target": "loop_scraper_scraper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_ingestion_pipeline",
+      "target": "loop_scraper_scraper",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_ingestion_pipeline",
+      "target": "loop_scraper_gemini_parser",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_ingestion_pipeline",
+      "target": "loop_scraper_puppeteer_scraper",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_scheduled_scraper",
+      "target": "loop_scraper_scraper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_insta_ids_directory",
+      "target": "concept_target_handles",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/scraper.py",
+      "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "concept_target_handles",
+      "target": "loop_scraper_scraper",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/scraper.py",
+      "source_location": "L24",
+      "weight": 1
+    },
+    {
+      "source": "skills_insta_ids_copy",
+      "target": "docs_insta_ids_directory",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.92,
+      "source_file": "skills/insta_ids.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_gemini_vision_extraction",
+      "target": "loop_scraper_gemini_parser",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/gemini_parser.py",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "concept_gemini_vision_extraction",
+      "target": "utils_geminiparser",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "loop-app/src/utils/geminiParser.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_confidence_score",
+      "target": "concept_gemini_vision_extraction",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/gemini_parser.py",
+      "source_location": "L38",
+      "weight": 1
+    },
+    {
+      "source": "concept_confidence_score",
+      "target": "screens_queuescreen",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_confidence_score",
+      "target": "screens_curatescreen",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "loop-app/src/screens/CurateScreen.tsx",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "loop_scraper_scraper",
+      "target": "concept_firestore_contract",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/scraper.py",
+      "source_location": "L13",
+      "weight": 1
+    },
+    {
+      "source": "config_firebase",
+      "target": "concept_firestore_contract",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/config/firebase.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "concept_firestore_contract",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "concept_client_side_gemini",
+      "target": "utils_geminiai",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/utils/geminiAI.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "components_aicampusconcierge",
+      "target": "concept_client_side_gemini",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/components/AICampusConcierge.tsx",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_client_side_gemini",
+      "target": "concept_gemini_vision_extraction",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "loop-app/src/utils/geminiAI.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_local_first_identity",
+      "target": "utils_auth",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/utils/auth.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "concept_local_first_identity",
+      "target": "utils_storage",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "loop-app/src/utils/storage.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "components_studentauthmodal",
+      "target": "concept_local_first_identity",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/components/StudentAuthModal.tsx",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_crimson_onyx",
+      "target": "theme_colors",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-app/src/theme/colors.ts",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "skills_ui_ux_pro_max",
+      "target": "readme_crimson_onyx",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "skills/ui-ux-skill.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "skills_frontend_design",
+      "target": "skills_ui_ux_pro_max",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "skills/frontend-skill.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "skills_frontend_design",
+      "target": "readme_crimson_onyx",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "skills/frontend-skill.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "deps_scraper_stack",
+      "target": "loop_scraper_scraper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "loop-scraper/requirements.txt",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "deps_scraper_stack",
+      "target": "readme_ingestion_pipeline",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "loop-scraper/requirements.txt",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "event_ingestion_flow",
+      "label": "Flyer-to-Firestore event ingestion flow",
+      "nodes": [
+        "loop_scraper_scraper",
+        "loop_scraper_puppeteer_scraper",
+        "loop_scraper_gemini_parser",
+        "concept_confidence_score",
+        "concept_firestore_contract"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "README.md"
+    },
+    {
+      "id": "gemini_surfaces",
+      "label": "Gemini touchpoints across both subsystems",
+      "nodes": [
+        "loop_scraper_gemini_parser",
+        "utils_geminiai",
+        "utils_geminiparser",
+        "components_aicampusconcierge"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "loop-app/src/utils/geminiAI.ts"
+    },
+    {
+      "id": "design_system_chain",
+      "label": "Vendored design skills → theme tokens → UI",
+      "nodes": [
+        "skills_frontend_design",
+        "skills_ui_ux_pro_max",
+        "readme_crimson_onyx",
+        "theme_colors",
+        "theme_typography"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "skills/ui-ux-skill.md"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

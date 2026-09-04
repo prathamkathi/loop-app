@@ -24,8 +24,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Inject Firebase Service Account
+        env:
+          FIREBASE_SERVICE_ACCOUNT_RAW: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > loop-app/scraper/serviceAccountKey.json
+          python3 -c "import os, json; data = os.environ['FIREBASE_SERVICE_ACCOUNT_RAW']; json.loads(data); open('loop-app/scraper/serviceAccountKey.json', 'w').write(data)"
 
       - name: Execute Scraper Pipeline
         env:

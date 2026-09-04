@@ -1,6 +1,3 @@
-# Vercel hosts only the serverless API. The web app is deployed to Firebase
-# Hosting, so nothing else in this repo should be uploaded — and anything
-# uploaded is publicly fetchable as a static file.
 loop-app/src
 loop-app/assets
 loop-app/scraper
@@ -18,3 +15,4 @@ loop-app/index.ts
 loop-app/scripts
 .graphify
 .github
+loop-app/api

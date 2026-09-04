@@ -1,10 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "routes": [
-    {
-      "src": "/loop-app/.*",
-      "status": 404
-    }
-  ]
+  "trailingSlash": false
 }

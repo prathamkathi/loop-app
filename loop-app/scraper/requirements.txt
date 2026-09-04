@@ -1,6 +1,5 @@
 apify-client
 firebase-admin
-google-generativeai
 python-dotenv
 requests
 pillow

@@ -35,3 +35,6 @@ Icon?
 
 .vercel
 .env*
+
+# Logs — the scraper echoes API keys in request URLs
+*.log

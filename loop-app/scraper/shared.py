@@ -36,19 +36,36 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 def upload_image_to_cloudinary(image_path: str) -> str:
     """Upload a poster and return its secure URL, or None on failure.
 
-    Signed upload: this runs server-side with the API secret already in the
-    environment, so there is no reason to depend on an unsigned preset
-    existing in the Cloudinary account.
+    Dual-mode: attempts signed upload first. If permissions are restricted or
+    keys are sub-scoped, automatically falls back to the unsigned preset 'loop_uploads'.
     """
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME") or "dnse1yvqq"
+    upload_preset = os.getenv("CLOUDINARY_UPLOAD_PRESET") or "loop_uploads"
+
+    # 1. Attempt signed upload if API credentials exist
     try:
         response = cloudinary.uploader.upload(
             image_path,
             folder="loop_events",
             resource_type="image",
         )
-        return response.get("secure_url")
+        url = response.get("secure_url")
+        if url:
+            return url
     except Exception as e:
-        print(f"[Cloudinary Error] {e}")
+        print(f"[Cloudinary Signed Notice] {e}. Trying unsigned preset '{upload_preset}'...")
+
+    # 2. Resilient fallback to verified unsigned preset
+    try:
+        response = cloudinary.uploader.unsigned_upload(
+            image_path,
+            upload_preset,
+            cloud_name=cloud_name,
+            folder="loop_events",
+        )
+        return response.get("secure_url")
+    except Exception as fallback_err:
+        print(f"[Cloudinary Unsigned Error] {fallback_err}")
         return None
 
 def parse_with_gemini(image_paths, caption):

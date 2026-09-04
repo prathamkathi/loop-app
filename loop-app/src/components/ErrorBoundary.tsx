@@ -1,9 +1,11 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
-import { typography, radii, spacing, lightColors as colors } from '../theme';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { WarningCircle, ArrowClockwise } from 'phosphor-react-native';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
@@ -22,39 +24,67 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
-    // TODO (T-08/Q5): Send to Crashlytics / Sentry once configured
+    // Structured crash telemetry logging
+    const crashReport = {
+      timestamp: new Date().toISOString(),
+      platform: Platform.OS,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    };
+
+    console.error('[Loop ErrorBoundary Caught Exception]:', crashReport);
+
+    // If an external service like Sentry or a Vercel telemetry webhook is configured:
+    // try { fetch('/api/telemetry', { method: 'POST', body: JSON.stringify(crashReport) }); } catch {}
   }
 
-  private handleReset = () => {
+  private handleRestart = () => {
     this.setState({ hasError: false, error: null });
+    if (this.props.onReset) {
+      this.props.onReset();
+    }
   };
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
-        <SafeAreaView style={styles.container}>
-          <View style={styles.content}>
-            <Text style={styles.title}>Something went wrong</Text>
-            <Text style={styles.message}>
-              We're sorry, but the app encountered an unexpected error. Our team has been notified.
-            </Text>
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText} numberOfLines={4}>
-                {this.state.error?.toString()}
-              </Text>
+        <View style={styles.container}>
+          <View style={styles.card}>
+            <View style={styles.iconCircle}>
+              <WarningCircle size={44} weight="duotone" color="#8A1538" />
             </View>
+
+            <Text style={styles.title}>Something went wrong</Text>
+            <Text style={styles.subtitle}>
+              An unexpected issue occurred while rendering this screen.
+            </Text>
+
+            {__DEV__ && this.state.error?.message ? (
+              <View style={styles.devErrorBox}>
+                <Text style={styles.devErrorText} numberOfLines={4}>
+                  {this.state.error.message}
+                </Text>
+              </View>
+            ) : null}
+
             <Pressable
+              onPress={this.handleRestart}
               style={({ pressed }) => [
-                styles.button,
-                { opacity: pressed ? 0.8 : 1 },
+                styles.restartBtn,
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { opacity: 0.8, transform: [{ scale: 0.98 }] },
               ]}
-              onPress={this.handleReset}
             >
-              <Text style={styles.buttonText}>Try Again</Text>
+              <ArrowClockwise size={18} weight="bold" color="#FFFFFF" />
+              <Text style={styles.restartBtnText}>Reload Screen</Text>
             </Pressable>
           </View>
-        </SafeAreaView>
+        </View>
       );
     }
 
@@ -65,48 +95,74 @@ export class ErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#0F0E13',
     alignItems: 'center',
-    padding: spacing.xl,
+    justifyContent: 'center',
+    padding: 24,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#1C191E',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderRadius: 24,
+    padding: 28,
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(138, 21, 56, 0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
   },
   title: {
-    ...typography.displayMd,
-    color: colors.foreground,
-    marginBottom: spacing.sm,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 8,
     textAlign: 'center',
   },
-  message: {
-    ...typography.bodyMd,
-    color: colors.foregroundSecondary,
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: 'rgba(255, 255, 255, 0.65)',
     textAlign: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: 20,
   },
-  errorBox: {
-    backgroundColor: colors.surface,
-    padding: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
+  devErrorBox: {
     width: '100%',
-    marginBottom: spacing.xl,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    marginBottom: 20,
   },
-  errorText: {
-    ...typography.bodySm,
-    color: colors.error,
-    fontFamily: 'monospace',
+  devErrorText: {
+    color: '#E06C75',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontSize: 12,
   },
-  button: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: radii.full,
+  restartBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#8A1538',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 24,
+    width: '100%',
   },
-  buttonText: {
-    ...typography.labelLg,
-    color: colors.onPrimary,
+  restartBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
+
+export default ErrorBoundary;

@@ -1,7 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/loop-app/:match*", "destination": "/404" }
+  "routes": [
+    {
+      "src": "/loop-app/.*",
+      "status": 404
+    }
   ]
 }

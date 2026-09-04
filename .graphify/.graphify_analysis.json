@@ -1,6 +1,12 @@
 {
   "communities": {
     "0": [
+      "components_notificationmodal",
+      "components_notificationmodal_initial_notifications",
+      "components_notificationmodal_notificationitem",
+      "components_notificationmodal_notificationmodal",
+      "components_notificationmodal_props",
+      "components_notificationmodal_styles",
       "components_studentauthmodal",
       "components_studentauthmodal_hostels",
       "components_studentauthmodal_props",
@@ -10,11 +16,14 @@
       "components_topbar_props",
       "components_topbar_styles",
       "components_topbar_topbar",
+      "concept_firestore_contract",
       "concept_local_first_identity",
       "loop_app_app",
       "loop_app_app_app",
       "loop_app_app_appcontent",
       "loop_app_index",
+      "readme_loop_platform",
+      "readme_monorepo_split",
       "utils_auth",
       "utils_auth_clearstudentprofile",
       "utils_auth_getstoredstudentprofile",
@@ -29,75 +38,72 @@
       "utils_storage_loadsavedevents",
       "utils_storage_saveinterests",
       "utils_storage_savereminder",
-      "utils_storage_savesavedevents"
+      "utils_storage_savesavedevents",
+      "utils_usefonts",
+      "utils_usefonts_usecustomfonts"
     ],
     "1": [
       "concept_client_side_gemini",
       "concept_confidence_score",
       "concept_gemini_vision_extraction",
-      "data_categories",
-      "data_categories_categories",
+      "config_firebase",
+      "config_firebase_auth",
+      "config_firebase_firebaseconfig",
       "data_queue",
       "data_queue_scrapeditem",
-      "loop_scraper_gemini_parser",
-      "loop_scraper_gemini_parser_parse_with_gemini",
-      "loop_scraper_gemini_parser_process",
-      "screens_curatescreen",
-      "screens_curatescreen_curatescreen",
-      "screens_curatescreen_default_reminder_opts",
-      "screens_curatescreen_getcategoryicon",
-      "screens_curatescreen_props",
-      "screens_curatescreen_styles",
       "screens_queuescreen",
       "screens_queuescreen_fieldrow",
       "screens_queuescreen_fieldstyles",
       "screens_queuescreen_queuescreen",
       "screens_queuescreen_styles",
-      "utils_geminiparser",
-      "utils_geminiparser_allowed_categories",
-      "utils_geminiparser_getmodel",
-      "utils_geminiparser_parsedevent",
-      "utils_geminiparser_parseeventposter",
-      "utils_geminiparser_parseeventposterfromurl"
-    ],
-    "2": [
-      "components_emptystate",
-      "components_emptystate_emptystate",
-      "components_emptystate_props",
-      "components_emptystate_styles",
-      "components_floatingfield",
-      "components_floatingfield_floatingfield",
-      "components_floatingfield_props",
-      "components_floatingfield_styles",
-      "components_sectionlabel",
-      "components_sectionlabel_props",
-      "components_sectionlabel_sectionlabel",
-      "components_sectionlabel_styles",
-      "config_firebase",
-      "config_firebase_db",
-      "config_firebase_firebaseconfig",
-      "screens_homescreen",
-      "screens_homescreen_homescreen",
-      "screens_homescreen_props",
-      "screens_homescreen_styles",
       "screens_submitscreen",
       "screens_submitscreen_props",
       "screens_submitscreen_styles",
-      "screens_submitscreen_submitscreen"
+      "screens_submitscreen_submitscreen",
+      "utils_geminiai",
+      "utils_geminiai_askcampusai",
+      "utils_geminiai_callgeminiviafunction",
+      "utils_geminiai_enhanceeventdraft",
+      "utils_geminiai_generateeventpitch",
+      "utils_session",
+      "utils_session_authready",
+      "utils_session_coordinatorinfo",
+      "utils_session_ensuresignedin",
+      "utils_session_getcoordinatorinfo",
+      "utils_session_iscoordinator",
+      "utils_session_not_coordinator",
+      "utils_session_oncoordinatorchange",
+      "utils_session_readclaims",
+      "utils_vercelclient",
+      "utils_vercelclient_apierror",
+      "utils_vercelclient_apierror_constructor",
+      "utils_vercelclient_apierrormessage",
+      "utils_vercelclient_httpscallable"
     ],
-    "3": [
+    "2": [
+      "components_eventcard",
+      "components_eventcard_eventcard",
+      "components_eventcard_openwhatsapp",
+      "components_eventcard_props",
+      "components_eventcard_pulsedot",
+      "components_eventcard_styles",
       "components_eventdetailmodal",
       "components_eventdetailmodal_detailrow",
       "components_eventdetailmodal_detailstyles",
       "components_eventdetailmodal_eventdetailmodal",
       "components_eventdetailmodal_props",
       "components_eventdetailmodal_styles",
-      "data_avatars",
-      "data_avatars_club_avatars",
-      "data_avatars_getclubavatar",
-      "data_clubs",
-      "data_clubs_clubitem",
-      "data_clubs_clubs",
+      "components_featuredcard",
+      "components_featuredcard_featuredcard",
+      "components_featuredcard_props",
+      "components_featuredcard_styles",
+      "components_savebutton",
+      "components_savebutton_props",
+      "components_savebutton_savebutton",
+      "components_savebutton_styles",
+      "data_events",
+      "data_events_eventcontact",
+      "data_events_eventitem",
       "utils_calendar",
       "utils_calendar_calendarevent",
       "utils_calendar_getgooglecalendarurl",
@@ -105,12 +111,47 @@
       "utils_calendar_opengooglecalendar",
       "utils_calendar_parsedateandtime",
       "utils_calendar_togooglecalendarformat",
+      "utils_cloudinary",
+      "utils_cloudinary_getoptimizedimageurl"
+    ],
+    "3": [
+      "components_aicampusconcierge",
+      "components_aicampusconcierge_aicampusconcierge",
+      "components_aicampusconcierge_message",
+      "components_aicampusconcierge_prompt_chips",
+      "components_aicampusconcierge_props",
+      "components_aicampusconcierge_styles",
+      "data_avatars",
+      "data_avatars_club_avatars",
+      "data_avatars_getclubavatar",
+      "data_clubs",
+      "data_clubs_clubitem",
+      "data_clubs_clubs",
+      "data_directory",
+      "data_directory_directory",
+      "data_directory_directoryitem",
+      "data_pulse",
+      "data_pulse_pulse",
+      "data_pulse_pulseitem",
+      "screens_directoryscreen",
+      "screens_directoryscreen_animatedwrapper",
+      "screens_directoryscreen_directoryscreen",
+      "screens_directoryscreen_filter_tabs",
+      "screens_directoryscreen_styles",
+      "screens_pulsescreen",
+      "screens_pulsescreen_animatedwrapper",
+      "screens_pulsescreen_pulsescreen",
+      "screens_pulsescreen_styles",
       "utils_linking",
       "utils_linking_openexternallink",
       "utils_linking_openinstagram",
       "utils_linking_openmaps"
     ],
     "4": [
+      "components_floatingfield",
+      "components_floatingfield_floatingfield",
+      "components_floatingfield_props",
+      "components_floatingfield_styles",
       "readme_crimson_onyx",
       "skills_frontend_design",
       "skills_ui_ux_pro_max",
@@ -136,65 +177,28 @@
       "theme_typography_typography"
     ],
     "5": [
-      "components_aicampusconcierge",
-      "components_aicampusconcierge_aicampusconcierge",
-      "components_aicampusconcierge_message",
-      "components_aicampusconcierge_prompt_chips",
-      "components_aicampusconcierge_props",
-      "components_aicampusconcierge_styles",
-      "data_directory",
-      "data_directory_directory",
-      "data_directory_directoryitem",
-      "screens_directoryscreen",
-      "screens_directoryscreen_animatedwrapper",
-      "screens_directoryscreen_directoryscreen",
-      "screens_directoryscreen_filter_tabs",
-      "screens_directoryscreen_styles",
-      "utils_geminiai",
-      "utils_geminiai_askcampusai",
-      "utils_geminiai_callgeminirest",
-      "utils_geminiai_enhanceeventdraft",
-      "utils_geminiai_generateeventpitch",
-      "utils_geminiai_models"
+      "components_emptystate",
+      "components_emptystate_emptystate",
+      "components_emptystate_props",
+      "components_emptystate_styles",
+      "components_sectionlabel",
+      "components_sectionlabel_props",
+      "components_sectionlabel_sectionlabel",
+      "components_sectionlabel_styles",
+      "data_categories",
+      "data_categories_categories",
+      "screens_curatescreen",
+      "screens_curatescreen_curatescreen",
+      "screens_curatescreen_default_reminder_opts",
+      "screens_curatescreen_getcategoryicon",
+      "screens_curatescreen_props",
+      "screens_curatescreen_styles",
+      "screens_homescreen",
+      "screens_homescreen_homescreen",
+      "screens_homescreen_props",
+      "screens_homescreen_styles"
     ],
     "6": [
-      "components_eventcard",
-      "components_eventcard_eventcard",
-      "components_eventcard_openwhatsapp",
-      "components_eventcard_props",
-      "components_eventcard_pulsedot",
-      "components_eventcard_styles",
-      "components_featuredcard",
-      "components_featuredcard_featuredcard",
-      "components_featuredcard_props",
-      "components_featuredcard_styles",
-      "components_savebutton",
-      "components_savebutton_props",
-      "components_savebutton_savebutton",
-      "components_savebutton_styles",
-      "data_events",
-      "data_events_eventcontact",
-      "data_events_eventitem"
-    ],
-    "7": [
-      "concept_firestore_contract",
-      "concept_target_handles",
-      "deps_scraper_stack",
-      "docs_insta_ids_directory",
-      "loop_scraper_scraper",
-      "loop_scraper_scraper_get_avatar_for_handle",
-      "loop_scraper_scraper_parse_with_gemini",
-      "loop_scraper_scraper_rationale_101",
-      "loop_scraper_scraper_rationale_209",
-      "loop_scraper_scraper_run_apify_pipeline",
-      "loop_scraper_scraper_upload_image",
-      "readme_ingestion_pipeline",
-      "readme_loop_platform",
-      "readme_monorepo_split",
-      "readme_scheduled_scraper",
-      "skills_insta_ids_copy"
-    ],
-    "8": [
       "navigation_appnavigator",
       "navigation_appnavigator_appnavigator",
       "navigation_appnavigator_props",
@@ -212,92 +216,151 @@
       "navigation_sidebar_sidebar",
       "navigation_sidebar_styles"
     ],
+    "7": [
+      "api_callgemini",
+      "api_callgemini_handler",
+      "api_callgemini_text_models",
+      "api_getcloudinarysignature",
+      "api_getcloudinarysignature_handler",
+      "api_parseeventposter",
+      "api_parseeventposter_allowed_categories",
+      "api_parseeventposter_config",
+      "api_parseeventposter_handler",
+      "lib_guard",
+      "lib_guard_allowed_origins",
+      "lib_guard_caller",
+      "lib_guard_guard",
+      "lib_guard_initadmin"
+    ],
+    "8": [
+      "scraper_puppeteer_scraper",
+      "scraper_puppeteer_scraper_downloadimage",
+      "scraper_puppeteer_scraper_fs",
+      "scraper_puppeteer_scraper_handles",
+      "scraper_puppeteer_scraper_https",
+      "scraper_puppeteer_scraper_images_dir",
+      "scraper_puppeteer_scraper_output_dir",
+      "scraper_puppeteer_scraper_path",
+      "scraper_puppeteer_scraper_puppeteer",
+      "scraper_puppeteer_scraper_scrapeinstagram"
+    ],
     "9": [
-      "loop_scraper_puppeteer_scraper",
-      "loop_scraper_puppeteer_scraper_downloadimage",
-      "loop_scraper_puppeteer_scraper_fs",
-      "loop_scraper_puppeteer_scraper_handles",
-      "loop_scraper_puppeteer_scraper_https",
-      "loop_scraper_puppeteer_scraper_images_dir",
-      "loop_scraper_puppeteer_scraper_output_dir",
-      "loop_scraper_puppeteer_scraper_path",
-      "loop_scraper_puppeteer_scraper_puppeteer",
-      "loop_scraper_puppeteer_scraper_scrapeinstagram"
+      "components_errorboundary",
+      "components_errorboundary_component",
+      "components_errorboundary_errorboundary",
+      "components_errorboundary_errorboundary_componentdidcatch",
+      "components_errorboundary_errorboundary_getderivedstatefromerror",
+      "components_errorboundary_errorboundary_render",
+      "components_errorboundary_props",
+      "components_errorboundary_state",
+      "components_errorboundary_styles"
     ],
     "10": [
-      "data_pulse",
-      "data_pulse_pulse",
-      "data_pulse_pulseitem",
-      "screens_pulsescreen",
-      "screens_pulsescreen_animatedwrapper",
-      "screens_pulsescreen_pulsescreen",
-      "screens_pulsescreen_styles"
+      "scraper_scraper",
+      "scraper_scraper_get_avatar_for_handle",
+      "scraper_scraper_load_target_handles",
+      "scraper_scraper_rationale_26",
+      "scraper_scraper_rationale_74",
+      "scraper_scraper_run_apify_pipeline"
     ],
     "11": [
-      "components_notificationmodal",
-      "components_notificationmodal_initial_notifications",
-      "components_notificationmodal_notificationitem",
-      "components_notificationmodal_notificationmodal",
-      "components_notificationmodal_props",
-      "components_notificationmodal_styles"
+      "scripts_backfill_events",
+      "scripts_backfill_events_backfillevents",
+      "scripts_backfill_events_db",
+      "scripts_backfill_events_parse",
+      "scripts_backfill_events_rationale_1",
+      "scripts_backfill_events_serviceaccountpath"
     ],
     "12": [
-      "loop_scraper_seed_data",
-      "loop_scraper_seed_data_rationale_33",
-      "loop_scraper_seed_data_rationale_42",
-      "loop_scraper_seed_data_seed_database",
-      "loop_scraper_seed_data_upload_local_to_cloudinary",
-      "loop_scraper_seed_data_upload_url_to_cloudinary"
+      "scraper_set_admin",
+      "scraper_set_admin_init",
+      "scraper_set_admin_list_coordinators",
+      "scraper_set_admin_main",
+      "scraper_set_admin_rationale_1"
     ],
     "13": [
-      "loop_scraper_harvest_avatars",
-      "loop_scraper_harvest_avatars_harvest_avatars",
-      "loop_scraper_harvest_avatars_rationale_40",
-      "loop_scraper_harvest_avatars_upload_avatar_to_cloudinary"
+      "scraper_shared",
+      "scraper_shared_parse_with_gemini",
+      "scraper_shared_rationale_37",
+      "scraper_shared_rationale_72",
+      "scraper_shared_upload_image_to_cloudinary"
     ],
     "14": [
-      "loop_scraper_purge_and_reset",
-      "loop_scraper_purge_and_reset_extract_cloudinary_public_id",
-      "loop_scraper_purge_and_reset_purge_all",
-      "loop_scraper_purge_and_reset_rationale_28"
+      "scraper_purge_and_reset",
+      "scraper_purge_and_reset_extract_cloudinary_public_id",
+      "scraper_purge_and_reset_purge_all",
+      "scraper_purge_and_reset_rationale_28"
     ],
     "15": [
-      "loop_scraper_stock_scraper",
-      "loop_scraper_stock_scraper_download_image",
-      "loop_scraper_stock_scraper_parse_with_gemini"
+      "concept_target_handles",
+      "docs_insta_ids_directory",
+      "skills_insta_ids_copy"
     ],
     "16": [
-      "loop_scraper_generate_real_events",
-      "loop_scraper_generate_real_events_generate_real_events"
+      "deps_scraper_stack",
+      "readme_ingestion_pipeline"
     ],
     "17": [
-      "loop_scraper_wipe_db",
-      "loop_scraper_wipe_db_wipe_events"
+      "scraper_cli",
+      "scraper_cli_main"
     ],
     "18": [
-      "loop_scraper_generate_events_offline"
+      "scraper_generate_real_events",
+      "scraper_generate_real_events_generate_real_events"
+    ],
+    "19": [
+      "scraper_harvest_avatars",
+      "scraper_harvest_avatars_main"
+    ],
+    "20": [
+      "scraper_seed_data",
+      "scraper_seed_data_seed_database"
+    ],
+    "21": [
+      "scraper_stock_scraper",
+      "scraper_stock_scraper_download_image"
+    ],
+    "22": [
+      "scraper_wipe_db",
+      "scraper_wipe_db_wipe_events"
+    ],
+    "23": [
+      "readme_scheduled_scraper"
+    ],
+    "24": [
+      "scraper_generate_events_offline"
+    ],
+    "25": [
+      "scraper_wipe_events"
     ]
   },
   "cohesion": {
-    "0": 0.10344827586206896,
-    "1": 0.09686609686609686,
-    "2": 0.09881422924901186,
-    "3": 0.13043478260869565,
-    "4": 0.14624505928853754,
-    "5": 0.14210526315789473,
-    "6": 0.15441176470588236,
-    "7": 0.15833333333333333,
-    "8": 0.18333333333333332,
+    "0": 0.07051282051282051,
+    "1": 0.09523809523809523,
+    "2": 0.10080645161290322,
+    "3": 0.08602150537634409,
+    "4": 0.1168091168091168,
+    "5": 0.11578947368421053,
+    "6": 0.18333333333333332,
+    "7": 0.18681318681318682,
+    "8": 0.2222222222222222,
     "9": 0.2222222222222222,
-    "10": 0.3333333333333333,
+    "10": 0.4666666666666667,
     "11": 0.3333333333333333,
-    "12": 0.4666666666666667,
-    "13": 0.6666666666666666,
+    "12": 0.6,
+    "13": 0.4,
     "14": 0.6666666666666666,
     "15": 0.6666666666666666,
     "16": 1,
     "17": 1,
-    "18": 1
+    "18": 1,
+    "19": 1,
+    "20": 1,
+    "21": 1,
+    "22": 1,
+    "23": 1,
+    "24": 1,
+    "25": 1
   },
   "gods": [
     {
@@ -307,28 +370,46 @@
       "degree": 8
     },
     {
+      "id": "components_errorboundary_errorboundary",
+      "label": "ErrorBoundary",
+      "edges": 6,
+      "degree": 6
+    },
+    {
       "id": "utils_linking_openexternallink",
       "label": "openExternalLink()",
       "edges": 6,
       "degree": 6
     },
     {
-      "id": "config_firebase_db",
-      "label": "db",
+      "id": "lib_guard_guard",
+      "label": "guard()",
       "edges": 5,
       "degree": 5
+    },
+    {
+      "id": "config_firebase_auth",
+      "label": "auth",
+      "edges": 5,
+      "degree": 5
+    },
+    {
+      "id": "utils_cloudinary_getoptimizedimageurl",
+      "label": "getOptimizedImageUrl()",
+      "edges": 5,
+      "degree": 5
+    },
+    {
+      "id": "scraper_scraper_run_apify_pipeline",
+      "label": "run_apify_pipeline()",
+      "edges": 4,
+      "degree": 4
     },
     {
       "id": "data_categories_categories",
       "label": "CATEGORIES",
-      "edges": 5,
-      "degree": 5
-    },
-    {
-      "id": "loop_scraper_scraper_run_apify_pipeline",
-      "label": "run_apify_pipeline()",
-      "edges": 5,
-      "degree": 5
+      "edges": 4,
+      "degree": 4
     },
     {
       "id": "navigation_bottomtabbar_tabid",
@@ -341,65 +422,14 @@
       "label": "getGoogleCalendarUrl()",
       "edges": 4,
       "degree": 4
-    },
-    {
-      "id": "utils_calendar_opengooglecalendar",
-      "label": "openGoogleCalendar()",
-      "edges": 4,
-      "degree": 4
-    },
-    {
-      "id": "utils_geminiai_callgeminirest",
-      "label": "callGeminiREST()",
-      "edges": 4,
-      "degree": 4
-    },
-    {
-      "id": "utils_linking_openinstagram",
-      "label": "openInstagram()",
-      "edges": 4,
-      "degree": 4
     }
   ],
   "surprises": [
     {
-      "source": "Client-side Gemini concierge calls",
-      "target": "Gemini flyer→structured-event extraction",
-      "source_files": [
-        "loop-app/src/utils/geminiAI.ts",
-        "loop-scraper/gemini_parser.py"
-      ],
-      "confidence": "INFERRED",
-      "relation": "semantically_similar_to",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link"
-    },
-    {
-      "source": "insta_ids duplicate (skills/)",
-      "target": "IIT Delhi club & board Instagram directory",
-      "source_files": [
-        "skills/insta_ids.md",
-        "docs/insta_ids.md"
-      ],
-      "confidence": "INFERRED",
-      "relation": "semantically_similar_to",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link"
-    },
-    {
-      "source": "IIT Delhi club & board Instagram directory",
-      "target": "TARGET_HANDLES scrape list",
-      "source_files": [
-        "docs/insta_ids.md",
-        "loop-scraper/scraper.py"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "crosses file types (doc ↔ code); connects across different repos/directories"
-    },
-    {
       "source": "Scraper dependency stack (apify, firebase-admin, google-generativeai, cloudinary)",
       "target": "Instagram → Gemini → Firestore ingestion pipeline",
       "source_files": [
-        "loop-scraper/requirements.txt",
+        "loop-app/scraper/requirements.txt",
         "README.md"
       ],
       "confidence": "INFERRED",
@@ -410,12 +440,82 @@
       "source": "ck:frontend-design skill (vendored)",
       "target": "Crimson & Onyx design system",
       "source_files": [
-        "skills/frontend-skill.md",
+        "loop-app/docs/skills/frontend-skill.md",
         "README.md"
       ],
       "confidence": "INFERRED",
       "relation": "conceptually_related_to",
       "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "ck:ui-ux-pro-max skill (vendored)",
+      "target": "Crimson & Onyx design system",
+      "source_files": [
+        "loop-app/docs/skills/ui-ux-skill.md",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "rationale_for",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "Client-side Gemini concierge calls",
+      "target": "Gemini flyer→structured-event extraction",
+      "source_files": [
+        "loop-app/src/utils/geminiAI.ts",
+        "loop-app/scraper/gemini_parser.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "semantically_similar_to",
+      "why": "inferred connection - not explicitly stated in source; semantically similar concepts with no structural link"
+    },
+    {
+      "source": "IIT Delhi club & board Instagram directory",
+      "target": "TARGET_HANDLES scrape list",
+      "source_files": [
+        "loop-app/docs/insta_ids.md",
+        "loop-app/scraper/scraper.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (doc ↔ code)"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `ErrorBoundary` connect `Puppeteer Instagram Fallback` to `App Shell & Student Identity`?",
+      "why": "High betweenness centrality (0.021) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `EventItem` connect `Firestore Client & Shared UI Primitives` to `Event Detail, Calendar & Deep Links`, `App Shell & Student Identity`, `AI Concierge & Club Directory`, `Flyer Parsing & Curation Queue`?",
+      "why": "High betweenness centrality (0.006) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `ALLOWED_ORIGINS`, `Caller`, `TEXT_MODELS` to the rest of the system?",
+      "why": "92 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `App Shell & Student Identity` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07051282051282051 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Flyer Parsing & Curation Queue` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Firestore Client & Shared UI Primitives` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.10080645161290322 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Event Detail, Calendar & Deep Links` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.08602150537634409 - nodes in this community are weakly interconnected."
     }
   ],
   "labels": {
@@ -437,43 +537,17 @@
     "15": "Stock Flyer Scraper",
     "16": "Offline Real-Event Generation",
     "17": "Firestore Wipe Utility",
-    "18": "Offline Event Fixtures"
+    "18": "Offline Event Fixtures",
+    "19": "Community 19",
+    "20": "Community 20",
+    "21": "Community 21",
+    "22": "Community 22",
+    "23": "Community 23",
+    "24": "Community 24",
+    "25": "Community 25"
   },
-  "questions": [
-    {
-      "type": "bridge_node",
-      "question": "Why does `Instagram → Gemini → Firestore ingestion pipeline` connect `Apify Instagram Ingestion Pipeline` to `Flyer Parsing & Curation Queue`, `Puppeteer Instagram Fallback`?",
-      "why": "High betweenness centrality (0.077) - this node is a cross-community bridge."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `Firestore events collection (system contract)` connect `Apify Instagram Ingestion Pipeline` to `Firestore Client & Shared UI Primitives`, `App Shell & Student Identity`?",
-      "why": "High betweenness centrality (0.076) - this node is a cross-community bridge."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `Two-subsystem monorepo (app + scraper)` connect `Apify Instagram Ingestion Pipeline` to `App Shell & Student Identity`?",
-      "why": "High betweenness centrality (0.075) - this node is a cross-community bridge."
-    },
-    {
-      "type": "isolated_nodes",
-      "question": "What connects `Message`, `Props`, `PROMPT_CHIPS` to the rest of the system?",
-      "why": "79 weakly-connected nodes found - possible documentation gaps or missing edges."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `App Shell & Student Identity` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.10344827586206896 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `Flyer Parsing & Curation Queue` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.09686609686609686 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `Firestore Client & Shared UI Primitives` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.09881422924901186 - nodes in this community are weakly interconnected."
-    }
-  ]
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
 }

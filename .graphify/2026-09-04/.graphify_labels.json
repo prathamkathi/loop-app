@@ -1,0 +1,21 @@
+{
+  "0": "App Shell & Student Identity",
+  "1": "Flyer Parsing & Curation Queue",
+  "2": "Firestore Client & Shared UI Primitives",
+  "3": "Event Detail, Calendar & Deep Links",
+  "4": "Crimson & Onyx Theme System",
+  "5": "AI Concierge & Club Directory",
+  "6": "Event Cards & Event Data Model",
+  "7": "Apify Instagram Ingestion Pipeline",
+  "8": "Navigation Shell (Tabs & Sidebar)",
+  "9": "Puppeteer Instagram Fallback",
+  "10": "Pulse Feed",
+  "11": "Notifications Modal",
+  "12": "Database Seeding & Cloudinary Upload",
+  "13": "Club Avatar Harvesting",
+  "14": "Cloudinary Purge & Reset",
+  "15": "Stock Flyer Scraper",
+  "16": "Offline Real-Event Generation",
+  "17": "Firestore Wipe Utility",
+  "18": "Offline Event Fixtures"
+}

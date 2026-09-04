@@ -1,0 +1,8 @@
+# graphify's own output — indexing it makes its minified studio bundle the
+# dominant hub in the graph
+.graphify/
+# build artefacts and vendored code
+loop-app/dist/
+.vercel/
+node_modules/
+venv/

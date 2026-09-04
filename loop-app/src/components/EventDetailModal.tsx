@@ -12,8 +12,23 @@ import {
   Share,
   Platform,
   Alert,
+  Linking,
 } from 'react-native';
-import { X, CalendarBlank, Clock, MapPin, BookmarkSimple, CalendarPlus, ShareNetwork, ArrowUpRight, WhatsappLogo, Sparkle, ArrowSquareOut } from 'phosphor-react-native';
+import {
+  X,
+  CalendarBlank,
+  Clock,
+  MapPin,
+  BookmarkSimple,
+  CalendarPlus,
+  ShareNetwork,
+  ArrowUpRight,
+  WhatsappLogo,
+  Sparkle,
+  ArrowSquareOut,
+  MagnifyingGlassPlus,
+  FileText,
+} from 'phosphor-react-native';
 import { BlurView } from 'expo-blur';
 import { useTheme, typography, radii, shadows } from '../theme';
 import { openGoogleCalendar } from '../utils/calendar';
@@ -22,6 +37,8 @@ import { openWhatsApp } from './EventCard';
 import { generateEventPitch } from '../utils/geminiAI';
 import { CLUBS } from '../data/clubs';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
+import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
+import PosterLightboxModal from './PosterLightboxModal';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -40,6 +57,12 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   const animValue = useRef(new Animated.Value(0)).current;
 
   const [aiPitch, setAiPitch] = useState<string>('');
+  const [showLightbox, setShowLightbox] = useState<boolean>(false);
+
+  const catMeta = getCategoryMeta(event.category);
+  const CategoryIcon = catMeta.icon;
+  const { primary: datePrimary, secondary: dateSecondary, isNotice } = formatCardDateLine(event);
+  const venueDisplay = formatCardVenue(event.venue, event.category);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,13 +107,13 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
       title: event.title,
       date: event.date,
       time: event.time,
-      venue: event.venue,
+      venue: venueDisplay,
       description: event.blurb,
     });
   };
 
   const handleShare = async () => {
-    const shareMessage = `Check out "${event.title}" happening at ${event.venue} on ${event.date} at ${event.time}! Curated on Loop.`;
+    const shareMessage = `Check out "${event.title}" happening at ${venueDisplay} on ${event.date || 'Campus'}! Curated on Loop.`;
     try {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
         await navigator.clipboard.writeText(shareMessage);
@@ -124,212 +147,286 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   };
 
   return (
-    <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-      <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
-      <Animated.View
-        onStartShouldSetResponder={() => true}
-        style={[
-          styles.modal,
-          {
-            backgroundColor: colors.background,
-            maxWidth: isDesktop ? 540 : '100%',
-            borderTopLeftRadius: radii.xxxl,
-            borderTopRightRadius: radii.xxxl,
-            borderBottomLeftRadius: isDesktop ? radii.xxxl : 0,
-            borderBottomRightRadius: isDesktop ? radii.xxxl : 0,
-            transform: [{ translateY }],
-          },
-          isDesktop && shadows.cardHover,
-        ]}
-      >
-        {/* Hero Image */}
-        <View style={[styles.hero, { backgroundColor: colors.highlight }]}>
-          <Image source={{ uri: getOptimizedImageUrl(event.image) }} style={styles.heroImage} />
-          <View style={styles.heroGradient} />
+    <>
+      <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
+        <Animated.View
+          onStartShouldSetResponder={() => true}
+          style={[
+            styles.modal,
+            {
+              backgroundColor: colors.background,
+              maxWidth: isDesktop ? 540 : '100%',
+              borderTopLeftRadius: radii.xxxl,
+              borderTopRightRadius: radii.xxxl,
+              borderBottomLeftRadius: isDesktop ? radii.xxxl : 0,
+              borderBottomRightRadius: isDesktop ? radii.xxxl : 0,
+              transform: [{ translateY }],
+            },
+            isDesktop && shadows.cardHover,
+          ]}
+        >
+          {/* Hero Image Container (Tap to open full uncropped flyer) */}
           <Pressable
-            onPress={(e) => {
-              e?.stopPropagation?.();
-              handleClose();
-            }}
-            accessibilityLabel="Close"
-            style={({ pressed }) => [
-              styles.closeBtnWrap,
-              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              pressed && { transform: [{ scale: 0.92 }] },
-            ]}
+            onPress={() => setShowLightbox(true)}
+            style={[styles.hero, { backgroundColor: colors.highlight }]}
           >
-            <BlurView intensity={40} tint="dark" style={styles.closeBtn}>
-              <X size={20} color="#FFFFFF" weight="bold" />
-            </BlurView>
-          </Pressable>
-          <BlurView intensity={40} tint="dark" style={styles.categoryOverlay}>
-            <Text style={styles.categoryText} numberOfLines={1} ellipsizeMode="tail">{event.category}</Text>
-          </BlurView>
-        </View>
+            <Image source={{ uri: getOptimizedImageUrl(event.image) }} style={styles.heroImage} />
+            <View style={styles.heroGradient} />
 
-        {/* Content */}
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={3} ellipsizeMode="tail">
-            {event.title}
-          </Text>
-
-          {/* Host Card */}
-          <Pressable
-            onPress={handleHostPress}
-            style={({ pressed }) => [
-              styles.hostCard,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              pressed && { opacity: 0.8 },
-            ]}
-          >
-            <Image 
-              source={{ uri: event.hostAvatar }} 
-              style={styles.avatar} 
-              onError={(e) => {
-                e.currentTarget.setNativeProps({
-                  src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
-                });
+            {/* Close Button */}
+            <Pressable
+              onPress={(e) => {
+                e?.stopPropagation?.();
+                handleClose();
               }}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.hostName, { color: colors.foreground }]} numberOfLines={1} ellipsizeMode="tail">
-                {event.host}
-              </Text>
-              <Text style={[styles.hostedBy, { color: colors.muted }]}>
-                {matchedClub ? `@${matchedClub.handle}` : 'Campus Organization'}
+              accessibilityLabel="Close"
+              style={({ pressed }) => [
+                styles.closeBtnWrap,
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { transform: [{ scale: 0.92 }] },
+              ]}
+            >
+              <BlurView intensity={40} tint="dark" style={styles.closeBtn}>
+                <X size={20} color="#FFFFFF" weight="bold" />
+              </BlurView>
+            </Pressable>
+
+            {/* Category Adaptive Overlay Badge */}
+            <View style={[styles.categoryOverlay, { backgroundColor: catMeta.color }]}>
+              <CategoryIcon size={13} color="#FFFFFF" weight="bold" />
+              <Text style={styles.categoryText} numberOfLines={1} ellipsizeMode="tail">
+                {catMeta.label}
               </Text>
             </View>
-            <ArrowSquareOut size={16} color={colors.muted} />
+
+            {/* Tap to inspect badge */}
+            <View style={styles.inspectOverlayBadge}>
+              <MagnifyingGlassPlus size={14} color="#FFFFFF" weight="bold" />
+              <Text style={styles.inspectOverlayText}>Tap to inspect full flyer</Text>
+            </View>
           </Pressable>
 
-          {/* AI Campus Pitch */}
-          {aiPitch ? (
-            <View style={[styles.aiPitchCard, { backgroundColor: isDark ? 'rgba(196, 77, 106, 0.12)' : 'rgba(138, 21, 56, 0.06)', borderColor: colors.primary }]}>
-              <Sparkle size={18} color={colors.primary} weight="fill" />
-              <Text style={[styles.aiPitchText, { color: colors.foreground }]}>
-                <Text style={{ fontWeight: '700', color: colors.primary }}>Why Attend: </Text>
-                {aiPitch}
-              </Text>
-            </View>
-          ) : (
-            <Animated.View style={[styles.aiPitchCard, { backgroundColor: isDark ? 'rgba(196, 77, 106, 0.05)' : 'rgba(138, 21, 56, 0.03)', borderColor: 'transparent', opacity: animValue }]}>
-               <Sparkle size={18} color={colors.muted} weight="regular" />
-               <View style={{ flex: 1, gap: 6, marginLeft: 8, justifyContent: 'center' }}>
-                 <View style={{ height: 12, width: '90%', backgroundColor: colors.border, borderRadius: 4 }} />
-                 <View style={{ height: 12, width: '60%', backgroundColor: colors.border, borderRadius: 4 }} />
-               </View>
-            </Animated.View>
-          )}
+          {/* Content */}
+          <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+            <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={3} ellipsizeMode="tail">
+              {event.title}
+            </Text>
 
-          {/* Details Card */}
-          <View style={[styles.detailCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <DetailRow icon={CalendarBlank} label="Date" colors={colors}>
-              {event.day ? `${event.day}, ` : ''}{event.date || 'Date TBA'}
-            </DetailRow>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <DetailRow icon={Clock} label="Time" colors={colors}>
-              {event.time || 'Time TBA'}
-            </DetailRow>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <DetailRow icon={MapPin} label="Venue" colors={colors}>
-              {event.venue || 'Venue TBA'}
-            </DetailRow>
-          </View>
-
-          {/* WhatsApp Organizer Queries Section */}
-          {event.contacts && event.contacts.length > 0 && (
-            <View style={[styles.contactsSection, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <View style={styles.contactsHeader}>
-                <WhatsappLogo size={20} color="#25D366" weight="fill" />
-                <Text style={[styles.contactsTitle, { color: colors.foreground }]}>Event Coordinators</Text>
+            {/* Host Card */}
+            <Pressable
+              onPress={handleHostPress}
+              style={({ pressed }) => [
+                styles.hostCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { opacity: 0.8 },
+              ]}
+            >
+              <Image 
+                source={{ uri: event.hostAvatar }} 
+                style={styles.avatar} 
+                onError={(e) => {
+                  e.currentTarget.setNativeProps({
+                    src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
+                  });
+                }} 
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.hostName, { color: colors.foreground }]} numberOfLines={1} ellipsizeMode="tail">
+                  {event.host}
+                </Text>
+                <Text style={[styles.hostedBy, { color: colors.muted }]}>
+                  {matchedClub ? `@${matchedClub.handle}` : 'Campus Organization'}
+                </Text>
               </View>
-              {event.contacts.map((contact, i) => (
-                <View key={i} style={[styles.contactCard, i > 0 && { borderTopWidth: 1, borderTopColor: colors.borderSubtle }]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.contactName, { color: colors.foreground }]}>{contact.name}</Text>
-                    <Text style={[styles.contactRole, { color: colors.muted }]}>
-                      {contact.role || 'Organizer'} · +91 {contact.phone}
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => openWhatsApp(contact.phone, contact.name, event.title)}
-                    style={({ pressed }) => [
-                      styles.waChatBtn,
-                      Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                      pressed && { transform: [{ scale: 0.95 }] },
-                    ]}
-                  >
-                    <WhatsappLogo size={16} color="#FFFFFF" weight="fill" />
-                    <Text style={styles.waChatText}>Chat</Text>
-                  </Pressable>
-                </View>
-              ))}
+              <ArrowSquareOut size={16} color={colors.muted} />
+            </Pressable>
+
+            {/* Action Link Banner (If notice or event has registration / survey link) */}
+            {event.actionUrl && (
+              <Pressable
+                onPress={() => {
+                  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                    window.open(event.actionUrl, '_blank', 'noopener,noreferrer');
+                  } else {
+                    Linking.openURL(event.actionUrl!);
+                  }
+                }}
+                style={({ pressed }) => [
+                  styles.actionBanner,
+                  { backgroundColor: catMeta.color },
+                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                  pressed && { opacity: 0.88, transform: [{ scale: 0.98 }] },
+                ]}
+              >
+                <ArrowSquareOut size={18} color="#FFFFFF" weight="bold" />
+                <Text style={styles.actionBannerText}>
+                  {catMeta.actionText || 'Open Official Notice / Form'}
+                </Text>
+              </Pressable>
+            )}
+
+            {/* AI Campus Pitch */}
+            {aiPitch ? (
+              <View style={[styles.aiPitchCard, { backgroundColor: isDark ? 'rgba(196, 77, 106, 0.12)' : 'rgba(138, 21, 56, 0.06)', borderColor: colors.primary }]}>
+                <Sparkle size={18} color={colors.primary} weight="fill" />
+                <Text style={[styles.aiPitchText, { color: colors.foreground }]}>
+                  <Text style={{ fontWeight: '700', color: colors.primary }}>Why Attend: </Text>
+                  {aiPitch}
+                </Text>
+              </View>
+            ) : (
+              <Animated.View style={[styles.aiPitchCard, { backgroundColor: isDark ? 'rgba(196, 77, 106, 0.05)' : 'rgba(138, 21, 56, 0.03)', borderColor: 'transparent', opacity: animValue }]}>
+                 <Sparkle size={18} color={colors.muted} weight="regular" />
+                 <View style={{ flex: 1, gap: 6, marginLeft: 8, justifyContent: 'center' }}>
+                   <View style={{ height: 12, width: '90%', backgroundColor: colors.border, borderRadius: 4 }} />
+                   <View style={{ height: 12, width: '60%', backgroundColor: colors.border, borderRadius: 4 }} />
+                 </View>
+              </Animated.View>
+            )}
+
+            {/* Adaptive Details Card */}
+            <View style={[styles.detailCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              {isNotice ? (
+                <>
+                  <DetailRow icon={FileText} label="Notice Date" colors={colors}>
+                    {event.date || 'Active Notice'}
+                  </DetailRow>
+                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  <DetailRow icon={Clock} label="Action / Deadline" colors={colors}>
+                    {event.deadline || event.time || 'Official Circular'}
+                  </DetailRow>
+                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  <DetailRow icon={MapPin} label="Scope" colors={colors}>
+                    {venueDisplay}
+                  </DetailRow>
+                </>
+              ) : (
+                <>
+                  <DetailRow icon={CalendarBlank} label="Date" colors={colors}>
+                    {event.day ? `${event.day}, ` : ''}{event.date || 'Date TBA'}
+                  </DetailRow>
+                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  <DetailRow icon={Clock} label="Time" colors={colors}>
+                    {event.time || 'Time TBA'}
+                  </DetailRow>
+                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  <DetailRow icon={MapPin} label="Venue" colors={colors}>
+                    {venueDisplay}
+                  </DetailRow>
+                </>
+              )}
             </View>
-          )}
 
-          {/* Blurb */}
-          <Text style={[styles.blurb, { color: colors.foregroundSecondary }]}>
-            {event.blurb}
-          </Text>
-        </ScrollView>
+            {/* WhatsApp Organizer Queries Section */}
+            {event.contacts && event.contacts.length > 0 && (
+              <View style={[styles.contactsSection, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={styles.contactsHeader}>
+                  <WhatsappLogo size={20} color="#25D366" weight="fill" />
+                  <Text style={[styles.contactsTitle, { color: colors.foreground }]}>Event Coordinators</Text>
+                </View>
+                {event.contacts.map((contact, i) => (
+                  <View key={i} style={[styles.contactCard, i > 0 && { borderTopWidth: 1, borderTopColor: colors.borderSubtle }]}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.contactName, { color: colors.foreground }]}>{contact.name}</Text>
+                      <Text style={[styles.contactRole, { color: colors.muted }]}>
+                        {contact.role || 'Organizer'} · +91 {contact.phone}
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => openWhatsApp(contact.phone, contact.name, event.title)}
+                      style={({ pressed }) => [
+                        styles.waChatBtn,
+                        Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                        pressed && { transform: [{ scale: 0.95 }] },
+                      ]}
+                    >
+                      <WhatsappLogo size={16} color="#FFFFFF" weight="fill" />
+                      <Text style={styles.waChatText}>Chat</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
 
-        {/* Action Bar */}
-        <View style={[styles.actionBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <Pressable
-            onPress={onToggleSave}
-            style={({ pressed }) => [
-              styles.iconBtn,
-              {
-                borderColor: saved ? colors.primary : colors.border,
-                backgroundColor: saved ? colors.primary : 'transparent',
-              },
-              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              pressed && { transform: [{ scale: 0.92 }] },
-            ]}
-          >
-            <BookmarkSimple
-              weight={saved ? 'fill' : 'regular'}
-              size={20}
-              color={saved ? colors.onPrimary : colors.primary}
-            />
-          </Pressable>
+            {/* Blurb */}
+            <Text style={[styles.blurb, { color: colors.foregroundSecondary }]}>
+              {event.blurb}
+            </Text>
+          </ScrollView>
 
-          <Pressable
-            onPress={handleCalendar}
-            style={({ pressed }) => [
-              styles.calBtn,
-              {
-                backgroundColor: colors.primary,
-              },
-              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              pressed && { transform: [{ scale: 0.98 }] },
-            ]}
-          >
-            <CalendarPlus size={19} color={colors.onPrimary} weight="bold" />
-            <Text style={[styles.calText, { color: colors.onPrimary }]}>Add to Google Calendar</Text>
-          </Pressable>
+          {/* Action Bar */}
+          <View style={[styles.actionBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+            <Pressable
+              onPress={onToggleSave}
+              style={({ pressed }) => [
+                styles.iconBtn,
+                {
+                  borderColor: saved ? colors.primary : colors.border,
+                  backgroundColor: saved ? colors.primary : 'transparent',
+                },
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { transform: [{ scale: 0.92 }] },
+              ]}
+              accessibilityLabel={saved ? "Remove from bookmarks" : "Save event"}
+            >
+              <BookmarkSimple
+                weight={saved ? 'fill' : 'regular'}
+                size={20}
+                color={saved ? colors.onPrimary : colors.primary}
+              />
+            </Pressable>
 
-          <Pressable
-            onPress={handleShare}
-            style={({ pressed }) => [
-              styles.iconBtn,
-              {
-                borderColor: colors.border,
-              },
-              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              pressed && { transform: [{ scale: 0.92 }] },
-            ]}
-            accessibilityLabel="Share event"
-          >
-            <ShareNetwork size={20} color={colors.primary} weight="regular" />
-          </Pressable>
-        </View>
+            <Pressable
+              onPress={handleCalendar}
+              style={({ pressed }) => [
+                styles.calBtn,
+                {
+                  backgroundColor: colors.primary,
+                },
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { transform: [{ scale: 0.98 }] },
+              ]}
+            >
+              <CalendarPlus size={19} color={colors.onPrimary} weight="bold" />
+              <Text style={[styles.calText, { color: colors.onPrimary }]}>
+                {isNotice ? 'Add Notice Reminder' : 'Add to Google Calendar'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleShare}
+              style={({ pressed }) => [
+                styles.iconBtn,
+                {
+                  borderColor: colors.border,
+                },
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { transform: [{ scale: 0.92 }] },
+              ]}
+              accessibilityLabel="Share event"
+            >
+              <ShareNetwork size={20} color={colors.primary} weight="regular" />
+            </Pressable>
+          </View>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+
+      {/* High-Resolution Poster Lightbox Modal */}
+      {event.image && (
+        <PosterLightboxModal
+          visible={showLightbox}
+          imageUri={event.image}
+          title={event.title}
+          subtitle={`${event.host} · ${catMeta.label}`}
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
+    </>
   );
 }
 
@@ -377,8 +474,9 @@ const styles = StyleSheet.create({
   },
   hero: {
     width: '100%',
-    height: 250,
+    height: 260,
     position: 'relative',
+    cursor: 'pointer' as any,
   },
   heroImage: {
     ...StyleSheet.absoluteFill,
@@ -413,21 +511,37 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     top: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: radii.full,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    overflow: 'hidden',
-    ...(Platform.OS === 'web'
-      ? ({
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-        })
-      : {}),
+    elevation: 4,
   },
   categoryText: {
     ...typography.labelSm,
     color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 11,
+  },
+  inspectOverlayBadge: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radii.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  inspectOverlayText: {
+    color: '#FFFFFF',
+    fontSize: 11,
     fontWeight: '600',
   },
   title: {
@@ -460,21 +574,25 @@ const styles = StyleSheet.create({
     ...typography.bodySm,
     fontWeight: '600',
   },
-  hostLink: {
+  actionBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: radii.lg,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 14,
   },
-  hostLinkText: {
-    ...typography.labelSm,
-    fontWeight: '600',
+  actionBannerText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
   detailCard: {
     borderRadius: radii.lg,
     borderWidth: 1,
-    marginTop: 20,
+    marginTop: 16,
     overflow: 'hidden',
   },
   divider: {

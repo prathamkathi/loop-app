@@ -1,6 +1,104 @@
 {
   "nodes": [
     {
+      "id": "lib_guard",
+      "label": "guard.ts",
+      "file_type": "code",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "lib_guard_allowed_origins",
+      "label": "ALLOWED_ORIGINS",
+      "file_type": "code",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "lib_guard_initadmin",
+      "label": "initAdmin()",
+      "file_type": "code",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "lib_guard_caller",
+      "label": "Caller",
+      "file_type": "code",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "lib_guard_guard",
+      "label": "guard()",
+      "file_type": "code",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L46"
+    },
+    {
+      "id": "api_callgemini",
+      "label": "callGemini.ts",
+      "file_type": "code",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "api_callgemini_text_models",
+      "label": "TEXT_MODELS",
+      "file_type": "code",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "api_callgemini_handler",
+      "label": "handler()",
+      "file_type": "code",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "api_getcloudinarysignature",
+      "label": "getCloudinarySignature.ts",
+      "file_type": "code",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "api_getcloudinarysignature_handler",
+      "label": "handler()",
+      "file_type": "code",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "api_parseeventposter",
+      "label": "parseEventPoster.ts",
+      "file_type": "code",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "api_parseeventposter_config",
+      "label": "config",
+      "file_type": "code",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "api_parseeventposter_allowed_categories",
+      "label": "ALLOWED_CATEGORIES",
+      "file_type": "code",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "api_parseeventposter_handler",
+      "label": "handler()",
+      "file_type": "code",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L25"
+    },
+    {
       "id": "loop_app_app",
       "label": "App.tsx",
       "file_type": "code",
@@ -12,14 +110,14 @@
       "label": "AppContent()",
       "file_type": "code",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L33"
+      "source_location": "L36"
     },
     {
       "id": "loop_app_app_app",
       "label": "App()",
       "file_type": "code",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L229"
+      "source_location": "L290"
     },
     {
       "id": "loop_app_index",
@@ -27,6 +125,363 @@
       "file_type": "code",
       "source_file": "loop-app/index.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "scraper_cli",
+      "label": "cli.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/cli.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_cli_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/cli.py",
+      "source_location": "L4"
+    },
+    {
+      "id": "scraper_generate_events_offline",
+      "label": "generate_events_offline.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/generate_events_offline.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_generate_real_events",
+      "label": "generate_real_events.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_generate_real_events_generate_real_events",
+      "label": "generate_real_events()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "scraper_harvest_avatars",
+      "label": "harvest_avatars.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_harvest_avatars_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L11"
+    },
+    {
+      "id": "scraper_puppeteer_scraper",
+      "label": "puppeteer_scraper.js",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_puppeteer",
+      "label": "puppeteer",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_fs",
+      "label": "fs",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L2"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_path",
+      "label": "path",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L3"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_https",
+      "label": "https",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L4"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_handles",
+      "label": "HANDLES",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L7"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_output_dir",
+      "label": "OUTPUT_DIR",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L23"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_images_dir",
+      "label": "IMAGES_DIR",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L24"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_downloadimage",
+      "label": "downloadImage()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L29"
+    },
+    {
+      "id": "scraper_puppeteer_scraper_scrapeinstagram",
+      "label": "scrapeInstagram()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L44"
+    },
+    {
+      "id": "scraper_purge_and_reset",
+      "label": "purge_and_reset.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_purge_and_reset_extract_cloudinary_public_id",
+      "label": "extract_cloudinary_public_id()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L27"
+    },
+    {
+      "id": "scraper_purge_and_reset_purge_all",
+      "label": "purge_all()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "scraper_purge_and_reset_rationale_28",
+      "label": "Extracts the public_id from a Cloudinary secure_url.",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L28"
+    },
+    {
+      "id": "scraper_scraper",
+      "label": "scraper.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_scraper_load_target_handles",
+      "label": "load_target_handles()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L25"
+    },
+    {
+      "id": "scraper_scraper_get_avatar_for_handle",
+      "label": "get_avatar_for_handle()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L56"
+    },
+    {
+      "id": "scraper_scraper_run_apify_pipeline",
+      "label": "run_apify_pipeline()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L73"
+    },
+    {
+      "id": "scraper_scraper_rationale_26",
+      "label": "Read handles dynamically from docs/insta_ids.md (F-44)",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L26"
+    },
+    {
+      "id": "scraper_scraper_rationale_74",
+      "label": "Runs Apify Instagram Scraper and ingests validated events with status: 'pending'",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L74"
+    },
+    {
+      "id": "scraper_seed_data",
+      "label": "seed_data.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_seed_data_seed_database",
+      "label": "seed_database()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L28"
+    },
+    {
+      "id": "scraper_set_admin",
+      "label": "set_admin.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_set_admin_init",
+      "label": "init()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "scraper_set_admin_list_coordinators",
+      "label": "list_coordinators()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "scraper_set_admin_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "scraper_set_admin_rationale_1",
+      "label": "Grant or revoke Club Studio coordinator access.  The Firestore rules and the ser",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_shared",
+      "label": "shared.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_shared_upload_image_to_cloudinary",
+      "label": "upload_image_to_cloudinary()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "scraper_shared_parse_with_gemini",
+      "label": "parse_with_gemini()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L71"
+    },
+    {
+      "id": "scraper_shared_rationale_37",
+      "label": "Upload a poster and return its secure URL, or None on failure.      Dual-mode: a",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "scraper_shared_rationale_72",
+      "label": "Parses poster images and caption using Gemini Vision with structured WhatsApp co",
+      "file_type": "rationale",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L72"
+    },
+    {
+      "id": "scraper_stock_scraper",
+      "label": "stock_scraper.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_stock_scraper_download_image",
+      "label": "download_image()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "scraper_wipe_db",
+      "label": "wipe_db.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scraper_wipe_db_wipe_events",
+      "label": "wipe_events()",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L16"
+    },
+    {
+      "id": "scraper_wipe_events",
+      "label": "wipe_events.py",
+      "file_type": "code",
+      "source_file": "loop-app/scraper/wipe_events.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_backfill_events",
+      "label": "backfill_events.py",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_backfill_events_parse",
+      "label": "parse()",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "scripts_backfill_events_rationale_1",
+      "label": "Backfill startsAt on events that predate the schema change (Phase 2, F-14). Dry-",
+      "file_type": "rationale",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_backfill_events",
+      "label": "backfill_events.ts",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_backfill_events_serviceaccountpath",
+      "label": "serviceAccountPath",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "scripts_backfill_events_db",
+      "label": "db",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L25"
+    },
+    {
+      "id": "scripts_backfill_events_backfillevents",
+      "label": "backfillEvents()",
+      "file_type": "code",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L27"
     },
     {
       "id": "components_aicampusconcierge",
@@ -99,6 +554,69 @@
       "source_location": "L63"
     },
     {
+      "id": "components_errorboundary",
+      "label": "ErrorBoundary.tsx",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_errorboundary_props",
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "components_errorboundary_state",
+      "label": "State",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "components_errorboundary_errorboundary",
+      "label": "ErrorBoundary",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "components_errorboundary_component",
+      "label": "Component",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "components_errorboundary_errorboundary_getderivedstatefromerror",
+      "label": ".getDerivedStateFromError()",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "components_errorboundary_errorboundary_componentdidcatch",
+      "label": ".componentDidCatch()",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "components_errorboundary_errorboundary_render",
+      "label": ".render()",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L49"
+    },
+    {
+      "id": "components_errorboundary_styles",
+      "label": "styles",
+      "file_type": "code",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L95"
+    },
+    {
       "id": "components_eventcard",
       "label": "EventCard.tsx",
       "file_type": "code",
@@ -110,35 +628,35 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L8"
+      "source_location": "L10"
     },
     {
       "id": "components_eventcard_pulsedot",
       "label": "PulseDot()",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L16"
+      "source_location": "L18"
     },
     {
       "id": "components_eventcard_openwhatsapp",
       "label": "openWhatsApp()",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L57"
+      "source_location": "L59"
     },
     {
       "id": "components_eventcard_eventcard",
       "label": "EventCard()",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L70"
+      "source_location": "L72"
     },
     {
       "id": "components_eventcard_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L227"
+      "source_location": "L256"
     },
     {
       "id": "components_eventdetailmodal",
@@ -152,35 +670,35 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "components_eventdetailmodal_eventdetailmodal",
       "label": "EventDetailModal()",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "components_eventdetailmodal_detailrow",
       "label": "DetailRow()",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L327"
+      "source_location": "L336"
     },
     {
       "id": "components_eventdetailmodal_detailstyles",
       "label": "detailStyles",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L339"
+      "source_location": "L348"
     },
     {
       "id": "components_eventdetailmodal_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L356"
+      "source_location": "L365"
     },
     {
       "id": "components_featuredcard",
@@ -194,21 +712,21 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "components_featuredcard_featuredcard",
       "label": "FeaturedCard()",
       "file_type": "code",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "components_featuredcard_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L130"
+      "source_location": "L148"
     },
     {
       "id": "components_floatingfield",
@@ -264,21 +782,21 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L51"
+      "source_location": "L50"
     },
     {
       "id": "components_notificationmodal_notificationmodal",
       "label": "NotificationModal()",
       "file_type": "code",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L56"
+      "source_location": "L58"
     },
     {
       "id": "components_notificationmodal_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L174"
+      "source_location": "L179"
     },
     {
       "id": "components_savebutton",
@@ -355,21 +873,21 @@
       "label": "HOSTELS",
       "file_type": "code",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L26"
+      "source_location": "L28"
     },
     {
       "id": "components_studentauthmodal_studentauthmodal",
       "label": "StudentAuthModal()",
       "file_type": "code",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "components_studentauthmodal_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L280"
+      "source_location": "L270"
     },
     {
       "id": "components_topbar",
@@ -411,14 +929,14 @@
       "label": "firebaseConfig",
       "file_type": "code",
       "source_file": "loop-app/src/config/firebase.ts",
-      "source_location": "L3"
+      "source_location": "L11"
     },
     {
-      "id": "config_firebase_db",
-      "label": "db",
+      "id": "config_firebase_auth",
+      "label": "auth",
       "file_type": "code",
       "source_file": "loop-app/src/config/firebase.ts",
-      "source_location": "L16"
+      "source_location": "L36"
     },
     {
       "id": "data_avatars",
@@ -579,7 +1097,7 @@
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/navigation/AppNavigator.tsx",
-      "source_location": "L58"
+      "source_location": "L56"
     },
     {
       "id": "navigation_bottomtabbar",
@@ -656,14 +1174,14 @@
       "label": "Sidebar()",
       "file_type": "code",
       "source_file": "loop-app/src/navigation/Sidebar.tsx",
-      "source_location": "L16"
+      "source_location": "L14"
     },
     {
       "id": "navigation_sidebar_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/navigation/Sidebar.tsx",
-      "source_location": "L112"
+      "source_location": "L108"
     },
     {
       "id": "screens_curatescreen",
@@ -740,7 +1258,7 @@
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/DirectoryScreen.tsx",
-      "source_location": "L262"
+      "source_location": "L267"
     },
     {
       "id": "screens_homescreen",
@@ -761,14 +1279,14 @@
       "label": "HomeScreen()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/HomeScreen.tsx",
-      "source_location": "L34"
+      "source_location": "L37"
     },
     {
       "id": "screens_homescreen_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/HomeScreen.tsx",
-      "source_location": "L288"
+      "source_location": "L308"
     },
     {
       "id": "screens_pulsescreen",
@@ -782,21 +1300,21 @@
       "label": "AnimatedWrapper()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L9"
+      "source_location": "L11"
     },
     {
       "id": "screens_pulsescreen_pulsescreen",
       "label": "PulseScreen()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L34"
+      "source_location": "L36"
     },
     {
       "id": "screens_pulsescreen_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L114"
+      "source_location": "L148"
     },
     {
       "id": "screens_queuescreen",
@@ -810,28 +1328,28 @@
       "label": "QueueScreen()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L39"
+      "source_location": "L55"
     },
     {
       "id": "screens_queuescreen_fieldrow",
       "label": "FieldRow()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L651"
+      "source_location": "L770"
     },
     {
       "id": "screens_queuescreen_fieldstyles",
       "label": "fieldStyles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L670"
+      "source_location": "L789"
     },
     {
       "id": "screens_queuescreen_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L685"
+      "source_location": "L804"
     },
     {
       "id": "screens_submitscreen",
@@ -845,21 +1363,21 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "screens_submitscreen_submitscreen",
       "label": "SubmitScreen()",
       "file_type": "code",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "screens_submitscreen_styles",
       "label": "styles",
       "file_type": "code",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L434"
+      "source_location": "L488"
     },
     {
       "id": "theme_themecontext",
@@ -901,7 +1419,7 @@
       "label": "useTheme()",
       "file_type": "code",
       "source_file": "loop-app/src/theme/ThemeContext.tsx",
-      "source_location": "L72"
+      "source_location": "L85"
     },
     {
       "id": "theme_colors",
@@ -1076,21 +1594,35 @@
       "label": "toGoogleCalendarFormat()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L106"
+      "source_location": "L118"
     },
     {
       "id": "utils_calendar_getgooglecalendarurl",
       "label": "getGoogleCalendarUrl()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L114"
+      "source_location": "L126"
     },
     {
       "id": "utils_calendar_opengooglecalendar",
       "label": "openGoogleCalendar()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L133"
+      "source_location": "L145"
+    },
+    {
+      "id": "utils_cloudinary",
+      "label": "cloudinary.ts",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/cloudinary.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "utils_cloudinary_getoptimizedimageurl",
+      "label": "getOptimizedImageUrl()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/cloudinary.ts",
+      "source_location": "L1"
     },
     {
       "id": "utils_geminiai",
@@ -1100,15 +1632,8 @@
       "source_location": "L1"
     },
     {
-      "id": "utils_geminiai_models",
-      "label": "MODELS",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "utils_geminiai_callgeminirest",
-      "label": "callGeminiREST()",
+      "id": "utils_geminiai_callgeminiviafunction",
+      "label": "callGeminiViaFunction()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/geminiAI.ts",
       "source_location": "L9"
@@ -1118,63 +1643,21 @@
       "label": "askCampusAI()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L56"
+      "source_location": "L19"
     },
     {
       "id": "utils_geminiai_generateeventpitch",
       "label": "generateEventPitch()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L107"
+      "source_location": "L70"
     },
     {
       "id": "utils_geminiai_enhanceeventdraft",
       "label": "enhanceEventDraft()",
       "file_type": "code",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L124"
-    },
-    {
-      "id": "utils_geminiparser",
-      "label": "geminiParser.ts",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "utils_geminiparser_parsedevent",
-      "label": "ParsedEvent",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "utils_geminiparser_allowed_categories",
-      "label": "ALLOWED_CATEGORIES",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L29"
-    },
-    {
-      "id": "utils_geminiparser_getmodel",
-      "label": "getModel()",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L60"
-    },
-    {
-      "id": "utils_geminiparser_parseeventposter",
-      "label": "parseEventPoster()",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L88"
-    },
-    {
-      "id": "utils_geminiparser_parseeventposterfromurl",
-      "label": "parseEventPosterFromUrl()",
-      "file_type": "code",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L142"
+      "source_location": "L87"
     },
     {
       "id": "utils_linking",
@@ -1203,6 +1686,69 @@
       "file_type": "code",
       "source_file": "loop-app/src/utils/linking.ts",
       "source_location": "L47"
+    },
+    {
+      "id": "utils_session",
+      "label": "session.ts",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "utils_session_authready",
+      "label": "authReady",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "utils_session_ensuresignedin",
+      "label": "ensureSignedIn()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "utils_session_coordinatorinfo",
+      "label": "CoordinatorInfo",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L56"
+    },
+    {
+      "id": "utils_session_not_coordinator",
+      "label": "NOT_COORDINATOR",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L58"
+    },
+    {
+      "id": "utils_session_readclaims",
+      "label": "readClaims()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L60"
+    },
+    {
+      "id": "utils_session_getcoordinatorinfo",
+      "label": "getCoordinatorInfo()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L78"
+    },
+    {
+      "id": "utils_session_iscoordinator",
+      "label": "isCoordinator()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L84"
+    },
+    {
+      "id": "utils_session_oncoordinatorchange",
+      "label": "onCoordinatorChange()",
+      "file_type": "code",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L93"
     },
     {
       "id": "utils_storage",
@@ -1268,301 +1814,245 @@
       "source_location": "L61"
     },
     {
-      "id": "loop_scraper_gemini_parser",
-      "label": "gemini_parser.py",
+      "id": "utils_usefonts",
+      "label": "useFonts.ts",
       "file_type": "code",
-      "source_file": "loop-scraper/gemini_parser.py",
+      "source_file": "loop-app/src/utils/useFonts.ts",
       "source_location": "L1"
     },
     {
-      "id": "loop_scraper_gemini_parser_parse_with_gemini",
-      "label": "parse_with_gemini()",
+      "id": "utils_usefonts_usecustomfonts",
+      "label": "useCustomFonts()",
       "file_type": "code",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L10"
-    },
-    {
-      "id": "loop_scraper_gemini_parser_process",
-      "label": "process()",
-      "file_type": "code",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L58"
-    },
-    {
-      "id": "loop_scraper_generate_events_offline",
-      "label": "generate_events_offline.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/generate_events_offline.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_generate_real_events",
-      "label": "generate_real_events.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_generate_real_events_generate_real_events",
-      "label": "generate_real_events()",
-      "file_type": "code",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "loop_scraper_harvest_avatars",
-      "label": "harvest_avatars.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_harvest_avatars_upload_avatar_to_cloudinary",
-      "label": "upload_avatar_to_cloudinary()",
-      "file_type": "code",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L39"
-    },
-    {
-      "id": "loop_scraper_harvest_avatars_harvest_avatars",
-      "label": "harvest_avatars()",
-      "file_type": "code",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L50"
-    },
-    {
-      "id": "loop_scraper_harvest_avatars_rationale_40",
-      "label": "Uploads an avatar to Cloudinary in loop_avatars folder.",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L40"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper",
-      "label": "puppeteer_scraper.js",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_puppeteer",
-      "label": "puppeteer",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_fs",
-      "label": "fs",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L2"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_path",
-      "label": "path",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L3"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_https",
-      "label": "https",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
+      "source_file": "loop-app/src/utils/useFonts.ts",
       "source_location": "L4"
     },
     {
-      "id": "loop_scraper_puppeteer_scraper_handles",
-      "label": "HANDLES",
+      "id": "utils_vercelclient",
+      "label": "vercelClient.ts",
       "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L7"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_output_dir",
-      "label": "OUTPUT_DIR",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L23"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_images_dir",
-      "label": "IMAGES_DIR",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L24"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_downloadimage",
-      "label": "downloadImage()",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L29"
-    },
-    {
-      "id": "loop_scraper_puppeteer_scraper_scrapeinstagram",
-      "label": "scrapeInstagram()",
-      "file_type": "code",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L44"
-    },
-    {
-      "id": "loop_scraper_purge_and_reset",
-      "label": "purge_and_reset.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/purge_and_reset.py",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
       "source_location": "L1"
     },
     {
-      "id": "loop_scraper_purge_and_reset_extract_cloudinary_public_id",
-      "label": "extract_cloudinary_public_id()",
+      "id": "utils_vercelclient_apierror",
+      "label": "ApiError",
       "file_type": "code",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L27"
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L15"
     },
     {
-      "id": "loop_scraper_purge_and_reset_purge_all",
-      "label": "purge_all()",
+      "id": "utils_vercelclient_apierror_constructor",
+      "label": ".constructor()",
       "file_type": "code",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L39"
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L17"
     },
     {
-      "id": "loop_scraper_purge_and_reset_rationale_28",
-      "label": "Extracts the public_id from a Cloudinary secure_url.",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L28"
-    },
-    {
-      "id": "loop_scraper_scraper",
-      "label": "scraper.py",
+      "id": "utils_vercelclient_apierrormessage",
+      "label": "apiErrorMessage()",
       "file_type": "code",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L1"
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L25"
     },
     {
-      "id": "loop_scraper_scraper_get_avatar_for_handle",
-      "label": "get_avatar_for_handle()",
+      "id": "utils_vercelclient_httpscallable",
+      "label": "httpsCallable()",
       "file_type": "code",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L66"
-    },
-    {
-      "id": "loop_scraper_scraper_upload_image",
-      "label": "upload_image()",
-      "file_type": "code",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L91"
-    },
-    {
-      "id": "loop_scraper_scraper_parse_with_gemini",
-      "label": "parse_with_gemini()",
-      "file_type": "code",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L100"
-    },
-    {
-      "id": "loop_scraper_scraper_run_apify_pipeline",
-      "label": "run_apify_pipeline()",
-      "file_type": "code",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L208"
-    },
-    {
-      "id": "loop_scraper_scraper_rationale_101",
-      "label": "Parses poster images and caption using Gemini Vision with structured WhatsApp co",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L101"
-    },
-    {
-      "id": "loop_scraper_scraper_rationale_209",
-      "label": "Runs Apify Instagram Scraper and ingests validated events with status: 'pending'",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L209"
-    },
-    {
-      "id": "loop_scraper_seed_data",
-      "label": "seed_data.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_seed_data_upload_local_to_cloudinary",
-      "label": "upload_local_to_cloudinary()",
-      "file_type": "code",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L32"
-    },
-    {
-      "id": "loop_scraper_seed_data_upload_url_to_cloudinary",
-      "label": "upload_url_to_cloudinary()",
-      "file_type": "code",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L41"
-    },
-    {
-      "id": "loop_scraper_seed_data_seed_database",
-      "label": "seed_database()",
-      "file_type": "code",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L50"
-    },
-    {
-      "id": "loop_scraper_seed_data_rationale_33",
-      "label": "Uploads a local image file to Cloudinary unsigned preset.",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L33"
-    },
-    {
-      "id": "loop_scraper_seed_data_rationale_42",
-      "label": "Uploads a remote image URL to Cloudinary unsigned preset.",
-      "file_type": "rationale",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L42"
-    },
-    {
-      "id": "loop_scraper_stock_scraper",
-      "label": "stock_scraper.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_stock_scraper_parse_with_gemini",
-      "label": "parse_with_gemini()",
-      "file_type": "code",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L29"
-    },
-    {
-      "id": "loop_scraper_stock_scraper_download_image",
-      "label": "download_image()",
-      "file_type": "code",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L92"
-    },
-    {
-      "id": "loop_scraper_wipe_db",
-      "label": "wipe_db.py",
-      "file_type": "code",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "loop_scraper_wipe_db_wipe_events",
-      "label": "wipe_events()",
-      "file_type": "code",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L16"
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L35"
     }
   ],
   "edges": [
+    {
+      "source": "lib_guard",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L12",
+      "weight": 1
+    },
+    {
+      "source": "lib_guard",
+      "target": "lib_guard_allowed_origins",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "lib_guard",
+      "target": "lib_guard_initadmin",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L24",
+      "weight": 1
+    },
+    {
+      "source": "lib_guard",
+      "target": "lib_guard_caller",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L33",
+      "weight": 1
+    },
+    {
+      "source": "lib_guard",
+      "target": "lib_guard_guard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L46",
+      "weight": 1
+    },
+    {
+      "source": "lib_guard_guard",
+      "target": "lib_guard_initadmin",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "api/_lib/guard.ts",
+      "source_location": "L83",
+      "weight": 1
+    },
+    {
+      "source": "api_callgemini",
+      "target": "generative_ai",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "api_callgemini",
+      "target": "lib_guard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "api_callgemini",
+      "target": "lib_guard_guard",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "api_callgemini",
+      "target": "api_callgemini_text_models",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "api_callgemini",
+      "target": "api_callgemini_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/callGemini.ts",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "api_getcloudinarysignature",
+      "target": "cloudinary",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "api_getcloudinarysignature",
+      "target": "lib_guard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "api_getcloudinarysignature",
+      "target": "lib_guard_guard",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "api_getcloudinarysignature",
+      "target": "api_getcloudinarysignature_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/getCloudinarySignature.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "api_parseeventposter_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "generative_ai",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "lib_guard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "lib_guard_guard",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "api_parseeventposter_allowed_categories",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "api_parseeventposter",
+      "target": "api_parseeventposter_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "api/parseEventPoster.ts",
+      "source_location": "L25",
+      "weight": 1
+    },
     {
       "source": "loop_app_app",
       "target": "react",
@@ -1619,7 +2109,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "theme_index",
+      "target": "utils_session",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1628,7 +2118,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "theme_index_themeprovider",
+      "target": "utils_session_ensuresignedin",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1637,16 +2127,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "theme_index_usetheme",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/App.tsx",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_app_app",
-      "target": "navigation_appnavigator",
+      "target": "utils_usefonts",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1655,7 +2136,16 @@
     },
     {
       "source": "loop_app_app",
-      "target": "navigation_bottomtabbar",
+      "target": "utils_usefonts_usecustomfonts",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "theme_index",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1664,7 +2154,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "navigation_bottomtabbar_tabid",
+      "target": "theme_index_themeprovider",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1673,7 +2163,16 @@
     },
     {
       "source": "loop_app_app",
-      "target": "components_topbar",
+      "target": "theme_index_usetheme",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "navigation_appnavigator",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1682,7 +2181,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "components_eventdetailmodal",
+      "target": "navigation_bottomtabbar",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1691,7 +2190,16 @@
     },
     {
       "source": "loop_app_app",
-      "target": "components_notificationmodal",
+      "target": "navigation_bottomtabbar_tabid",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "components_topbar",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1700,7 +2208,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "components_studentauthmodal",
+      "target": "components_eventdetailmodal",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1709,7 +2217,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "components_aicampusconcierge",
+      "target": "components_notificationmodal",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1718,7 +2226,16 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_homescreen",
+      "target": "components_notificationmodal_initial_notifications",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L13",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "components_studentauthmodal",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1727,7 +2244,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_pulsescreen",
+      "target": "components_aicampusconcierge",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1736,7 +2253,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_directoryscreen",
+      "target": "screens_homescreen",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1745,7 +2262,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_curatescreen",
+      "target": "screens_pulsescreen",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1754,7 +2271,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_submitscreen",
+      "target": "screens_directoryscreen",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1763,7 +2280,7 @@
     },
     {
       "source": "loop_app_app",
-      "target": "screens_queuescreen",
+      "target": "screens_curatescreen",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
@@ -1772,11 +2289,29 @@
     },
     {
       "source": "loop_app_app",
-      "target": "data_categories",
+      "target": "screens_submitscreen",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
       "source_location": "L20",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "screens_queuescreen",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L21",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "data_categories",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L22",
       "weight": 1
     },
     {
@@ -1785,7 +2320,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L20",
+      "source_location": "L22",
       "weight": 1
     },
     {
@@ -1794,7 +2329,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L21",
+      "source_location": "L23",
       "weight": 1
     },
     {
@@ -1803,7 +2338,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L21",
+      "source_location": "L23",
       "weight": 1
     },
     {
@@ -1812,7 +2347,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1
     },
     {
@@ -1821,7 +2356,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1
     },
     {
@@ -1830,7 +2365,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1839,7 +2374,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1848,7 +2383,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1857,7 +2392,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1866,7 +2401,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1875,7 +2410,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1884,7 +2419,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1
     },
     {
@@ -1893,7 +2428,25 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L23",
+      "source_location": "L25",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "components_errorboundary",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L34",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "components_errorboundary_errorboundary",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L34",
       "weight": 1
     },
     {
@@ -1902,7 +2455,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L33",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -1911,7 +2464,25 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/App.tsx",
-      "source_location": "L229",
+      "source_location": "L290",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "async_storage",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L86",
+      "weight": 1
+    },
+    {
+      "source": "loop_app_app",
+      "target": "async_storage",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/App.tsx",
+      "source_location": "L121",
       "weight": 1
     },
     {
@@ -1930,6 +2501,1194 @@
       "confidence": "EXTRACTED",
       "source_file": "loop-app/index.ts",
       "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_cli",
+      "target": "argparse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/cli.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_cli",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/cli.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_cli",
+      "target": "scraper_cli_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/cli.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_events_offline",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_events_offline.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_events_offline",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_events_offline.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_events_offline",
+      "target": "uuid",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_events_offline.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_real_events",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_real_events",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_real_events",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_real_events",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_generate_real_events",
+      "target": "scraper_generate_real_events_generate_real_events",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/generate_real_events.py",
+      "source_location": "L21",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "tempfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "apify_client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "shared",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "cloudinary_uploader",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "scraper_harvest_avatars",
+      "target": "scraper_harvest_avatars_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/harvest_avatars.py",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "puppeteer",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_puppeteer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "fs",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_fs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "path",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "https",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_https",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_handles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_output_dir",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_images_dir",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L24",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_downloadimage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L29",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper",
+      "target": "scraper_puppeteer_scraper_scrapeinstagram",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L44",
+      "weight": 1
+    },
+    {
+      "source": "scraper_puppeteer_scraper_scrapeinstagram",
+      "target": "scraper_puppeteer_scraper_downloadimage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/puppeteer_scraper.js",
+      "source_location": "L100",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "re",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "cloudinary",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "cloudinary_uploader",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "scraper_purge_and_reset_extract_cloudinary_public_id",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L27",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset",
+      "target": "scraper_purge_and_reset_purge_all",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L39",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset_purge_all",
+      "target": "scraper_purge_and_reset_extract_cloudinary_public_id",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L48",
+      "weight": 1
+    },
+    {
+      "source": "scraper_purge_and_reset_rationale_28",
+      "target": "scraper_purge_and_reset_extract_cloudinary_public_id",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/purge_and_reset.py",
+      "source_location": "L28",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "re",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "random",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "base64",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "uuid",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "tempfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "apify_client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L12",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "shared",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L13",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L14",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "cloudinary",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L15",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "cloudinary_uploader",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "scraper_scraper_load_target_handles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L25",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "scraper_scraper_get_avatar_for_handle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L56",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper",
+      "target": "scraper_scraper_run_apify_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L73",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper_run_apify_pipeline",
+      "target": "scraper_scraper_load_target_handles",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L79",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper_run_apify_pipeline",
+      "target": "scraper_scraper_get_avatar_for_handle",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L250",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper_rationale_26",
+      "target": "scraper_scraper_load_target_handles",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L26",
+      "weight": 1
+    },
+    {
+      "source": "scraper_scraper_rationale_74",
+      "target": "scraper_scraper_run_apify_pipeline",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/scraper.py",
+      "source_location": "L74",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "glob",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "random",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "shared",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "shared",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "scraper_seed_data",
+      "target": "scraper_seed_data_seed_database",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/seed_data.py",
+      "source_location": "L28",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L15",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L17",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L18",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "scraper_set_admin_init",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "scraper_set_admin_list_coordinators",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L30",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin",
+      "target": "scraper_set_admin_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L44",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin_main",
+      "target": "scraper_set_admin_init",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L49",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin_main",
+      "target": "scraper_set_admin_list_coordinators",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L53",
+      "weight": 1
+    },
+    {
+      "source": "scraper_set_admin_rationale_1",
+      "target": "scraper_set_admin",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/set_admin.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "base64",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "cloudinary",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "cloudinary_uploader",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "scraper_shared_upload_image_to_cloudinary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L36",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared",
+      "target": "scraper_shared_parse_with_gemini",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L71",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared_rationale_37",
+      "target": "scraper_shared_upload_image_to_cloudinary",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L37",
+      "weight": 1
+    },
+    {
+      "source": "scraper_shared_rationale_72",
+      "target": "scraper_shared_parse_with_gemini",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/shared.py",
+      "source_location": "L72",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "tempfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "base64",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "instagrapi",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "scraper_stock_scraper",
+      "target": "scraper_stock_scraper_download_image",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/stock_scraper.py",
+      "source_location": "L45",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_db",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_db",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_db",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_db",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_db",
+      "target": "scraper_wipe_db_wipe_events",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_db.py",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_events",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_events.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scraper_wipe_events",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scraper/wipe_events.py",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "re",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "firebase_admin",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "scripts_backfill_events_parse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L15",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events_rationale_1",
+      "target": "scripts_backfill_events",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.py",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "firebase_admin",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "path",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "scripts_backfill_events_serviceaccountpath",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "scripts_backfill_events_db",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L25",
+      "weight": 1
+    },
+    {
+      "source": "scripts_backfill_events",
+      "target": "scripts_backfill_events_backfillevents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/scripts/backfill_events.ts",
+      "source_location": "L27",
       "weight": 1
     },
     {
@@ -2185,6 +3944,105 @@
       "weight": 1
     },
     {
+      "source": "components_errorboundary",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "react_native",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "phosphor_react_native",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "components_errorboundary_props",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "components_errorboundary_state",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "components_errorboundary_errorboundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary_errorboundary",
+      "target": "components_errorboundary_component",
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L16",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary_errorboundary",
+      "target": "components_errorboundary_errorboundary_getderivedstatefromerror",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L22",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary_errorboundary",
+      "target": "components_errorboundary_errorboundary_componentdidcatch",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L26",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary_errorboundary",
+      "target": "components_errorboundary_errorboundary_render",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L49",
+      "weight": 1
+    },
+    {
+      "source": "components_errorboundary",
+      "target": "components_errorboundary_styles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/ErrorBoundary.tsx",
+      "source_location": "L95",
+      "weight": 1
+    },
+    {
       "source": "components_eventcard",
       "target": "react",
       "relation": "imports_from",
@@ -2213,7 +4071,7 @@
     },
     {
       "source": "components_eventcard",
-      "target": "theme_index",
+      "target": "expo_linear_gradient",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
@@ -2222,43 +4080,7 @@
     },
     {
       "source": "components_eventcard",
-      "target": "theme_index_usetheme",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "components_eventcard",
-      "target": "theme_index_typography",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "components_eventcard",
-      "target": "theme_index_radii",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "components_eventcard",
-      "target": "theme_index_shadows",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "components_eventcard",
-      "target": "components_savebutton",
+      "target": "theme_index",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
@@ -2267,7 +4089,43 @@
     },
     {
       "source": "components_eventcard",
-      "target": "data_events",
+      "target": "theme_index_usetheme",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "theme_index_typography",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "theme_index_radii",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "theme_index_shadows",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "components_savebutton",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
@@ -2276,11 +4134,38 @@
     },
     {
       "source": "components_eventcard",
+      "target": "utils_cloudinary",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "utils_cloudinary_getoptimizedimageurl",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
+      "target": "data_events",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventCard.tsx",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "components_eventcard",
       "target": "data_events_eventitem",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L6",
+      "source_location": "L8",
       "weight": 1
     },
     {
@@ -2289,7 +4174,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L8",
+      "source_location": "L10",
       "weight": 1
     },
     {
@@ -2298,7 +4183,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L16",
+      "source_location": "L18",
       "weight": 1
     },
     {
@@ -2307,7 +4192,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1
     },
     {
@@ -2316,7 +4201,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1
     },
     {
@@ -2325,7 +4210,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventCard.tsx",
-      "source_location": "L227",
+      "source_location": "L256",
       "weight": 1
     },
     {
@@ -2501,7 +4386,7 @@
     },
     {
       "source": "components_eventdetailmodal",
-      "target": "data_events",
+      "target": "utils_cloudinary",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
@@ -2510,7 +4395,7 @@
     },
     {
       "source": "components_eventdetailmodal",
-      "target": "data_events_eventitem",
+      "target": "utils_cloudinary_getoptimizedimageurl",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
@@ -2519,11 +4404,29 @@
     },
     {
       "source": "components_eventdetailmodal",
+      "target": "data_events",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventDetailModal.tsx",
+      "source_location": "L25",
+      "weight": 1
+    },
+    {
+      "source": "components_eventdetailmodal",
+      "target": "data_events_eventitem",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/EventDetailModal.tsx",
+      "source_location": "L25",
+      "weight": 1
+    },
+    {
+      "source": "components_eventdetailmodal",
       "target": "components_eventdetailmodal_props",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1
     },
     {
@@ -2532,7 +4435,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1
     },
     {
@@ -2541,7 +4444,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L327",
+      "source_location": "L336",
       "weight": 1
     },
     {
@@ -2550,7 +4453,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L339",
+      "source_location": "L348",
       "weight": 1
     },
     {
@@ -2559,7 +4462,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/EventDetailModal.tsx",
-      "source_location": "L356",
+      "source_location": "L365",
       "weight": 1
     },
     {
@@ -2690,7 +4593,7 @@
     },
     {
       "source": "components_featuredcard",
-      "target": "data_events",
+      "target": "utils_cloudinary",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
@@ -2699,7 +4602,7 @@
     },
     {
       "source": "components_featuredcard",
-      "target": "data_events_eventitem",
+      "target": "utils_cloudinary_getoptimizedimageurl",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
@@ -2708,11 +4611,29 @@
     },
     {
       "source": "components_featuredcard",
+      "target": "data_events",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/FeaturedCard.tsx",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "components_featuredcard",
+      "target": "data_events_eventitem",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/components/FeaturedCard.tsx",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "components_featuredcard",
       "target": "components_featuredcard_props",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1
     },
     {
@@ -2721,7 +4642,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1
     },
     {
@@ -2730,7 +4651,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/FeaturedCard.tsx",
-      "source_location": "L130",
+      "source_location": "L148",
       "weight": 1
     },
     {
@@ -2910,7 +4831,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L51",
+      "source_location": "L50",
       "weight": 1
     },
     {
@@ -2919,7 +4840,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L56",
+      "source_location": "L58",
       "weight": 1
     },
     {
@@ -2928,7 +4849,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/NotificationModal.tsx",
-      "source_location": "L174",
+      "source_location": "L179",
       "weight": 1
     },
     {
@@ -3171,7 +5092,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1
     },
     {
@@ -3180,7 +5101,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1
     },
     {
@@ -3189,7 +5110,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/components/StudentAuthModal.tsx",
-      "source_location": "L280",
+      "source_location": "L270",
       "weight": 1
     },
     {
@@ -3302,7 +5223,7 @@
     },
     {
       "source": "config_firebase",
-      "target": "app",
+      "target": "react_native",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/config/firebase.ts",
@@ -3311,7 +5232,7 @@
     },
     {
       "source": "config_firebase",
-      "target": "firestore",
+      "target": "app",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/config/firebase.ts",
@@ -3320,8 +5241,8 @@
     },
     {
       "source": "config_firebase",
-      "target": "config_firebase_firebaseconfig",
-      "relation": "contains",
+      "target": "firestore",
+      "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/config/firebase.ts",
       "source_location": "L3",
@@ -3329,11 +5250,29 @@
     },
     {
       "source": "config_firebase",
-      "target": "config_firebase_db",
+      "target": "auth",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/config/firebase.ts",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "config_firebase",
+      "target": "config_firebase_firebaseconfig",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/config/firebase.ts",
-      "source_location": "L16",
+      "source_location": "L11",
+      "weight": 1
+    },
+    {
+      "source": "config_firebase",
+      "target": "config_firebase_auth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/config/firebase.ts",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -3567,7 +5506,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/navigation/AppNavigator.tsx",
-      "source_location": "L58",
+      "source_location": "L56",
       "weight": 1
     },
     {
@@ -3828,7 +5767,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/navigation/Sidebar.tsx",
-      "source_location": "L16",
+      "source_location": "L14",
       "weight": 1
     },
     {
@@ -3837,7 +5776,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/navigation/Sidebar.tsx",
-      "source_location": "L112",
+      "source_location": "L108",
       "weight": 1
     },
     {
@@ -4152,7 +6091,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/DirectoryScreen.tsx",
-      "source_location": "L262",
+      "source_location": "L267",
       "weight": 1
     },
     {
@@ -4350,7 +6289,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/HomeScreen.tsx",
-      "source_location": "L34",
+      "source_location": "L37",
       "weight": 1
     },
     {
@@ -4359,7 +6298,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/HomeScreen.tsx",
-      "source_location": "L288",
+      "source_location": "L308",
       "weight": 1
     },
     {
@@ -4436,7 +6375,7 @@
     },
     {
       "source": "screens_pulsescreen",
-      "target": "data_pulse_pulse",
+      "target": "data_pulse_pulseitem",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
@@ -4463,11 +6402,38 @@
     },
     {
       "source": "screens_pulsescreen",
+      "target": "firestore",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/PulseScreen.tsx",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "screens_pulsescreen",
+      "target": "config_firebase",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/PulseScreen.tsx",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "screens_pulsescreen",
+      "target": "config_firebase_db",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/PulseScreen.tsx",
+      "source_location": "L9",
+      "weight": 1
+    },
+    {
+      "source": "screens_pulsescreen",
       "target": "screens_pulsescreen_animatedwrapper",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L9",
+      "source_location": "L11",
       "weight": 1
     },
     {
@@ -4476,7 +6442,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L34",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4485,7 +6451,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/PulseScreen.tsx",
-      "source_location": "L114",
+      "source_location": "L148",
       "weight": 1
     },
     {
@@ -4512,7 +6478,25 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_cloudinary",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L34",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_cloudinary_getoptimizedimageurl",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L34",
       "weight": 1
     },
     {
@@ -4521,7 +6505,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L31",
+      "source_location": "L35",
       "weight": 1
     },
     {
@@ -4530,7 +6514,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4539,7 +6523,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4548,7 +6532,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4557,7 +6541,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4566,7 +6550,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4575,7 +6559,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1
     },
     {
@@ -4584,7 +6568,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L33",
+      "source_location": "L37",
       "weight": 1
     },
     {
@@ -4593,7 +6577,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L34",
+      "source_location": "L38",
       "weight": 1
     },
     {
@@ -4602,7 +6586,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L34",
+      "source_location": "L38",
       "weight": 1
     },
     {
@@ -4611,7 +6595,34 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L35",
+      "source_location": "L39",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "auth",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L50",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_session",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L51",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_session_oncoordinatorchange",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L51",
       "weight": 1
     },
     {
@@ -4620,7 +6631,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L36",
+      "source_location": "L52",
       "weight": 1
     },
     {
@@ -4629,25 +6640,34 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L36",
+      "source_location": "L52",
       "weight": 1
     },
     {
       "source": "screens_queuescreen",
-      "target": "utils_geminiparser",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L37",
-      "weight": 1
-    },
-    {
-      "source": "screens_queuescreen",
-      "target": "utils_geminiparser_parseeventposterfromurl",
+      "target": "config_firebase_auth",
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L37",
+      "source_location": "L52",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_vercelclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L53",
+      "weight": 1
+    },
+    {
+      "source": "screens_queuescreen",
+      "target": "utils_vercelclient_httpscallable",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/QueueScreen.tsx",
+      "source_location": "L53",
       "weight": 1
     },
     {
@@ -4656,7 +6676,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L39",
+      "source_location": "L55",
       "weight": 1
     },
     {
@@ -4665,7 +6685,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L651",
+      "source_location": "L770",
       "weight": 1
     },
     {
@@ -4674,7 +6694,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L670",
+      "source_location": "L789",
       "weight": 1
     },
     {
@@ -4683,7 +6703,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/QueueScreen.tsx",
-      "source_location": "L685",
+      "source_location": "L804",
       "weight": 1
     },
     {
@@ -4796,29 +6816,11 @@
     },
     {
       "source": "screens_submitscreen",
-      "target": "utils_geminiparser",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L20",
-      "weight": 1
-    },
-    {
-      "source": "screens_submitscreen",
-      "target": "utils_geminiparser_parseeventposter",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L20",
-      "weight": 1
-    },
-    {
-      "source": "screens_submitscreen",
       "target": "utils_geminiai",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1
     },
     {
@@ -4827,7 +6829,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1
     },
     {
@@ -4836,7 +6838,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1
     },
     {
@@ -4845,7 +6847,16 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L22",
+      "source_location": "L21",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "config_firebase_auth",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L21",
       "weight": 1
     },
     {
@@ -4854,7 +6865,52 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L22",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "utils_vercelclient",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
       "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "utils_vercelclient_httpscallable",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "utils_vercelclient_apierrormessage",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L23",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "utils_session",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L24",
+      "weight": 1
+    },
+    {
+      "source": "screens_submitscreen",
+      "target": "utils_session_oncoordinatorchange",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/screens/SubmitScreen.tsx",
+      "source_location": "L24",
       "weight": 1
     },
     {
@@ -4863,7 +6919,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1
     },
     {
@@ -4872,7 +6928,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1
     },
     {
@@ -4881,7 +6937,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/screens/SubmitScreen.tsx",
-      "source_location": "L434",
+      "source_location": "L488",
       "weight": 1
     },
     {
@@ -4989,7 +7045,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/theme/ThemeContext.tsx",
-      "source_location": "L72",
+      "source_location": "L85",
       "weight": 1
     },
     {
@@ -5355,7 +7411,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L106",
+      "source_location": "L118",
       "weight": 1
     },
     {
@@ -5364,7 +7420,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L114",
+      "source_location": "L126",
       "weight": 1
     },
     {
@@ -5373,7 +7429,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L133",
+      "source_location": "L145",
       "weight": 1
     },
     {
@@ -5382,7 +7438,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L115",
+      "source_location": "L127",
       "weight": 1
     },
     {
@@ -5391,7 +7447,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L122",
+      "source_location": "L134",
       "weight": 1
     },
     {
@@ -5400,7 +7456,16 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/calendar.ts",
-      "source_location": "L134",
+      "source_location": "L146",
+      "weight": 1
+    },
+    {
+      "source": "utils_cloudinary",
+      "target": "utils_cloudinary_getoptimizedimageurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/cloudinary.ts",
+      "source_location": "L1",
       "weight": 1
     },
     {
@@ -5441,16 +7506,25 @@
     },
     {
       "source": "utils_geminiai",
-      "target": "utils_geminiai_models",
-      "relation": "contains",
+      "target": "utils_vercelclient",
+      "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L7",
+      "source_location": "L4",
       "weight": 1
     },
     {
       "source": "utils_geminiai",
-      "target": "utils_geminiai_callgeminirest",
+      "target": "utils_vercelclient_httpscallable",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/geminiAI.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "utils_geminiai",
+      "target": "utils_geminiai_callgeminiviafunction",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
@@ -5463,7 +7537,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L56",
+      "source_location": "L19",
       "weight": 1
     },
     {
@@ -5472,7 +7546,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L107",
+      "source_location": "L70",
       "weight": 1
     },
     {
@@ -5481,115 +7555,34 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L124",
+      "source_location": "L87",
       "weight": 1
     },
     {
       "source": "utils_geminiai_askcampusai",
-      "target": "utils_geminiai_callgeminirest",
+      "target": "utils_geminiai_callgeminiviafunction",
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L104",
+      "source_location": "L67",
       "weight": 1
     },
     {
       "source": "utils_geminiai_generateeventpitch",
-      "target": "utils_geminiai_callgeminirest",
+      "target": "utils_geminiai_callgeminiviafunction",
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L117",
+      "source_location": "L80",
       "weight": 1
     },
     {
       "source": "utils_geminiai_enhanceeventdraft",
-      "target": "utils_geminiai_callgeminirest",
+      "target": "utils_geminiai_callgeminiviafunction",
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/geminiAI.ts",
-      "source_location": "L139",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "generative_ai",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L13",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "data_categories",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L14",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "data_categories_categories",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L14",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "utils_geminiparser_parsedevent",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L17",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "utils_geminiparser_allowed_categories",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L29",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "utils_geminiparser_getmodel",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L60",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "utils_geminiparser_parseeventposter",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L88",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser",
-      "target": "utils_geminiparser_parseeventposterfromurl",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L142",
-      "weight": 1
-    },
-    {
-      "source": "utils_geminiparser_parseeventposter",
-      "target": "utils_geminiparser_getmodel",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-app/src/utils/geminiParser.ts",
-      "source_location": "L99",
+      "source_location": "L102",
       "weight": 1
     },
     {
@@ -5644,6 +7637,123 @@
       "confidence": "EXTRACTED",
       "source_file": "loop-app/src/utils/linking.ts",
       "source_location": "L48",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "auth",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L17",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "config_firebase",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L18",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "config_firebase_auth",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L18",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_authready",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L26",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_ensuresignedin",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L39",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_coordinatorinfo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L56",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_not_coordinator",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L58",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_readclaims",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L60",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_getcoordinatorinfo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L78",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_iscoordinator",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L84",
+      "weight": 1
+    },
+    {
+      "source": "utils_session",
+      "target": "utils_session_oncoordinatorchange",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L93",
+      "weight": 1
+    },
+    {
+      "source": "utils_session_getcoordinatorinfo",
+      "target": "utils_session_readclaims",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L80",
+      "weight": 1
+    },
+    {
+      "source": "utils_session_iscoordinator",
+      "target": "utils_session_getcoordinatorinfo",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/session.ts",
+      "source_location": "L85",
       "weight": 1
     },
     {
@@ -5728,984 +7838,102 @@
       "weight": 1
     },
     {
-      "source": "loop_scraper_gemini_parser",
-      "target": "os",
-      "relation": "imports",
+      "source": "utils_usefonts",
+      "target": "outfit",
+      "relation": "imports_from",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
+      "source_file": "loop-app/src/utils/useFonts.ts",
       "source_location": "L1",
       "weight": 1
     },
     {
-      "source": "loop_scraper_gemini_parser",
-      "target": "json",
-      "relation": "imports",
+      "source": "utils_usefonts",
+      "target": "geist",
+      "relation": "imports_from",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
+      "source_file": "loop-app/src/utils/useFonts.ts",
       "source_location": "L2",
       "weight": 1
     },
     {
-      "source": "loop_scraper_gemini_parser",
-      "target": "base64",
-      "relation": "imports",
+      "source": "utils_usefonts",
+      "target": "utils_usefonts_usecustomfonts",
+      "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_gemini_parser",
-      "target": "requests",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
+      "source_file": "loop-app/src/utils/useFonts.ts",
       "source_location": "L4",
       "weight": 1
     },
     {
-      "source": "loop_scraper_gemini_parser",
-      "target": "dotenv",
+      "source": "utils_vercelclient",
+      "target": "config_firebase",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_gemini_parser",
-      "target": "loop_scraper_gemini_parser_parse_with_gemini",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
       "source_location": "L10",
       "weight": 1
     },
     {
-      "source": "loop_scraper_gemini_parser",
-      "target": "loop_scraper_gemini_parser_process",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L58",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_gemini_parser_process",
-      "target": "loop_scraper_gemini_parser_parse_with_gemini",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/gemini_parser.py",
-      "source_location": "L75",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_events_offline",
-      "target": "os",
+      "source": "utils_vercelclient",
+      "target": "config_firebase_auth",
       "relation": "imports",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_events_offline.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_events_offline",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_events_offline.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_events_offline",
-      "target": "uuid",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_events_offline.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_real_events",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_real_events",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_real_events",
-      "target": "requests",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_real_events",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_generate_real_events",
-      "target": "loop_scraper_generate_real_events_generate_real_events",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/generate_real_events.py",
-      "source_location": "L21",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "time",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "requests",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "tempfile",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "apify_client",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "cloudinary",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L8",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "cloudinary_uploader",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L9",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "loop_scraper_harvest_avatars_upload_avatar_to_cloudinary",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L39",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars",
-      "target": "loop_scraper_harvest_avatars_harvest_avatars",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L50",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars_harvest_avatars",
-      "target": "loop_scraper_harvest_avatars_upload_avatar_to_cloudinary",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L92",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_harvest_avatars_rationale_40",
-      "target": "loop_scraper_harvest_avatars_upload_avatar_to_cloudinary",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/harvest_avatars.py",
-      "source_location": "L40",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "puppeteer",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_puppeteer",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "fs",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_fs",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "path",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_path",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "https",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_https",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_handles",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_output_dir",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L23",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_images_dir",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L24",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_downloadimage",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L29",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper",
-      "target": "loop_scraper_puppeteer_scraper_scrapeinstagram",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L44",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_puppeteer_scraper_scrapeinstagram",
-      "target": "loop_scraper_puppeteer_scraper_downloadimage",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/puppeteer_scraper.js",
-      "source_location": "L100",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "re",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "firebase_admin",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "firebase_admin",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "cloudinary",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "cloudinary_uploader",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "loop_scraper_purge_and_reset_extract_cloudinary_public_id",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L27",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset",
-      "target": "loop_scraper_purge_and_reset_purge_all",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L39",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset_purge_all",
-      "target": "loop_scraper_purge_and_reset_extract_cloudinary_public_id",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L48",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_purge_and_reset_rationale_28",
-      "target": "loop_scraper_purge_and_reset_extract_cloudinary_public_id",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/purge_and_reset.py",
-      "source_location": "L28",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "re",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "time",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "random",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "base64",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "requests",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "uuid",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L8",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "tempfile",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L9",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
       "source_location": "L10",
       "weight": 1
     },
     {
-      "source": "loop_scraper_scraper",
-      "target": "apify_client",
+      "source": "utils_vercelclient",
+      "target": "utils_session",
       "relation": "imports_from",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
       "source_location": "L11",
       "weight": 1
     },
     {
-      "source": "loop_scraper_scraper",
-      "target": "firebase_admin",
+      "source": "utils_vercelclient",
+      "target": "utils_session_ensuresignedin",
       "relation": "imports",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L12",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L11",
       "weight": 1
     },
     {
-      "source": "loop_scraper_scraper",
-      "target": "firebase_admin",
-      "relation": "imports_from",
+      "source": "utils_vercelclient",
+      "target": "utils_vercelclient_apierror",
+      "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L13",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "cloudinary",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L14",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "cloudinary_uploader",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
       "source_location": "L15",
       "weight": 1
     },
     {
-      "source": "loop_scraper_scraper",
-      "target": "loop_scraper_scraper_get_avatar_for_handle",
+      "source": "utils_vercelclient_apierror",
+      "target": "utils_vercelclient_apierror_constructor",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L17",
+      "weight": 1
+    },
+    {
+      "source": "utils_vercelclient",
+      "target": "utils_vercelclient_apierrormessage",
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L66",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L25",
       "weight": 1
     },
     {
-      "source": "loop_scraper_scraper",
-      "target": "loop_scraper_scraper_upload_image",
+      "source": "utils_vercelclient",
+      "target": "utils_vercelclient_httpscallable",
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L91",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "loop_scraper_scraper_parse_with_gemini",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L100",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper",
-      "target": "loop_scraper_scraper_run_apify_pipeline",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L208",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper_run_apify_pipeline",
-      "target": "loop_scraper_scraper_parse_with_gemini",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L291",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper_run_apify_pipeline",
-      "target": "loop_scraper_scraper_upload_image",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L354",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper_run_apify_pipeline",
-      "target": "loop_scraper_scraper_get_avatar_for_handle",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L376",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper_rationale_101",
-      "target": "loop_scraper_scraper_parse_with_gemini",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L101",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_scraper_rationale_209",
-      "target": "loop_scraper_scraper_run_apify_pipeline",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/scraper.py",
-      "source_location": "L209",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "glob",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "random",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "cloudinary",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "cloudinary_uploader",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "firebase_admin",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "firebase_admin",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L8",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L9",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "loop_scraper_seed_data_upload_local_to_cloudinary",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L32",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "loop_scraper_seed_data_upload_url_to_cloudinary",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L41",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data",
-      "target": "loop_scraper_seed_data_seed_database",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L50",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data_seed_database",
-      "target": "loop_scraper_seed_data_upload_local_to_cloudinary",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L72",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data_seed_database",
-      "target": "loop_scraper_seed_data_upload_url_to_cloudinary",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L84",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data_rationale_33",
-      "target": "loop_scraper_seed_data_upload_local_to_cloudinary",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L33",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_seed_data_rationale_42",
-      "target": "loop_scraper_seed_data_upload_url_to_cloudinary",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/seed_data.py",
-      "source_location": "L42",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "time",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "json",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "requests",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "tempfile",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L5",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "base64",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L6",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L7",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "instagrapi",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L8",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "loop_scraper_stock_scraper_parse_with_gemini",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L29",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_stock_scraper",
-      "target": "loop_scraper_stock_scraper_download_image",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/stock_scraper.py",
-      "source_location": "L92",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_wipe_db",
-      "target": "os",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L1",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_wipe_db",
-      "target": "firebase_admin",
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L2",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_wipe_db",
-      "target": "firebase_admin",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L3",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_wipe_db",
-      "target": "dotenv",
-      "relation": "imports_from",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L4",
-      "weight": 1
-    },
-    {
-      "source": "loop_scraper_wipe_db",
-      "target": "loop_scraper_wipe_db_wipe_events",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "loop-scraper/wipe_db.py",
-      "source_location": "L16",
+      "source_file": "loop-app/src/utils/vercelClient.ts",
+      "source_location": "L35",
       "weight": 1
     }
   ],

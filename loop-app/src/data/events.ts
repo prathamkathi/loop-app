@@ -28,4 +28,6 @@ export type EventItem = {
   status?: 'pending' | 'approved' | 'rejected';
   igPostId?: string;       // Scraper dedup key
   approvedAt?: any;        // Firestore Timestamp, set on approve
+  actionUrl?: string;      // Optional registration link, survey form, or circular doc
+  deadline?: string;       // Explicit deadline date for notices/surveys
 };

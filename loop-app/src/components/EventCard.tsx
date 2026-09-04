@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Animated, Easing, Platform, Linking } from 'react-native';
-import { MapPin, WhatsappLogo, ImageSquare, CalendarBlank } from 'phosphor-react-native';
+import { MapPin, WhatsappLogo, CalendarBlank, MagnifyingGlassPlus, ArrowSquareOut } from 'phosphor-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, typography, radii, shadows } from '../theme';
 import SaveButton from './SaveButton';
+import PosterLightboxModal from './PosterLightboxModal';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
+import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -71,8 +73,15 @@ export function openWhatsApp(rawPhone: string, name: string, eventTitle: string)
 
 export default function EventCard({ event, saved, onToggleSave, onPress, index }: Props) {
   const { colors, isDark } = useTheme();
+  const [imgError, setImgError] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
-  const [imgError, setImgError] = React.useState(false);
+  const catMeta = getCategoryMeta(event.category);
+  const CategoryIcon = catMeta.icon;
+  const { primary: datePrimary, secondary: dateSecondary, isNotice } = formatCardDateLine(event);
+  const venueDisplay = formatCardVenue(event.venue, event.category);
 
   const riseAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -100,156 +109,237 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
     ? 1.4
     : 1.0;
 
-  const [isHovered, setIsHovered] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-
   return (
-    <Animated.View 
-      style={[
-        { opacity: riseAnim, transform: [{ translateY }], width: '100%' },
-        styles.card,
-        {
-          backgroundColor: colors.card,
-          borderColor: colors.border,
-        },
-        shadows.card,
-        Platform.OS === 'web' && ({
-          transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease',
-        } as any),
-        Platform.OS === 'web' && isHovered && ({
-          transform: [{ translateY: -5 }, { scale: 1.015 }],
-          borderColor: colors.primary,
-          boxShadow: isDark
-            ? '0 16px 36px rgba(196, 77, 106, 0.20)'
-            : '0 16px 36px rgba(138, 21, 56, 0.14)',
-        } as any),
-        isPressed && { transform: [{ scale: 0.985 }] },
-      ]}
-    >
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => setIsPressed(true)}
-        onPressOut={() => setIsPressed(false)}
-        //@ts-ignore - React Native Web hover props
-        onHoverIn={() => setIsHovered(true)}
-        onHoverOut={() => setIsHovered(false)}
+    <>
+      <Animated.View 
         style={[
-          Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+          { opacity: riseAnim, transform: [{ translateY }], width: '100%' },
+          styles.card,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+          },
+          shadows.card,
+          Platform.OS === 'web' && ({
+            transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease',
+          } as any),
+          Platform.OS === 'web' && isHovered && ({
+            transform: [{ translateY: -5 }, { scale: 1.015 }],
+            borderColor: catMeta.color,
+            boxShadow: isDark
+              ? '0 16px 36px rgba(196, 77, 106, 0.20)'
+              : '0 16px 36px rgba(138, 21, 56, 0.14)',
+          } as any),
+          isPressed && { transform: [{ scale: 0.985 }] },
         ]}
       >
-        {/* Adaptive Dual-Layer Poster Container (Zero Cropping) */}
-        <View style={[styles.imageWrap, { aspectRatio: computedAspect, backgroundColor: colors.highlight }]}>
-          {!event.image || imgError ? (
-            <LinearGradient
-              colors={isDark ? ['#2D0B16', '#1A080E', '#100508'] : ['#F8E9ED', '#EED4DC', '#E5C0CB']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}
-            >
-              <CalendarBlank size={48} color={colors.primary} weight="duotone" style={{ opacity: 0.4 }} />
-              <Text style={{ color: colors.primary, fontSize: 11, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
-                {event.category || 'Campus Event'}
-              </Text>
-            </LinearGradient>
-          ) : (
-            <>
-              <Image
-                source={{ uri: getOptimizedImageUrl(event.image) }}
-                style={StyleSheet.absoluteFill}
-                blurRadius={Platform.OS === 'web' ? 14 : 20}
-                resizeMode="cover"
-                onError={() => setImgError(true)}
-              />
-              <View
-                style={[
-                  StyleSheet.absoluteFill,
-                  { backgroundColor: isDark ? 'rgba(0, 0, 0, 0.30)' : 'rgba(255, 255, 255, 0.25)' },
-                ]}
-              />
-              <Image 
-                source={{ uri: getOptimizedImageUrl(event.image) }} 
-                style={styles.image} 
-                resizeMode="contain" 
-                onError={() => setImgError(true)} 
-              />
-            </>
-          )}
-
-          <SaveButton saved={saved} onPress={onToggleSave} light />
-
-          {event.fillingFast && (
-            <View style={[styles.fillingBadge, { backgroundColor: colors.surface }]}>
-              <PulseDot color={colors.primary} />
-              <Text style={[styles.fillingText, { color: colors.foreground }]}>Filling Fast</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.content}>
-          <View style={styles.dateLine}>
-            <Text style={[styles.dateText, { color: colors.primary }]} numberOfLines={1}>
-              {event.date || 'Date TBA'}
-            </Text>
-            <View style={[styles.dotSep, { backgroundColor: colors.primary }]} />
-            <Text style={[styles.dateText, { color: colors.primary }]} numberOfLines={1}>
-              {event.time || 'Time TBA'}
-            </Text>
-          </View>
-
-          <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={2} ellipsizeMode="tail">
-            {event.title}
-          </Text>
-
-          <View style={styles.venueLine}>
-            <Image 
-              source={{ uri: event.hostAvatar }} 
-              style={styles.hostAvatar} 
-              onError={(e) => {
-                // F-39 fallback
-                e.currentTarget.setNativeProps({
-                  src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
-                });
-              }} 
-            />
-            <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
-              {event.host}
-            </Text>
-          </View>
-
-          <View style={[styles.venueLine, { marginTop: 4 }]}>
-            <MapPin size={15} weight="light" color={colors.muted} />
-            <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
-              {event.venue || 'Venue TBA'}
-            </Text>
-          </View>
-        </View>
-      </Pressable>
-
-      {/* Adaptive WhatsApp Organizer Contact Buttons - outside the main Pressable (F-29) */}
-      {event.contacts && event.contacts.length > 0 && (
-        <View style={[styles.content, { paddingTop: 0 }]}>
-          <View style={styles.contactsRow}>
-            {event.contacts.slice(0, 2).map((contact, i) => (
-              <Pressable
-                key={i}
-                onPress={() => openWhatsApp(contact.phone, contact.name, event.title)}
-                style={({ pressed }) => [
-                  styles.whatsAppPill,
-                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                  pressed && { transform: [{ scale: 0.94 }] },
-                ]}
-                accessibilityLabel={`WhatsApp ${contact.name}`}
+        <Pressable
+          onPress={onPress}
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
+          //@ts-ignore - React Native Web hover props
+          onHoverIn={() => setIsHovered(true)}
+          onHoverOut={() => setIsHovered(false)}
+          style={[
+            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+          ]}
+        >
+          {/* Adaptive Dual-Layer Poster Container (Zero Cropping) */}
+          <View style={[styles.imageWrap, { aspectRatio: computedAspect, backgroundColor: colors.highlight }]}>
+            {!event.image || imgError ? (
+              <LinearGradient
+                colors={isDark ? ['#2D0B16', '#1A080E', '#100508'] : ['#F8E9ED', '#EED4DC', '#E5C0CB']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}
               >
-                <WhatsappLogo size={14} color="#FFFFFF" weight="fill" />
-                <Text style={styles.whatsAppText}>
-                  {event.contacts!.length === 1 ? `WhatsApp ${contact.name}` : contact.name}
+                <CategoryIcon size={44} color={catMeta.color} weight="duotone" style={{ opacity: 0.6 }} />
+                <Text style={{ color: catMeta.color, fontSize: 11, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                  {catMeta.label}
                 </Text>
-              </Pressable>
-            ))}
+              </LinearGradient>
+            ) : (
+              <>
+                <Image
+                  source={{ uri: getOptimizedImageUrl(event.image) }}
+                  style={StyleSheet.absoluteFill}
+                  blurRadius={Platform.OS === 'web' ? 14 : 20}
+                  resizeMode="cover"
+                  onError={() => setImgError(true)}
+                />
+                <View
+                  style={[
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: isDark ? 'rgba(0, 0, 0, 0.30)' : 'rgba(255, 255, 255, 0.25)' },
+                  ]}
+                />
+                <Image 
+                  source={{ uri: getOptimizedImageUrl(event.image) }} 
+                  style={styles.image} 
+                  resizeMode="contain" 
+                  onError={() => setImgError(true)} 
+                />
+              </>
+            )}
+
+            {/* Category Adaptive Badge (Top Left) */}
+            <View style={[
+              styles.categoryPill,
+              {
+                backgroundColor: isDark ? 'rgba(18, 18, 20, 0.82)' : 'rgba(255, 255, 255, 0.92)',
+                borderColor: catMeta.color,
+              }
+            ]}>
+              <CategoryIcon size={12} color={catMeta.color} weight="bold" />
+              <Text style={[styles.categoryPillText, { color: catMeta.color }]}>
+                {catMeta.tag}
+              </Text>
+            </View>
+
+            {/* Top Right Buttons: Poster Lightbox + Save */}
+            <View style={styles.topRightActions}>
+              {event.image && (
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setShowLightbox(true);
+                  }}
+                  style={({ pressed }) => [
+                    styles.lightboxBtn,
+                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                    pressed && { transform: [{ scale: 0.9 }] },
+                  ]}
+                  accessibilityLabel="Inspect full poster"
+                >
+                  <MagnifyingGlassPlus size={15} color="#FFFFFF" weight="bold" />
+                </Pressable>
+              )}
+              <SaveButton saved={saved} onPress={onToggleSave} light />
+            </View>
+
+            {event.fillingFast && (
+              <View style={[styles.fillingBadge, { backgroundColor: colors.surface }]}>
+                <PulseDot color={colors.primary} />
+                <Text style={[styles.fillingText, { color: colors.foreground }]}>Filling Fast</Text>
+              </View>
+            )}
           </View>
-        </View>
+
+          <View style={styles.content}>
+            {/* Adaptive Date / Notice Line */}
+            <View style={styles.dateLine}>
+              <Text 
+                style={[
+                  styles.dateText, 
+                  { color: isNotice ? catMeta.color : colors.primary, fontWeight: isNotice ? '700' : '600' }
+                ]} 
+                numberOfLines={1}
+              >
+                {datePrimary}
+              </Text>
+              <View style={[styles.dotSep, { backgroundColor: isNotice ? catMeta.color : colors.primary }]} />
+              <Text 
+                style={[
+                  styles.dateText, 
+                  { color: isNotice ? colors.muted : colors.primary }
+                ]} 
+                numberOfLines={1}
+              >
+                {dateSecondary}
+              </Text>
+            </View>
+
+            <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={2} ellipsizeMode="tail">
+              {event.title}
+            </Text>
+
+            <View style={styles.venueLine}>
+              <Image 
+                source={{ uri: event.hostAvatar }} 
+                style={styles.hostAvatar} 
+                onError={(e) => {
+                  e.currentTarget.setNativeProps({
+                    src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
+                  });
+                }} 
+              />
+              <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
+                {event.host}
+              </Text>
+            </View>
+
+            <View style={[styles.venueLine, { marginTop: 4 }]}>
+              <MapPin size={15} weight="light" color={colors.muted} />
+              <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
+                {venueDisplay}
+              </Text>
+            </View>
+          </View>
+        </Pressable>
+
+        {/* Action Link Button (if notice has actionUrl or registration link) */}
+        {event.actionUrl && (
+          <View style={[styles.content, { paddingTop: 0, paddingBottom: 6 }]}>
+            <Pressable
+              onPress={() => {
+                if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                  window.open(event.actionUrl, '_blank', 'noopener,noreferrer');
+                } else {
+                  Linking.openURL(event.actionUrl!);
+                }
+              }}
+              style={({ pressed }) => [
+                styles.actionUrlBtn,
+                { backgroundColor: isDark ? catMeta.bgDark : catMeta.bgLight, borderColor: catMeta.color },
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { opacity: 0.8 },
+              ]}
+            >
+              <ArrowSquareOut size={13} color={catMeta.color} weight="bold" />
+              <Text style={[styles.actionUrlText, { color: catMeta.color }]} numberOfLines={1}>
+                {catMeta.actionText || 'Open Official Link'}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Adaptive WhatsApp Organizer Contact Buttons */}
+        {event.contacts && event.contacts.length > 0 && (
+          <View style={[styles.content, { paddingTop: 0 }]}>
+            <View style={styles.contactsRow}>
+              {event.contacts.slice(0, 2).map((contact, i) => (
+                <Pressable
+                  key={i}
+                  onPress={() => openWhatsApp(contact.phone, contact.name, event.title)}
+                  style={({ pressed }) => [
+                    styles.whatsAppPill,
+                    Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
+                    pressed && { transform: [{ scale: 0.94 }] },
+                  ]}
+                  accessibilityLabel={`WhatsApp ${contact.name}`}
+                >
+                  <WhatsappLogo size={14} color="#FFFFFF" weight="fill" />
+                  <Text style={styles.whatsAppText}>
+                    {event.contacts!.length === 1 ? `WhatsApp ${contact.name}` : contact.name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+      </Animated.View>
+
+      {/* High-Resolution Poster Lightbox Modal */}
+      {event.image && (
+        <PosterLightboxModal
+          visible={showLightbox}
+          imageUri={event.image}
+          title={event.title}
+          subtitle={`${event.host} · ${catMeta.label}`}
+          onClose={() => setShowLightbox(false)}
+        />
       )}
-    </Animated.View>
+    </>
   );
 }
 
@@ -270,6 +360,42 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  categoryPill: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    elevation: 3,
+  },
+  categoryPillText: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+  },
+  topRightActions: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  lightboxBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   fillingBadge: {
     position: 'absolute',
@@ -329,6 +455,21 @@ const styles = StyleSheet.create({
     ...typography.bodySm,
     fontSize: 12,
     flex: 1,
+  },
+  actionUrlBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    marginTop: 6,
+  },
+  actionUrlText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   contactsRow: {
     flexDirection: 'row',

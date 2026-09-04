@@ -1,70 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Pressable, Modal, ScrollView, Platform } from 'react-native';
-import { X, Bell, CheckCircle, WarningCircle, Sparkle, Calendar } from 'phosphor-react-native';
+import { X, Bell, CheckCircle, WarningCircle, Sparkle, Calendar, ArrowRight } from 'phosphor-react-native';
 import { useTheme, typography, radii, shadows } from '../theme';
-import { BlurView } from 'expo-blur';
+import type { NotificationItem } from '../utils/notifications';
 
-export type NotificationItem = {
-  id: string;
-  title: string;
-  body: string;
-  time: string;
-  type: 'urgent' | 'event' | 'system';
-  read: boolean;
-};
+export { NotificationItem };
 
-export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'n1',
-    title: 'Orientation Day: Thesis to Venture',
-    body: 'Economics & Finance Club (eDC) orientation starts today at Seminar Hall. Don\'t miss out!',
-    time: '15m ago',
-    type: 'event',
-    read: false,
-  },
-  {
-    id: 'n2',
-    title: 'Debutant 11.0 IA/SA Applications',
-    body: 'Debating Society has opened adjudication applications for the upcoming tournament.',
-    time: '2h ago',
-    type: 'event',
-    read: false,
-  },
-  {
-    id: 'n3',
-    title: 'Add/Drop Course Deadline Tonight',
-    body: 'Semester schedule modification window closes strictly at 11:59 PM on eCampus portal.',
-    time: '5h ago',
-    type: 'urgent',
-    read: false,
-  },
-  {
-    id: 'n4',
-    title: 'Central Library 24×7 Reading Hall',
-    body: 'Air-conditioned study areas extended around the clock for upcoming examination preparations.',
-    time: 'Yesterday',
-    type: 'system',
-    read: true,
-  },
-];
 type Props = {
   visible: boolean;
   onClose: () => void;
   notifications: NotificationItem[];
   onMarkAllRead: () => void;
   onMarkRead: (id: string) => void;
+  onSelectNotification?: (item: NotificationItem) => void;
 };
 
-export default function NotificationModal({ visible, onClose, notifications, onMarkAllRead, onMarkRead }: Props) {
+export default function NotificationModal({
+  visible,
+  onClose,
+  notifications,
+  onMarkAllRead,
+  onMarkRead,
+  onSelectNotification,
+}: Props) {
   const { colors, isDark } = useTheme();
-
-  const markAllRead = () => {
-    onMarkAllRead && onMarkAllRead();
-  };
-
-  const markRead = (id: string) => {
-    onMarkRead && onMarkRead(id);
-  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -80,8 +39,15 @@ export default function NotificationModal({ visible, onClose, notifications, onM
   if (!visible) return null;
 
   const bgOverlay = isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(0, 0, 0, 0.45)';
-  const cardBg = isDark ? 'rgba(28, 28, 30, 0.96)' : 'rgba(255, 255, 255, 0.98)';
+  const cardBg = isDark ? 'rgba(28, 28, 30, 0.98)' : 'rgba(255, 255, 255, 0.98)';
   const borderCol = isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(138, 21, 56, 0.12)';
+
+  const handleItemPress = (item: NotificationItem) => {
+    onMarkRead(item.id);
+    if (onSelectNotification) {
+      onSelectNotification(item);
+    }
+  };
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -95,7 +61,7 @@ export default function NotificationModal({ visible, onClose, notifications, onM
             },
             shadows.card,
             Platform.OS === 'web' && ({
-              maxWidth: 480,
+              maxWidth: 500,
               width: '92%',
               alignSelf: 'center',
             }),
@@ -117,7 +83,7 @@ export default function NotificationModal({ visible, onClose, notifications, onM
             </View>
             <View style={styles.headerActions}>
               <Pressable
-                onPress={markAllRead}
+                onPress={onMarkAllRead}
                 style={({ pressed }) => [
                   styles.markReadBtn,
                   pressed && { opacity: 0.7 },
@@ -144,31 +110,50 @@ export default function NotificationModal({ visible, onClose, notifications, onM
 
           {/* List */}
           <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-            {notifications.map((item) => (
-              <View
-                key={item.id}
-                style={[
-                  styles.itemCard,
-                  {
-                    backgroundColor: item.read ? 'transparent' : colors.highlight,
-                    borderColor: item.read ? colors.borderSubtle : borderCol,
-                  },
-                ]}
-              >
-                <View style={styles.itemIcon}>{getIcon(item.type)}</View>
-                <View style={styles.itemBody}>
-                  <View style={styles.itemTop}>
-                    <Text style={[styles.itemTitle, { color: colors.foreground }]} numberOfLines={1}>
-                      {item.title}
-                    </Text>
-                    <Text style={[styles.itemTime, { color: colors.muted }]}>{item.time}</Text>
-                  </View>
-                  <Text style={[styles.itemText, { color: colors.foregroundSecondary }]}>
-                    {item.body}
-                  </Text>
-                </View>
+            {notifications.length === 0 ? (
+              <View style={styles.emptyWrap}>
+                <Bell size={36} color={colors.muted} weight="light" />
+                <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No Campus Alerts</Text>
+                <Text style={[styles.emptySub, { color: colors.muted }]}>
+                  You're all caught up with urgent notices and event updates.
+                </Text>
               </View>
-            ))}
+            ) : (
+              notifications.map((item) => (
+                <Pressable
+                  key={item.id}
+                  onPress={() => handleItemPress(item)}
+                  style={({ pressed }) => [
+                    styles.itemCard,
+                    {
+                      backgroundColor: item.read ? 'transparent' : colors.highlight,
+                      borderColor: item.read ? colors.borderSubtle : borderCol,
+                    },
+                    Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
+                    pressed && { transform: [{ scale: 0.98 }] },
+                  ]}
+                >
+                  <View style={styles.itemIcon}>{getIcon(item.type)}</View>
+                  <View style={styles.itemBody}>
+                    <View style={styles.itemTop}>
+                      <Text style={[styles.itemTitle, { color: colors.foreground }]} numberOfLines={1}>
+                        {item.title}
+                      </Text>
+                      <Text style={[styles.itemTime, { color: colors.muted }]}>{item.time}</Text>
+                    </View>
+                    <Text style={[styles.itemText, { color: colors.foregroundSecondary }]} numberOfLines={3}>
+                      {item.body}
+                    </Text>
+                    {item.eventId ? (
+                      <View style={styles.viewEventRow}>
+                        <Text style={[styles.viewEventText, { color: colors.primary }]}>Tap to view event</Text>
+                        <ArrowRight size={12} color={colors.primary} weight="bold" />
+                      </View>
+                    ) : null}
+                  </View>
+                </Pressable>
+              ))
+            )}
           </ScrollView>
         </Pressable>
       </Pressable>
@@ -276,5 +261,32 @@ const styles = StyleSheet.create({
   itemText: {
     ...typography.bodySm,
     lineHeight: 18,
+  },
+  viewEventRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 6,
+  },
+  viewEventText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    gap: 10,
+  },
+  emptyTitle: {
+    ...typography.titleSm,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  emptySub: {
+    ...typography.bodySm,
+    fontSize: 12,
+    textAlign: 'center',
+    maxWidth: 260,
   },
 });

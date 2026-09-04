@@ -1,3 +1,5 @@
+import type { EventContact } from './events';
+
 export type ScrapedItem = {
   id: string;
   image: string;
@@ -12,5 +14,9 @@ export type ScrapedItem = {
   sourceTimestamp: string;
   rawCaption: string;
   eventType: string;
+  contacts?: EventContact[];
+  actionUrl?: string;
+  status?: 'pending' | 'approved' | 'rejected';
+  rejectedAt?: any;
 };
 

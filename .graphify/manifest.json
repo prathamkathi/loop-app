@@ -1,7 +1,7 @@
 {
   "loop-app/App.tsx": {
-    "mtime": 1788424138550.5364,
-    "hash": "2dc4b35d0db4c15db3cf0a3e0fe25549"
+    "mtime": 1788468908832.8328,
+    "hash": "74ef16bc3a915d87ae2b956081b82533"
   },
   "loop-app/index.ts": {
     "mtime": 1788290652583.391,
@@ -16,24 +16,24 @@
     "hash": "1bb37f6547450a9e61ffdbfc47825e83"
   },
   "loop-app/src/components/EventCard.tsx": {
-    "mtime": 1788424080376.324,
-    "hash": "68509916104e89c8e98be7b08c190abb"
+    "mtime": 1788524971367.3867,
+    "hash": "35225bb3d006f34748a238cf079238d0"
   },
   "loop-app/src/components/EventDetailModal.tsx": {
-    "mtime": 1788424080371.9924,
-    "hash": "07b246ee54011fb290c7dd8ca7dced60"
+    "mtime": 1788460871920.2131,
+    "hash": "3e1b0c6330e9fa66da1404233a8b26bf"
   },
   "loop-app/src/components/FeaturedCard.tsx": {
-    "mtime": 1788424080373.9934,
-    "hash": "144dcc8d948e4921abf4f038cfeef660"
+    "mtime": 1788524942991.8066,
+    "hash": "450d18590bab4c82b1d76b9f5557ff4d"
   },
   "loop-app/src/components/FloatingField.tsx": {
-    "mtime": 1788424260891.0862,
-    "hash": "1410b4132486615a27c34ce8422136d9"
+    "mtime": 1788459760055.3113,
+    "hash": "834d61c8fee98871a92721d1254c04a0"
   },
   "loop-app/src/components/NotificationModal.tsx": {
-    "mtime": 1788424080372.3677,
-    "hash": "f6562562bf4ac676b48dacf94d882c8f"
+    "mtime": 1788459926443.6213,
+    "hash": "82cf8077d8ac2d56fed125898bf13a21"
   },
   "loop-app/src/components/SaveButton.tsx": {
     "mtime": 1788424080375.5588,
@@ -44,16 +44,16 @@
     "hash": "55bdbda6daadfbdba31450fa7f005422"
   },
   "loop-app/src/components/StudentAuthModal.tsx": {
-    "mtime": 1788424141595.7456,
-    "hash": "b6442f800b746dcb2225748ca746ff39"
+    "mtime": 1788468934078.797,
+    "hash": "a7495b01984541ae1be2392dc33b1505"
   },
   "loop-app/src/components/TopBar.tsx": {
     "mtime": 1788424080372.9763,
     "hash": "009b6c90350a81559d28c83969585dcf"
   },
   "loop-app/src/config/firebase.ts": {
-    "mtime": 1788347559966.6438,
-    "hash": "a4c2d735dd2236e5756ea1735bc5f0cb"
+    "mtime": 1788468988700.0635,
+    "hash": "79a60408d04667a3d99194b0165df0e8"
   },
   "loop-app/src/data/avatars.ts": {
     "mtime": 1788421293827.918,
@@ -72,8 +72,8 @@
     "hash": "9e896bba936b9abf109da987b55c403c"
   },
   "loop-app/src/data/events.ts": {
-    "mtime": 1788420394931.86,
-    "hash": "3da72b096e5e79e7f7d0f9c411c083f1"
+    "mtime": 1788457544745.7412,
+    "hash": "eaea9673363b114b1d3afacfee27746f"
   },
   "loop-app/src/data/pulse.ts": {
     "mtime": 1788420368139.5168,
@@ -84,44 +84,44 @@
     "hash": "0c10fc5680fa3cb113f41c9405b7c463"
   },
   "loop-app/src/navigation/AppNavigator.tsx": {
-    "mtime": 1788420185864.505,
-    "hash": "1d94ccf240ef5868005ce84b4b8e20da"
+    "mtime": 1788460128849.4688,
+    "hash": "4bce1f10b1e06a7ce0517db43992ede6"
   },
   "loop-app/src/navigation/BottomTabBar.tsx": {
     "mtime": 1788424080366.0273,
     "hash": "7cc51bb0436e3b67a1915c60d851c864"
   },
   "loop-app/src/navigation/Sidebar.tsx": {
-    "mtime": 1788424080366.492,
-    "hash": "37748eb3f45c97343ecc6aeb3d841091"
+    "mtime": 1788460255679.2185,
+    "hash": "8b98f58d33303d4b23c90787b51b0d76"
   },
   "loop-app/src/screens/CurateScreen.tsx": {
     "mtime": 1788424080369.4849,
     "hash": "af56b724979b9b79198faa95654a735d"
   },
   "loop-app/src/screens/DirectoryScreen.tsx": {
-    "mtime": 1788424080370.0613,
-    "hash": "e05e9e81e5a53f3d4b83895f0d53af19"
+    "mtime": 1788460998745.0032,
+    "hash": "8ec4dd8b79fee6b5d952670fa3433552"
   },
   "loop-app/src/screens/HomeScreen.tsx": {
-    "mtime": 1788424185526.289,
-    "hash": "346fa05b54247f175302787575e4854f"
+    "mtime": 1788468923088.793,
+    "hash": "465817722e3414c7a1e246efc24bda7e"
   },
   "loop-app/src/screens/PulseScreen.tsx": {
-    "mtime": 1788424080368.9177,
-    "hash": "4be27b7196de747998f21fb0c46ead28"
+    "mtime": 1788461095210.4045,
+    "hash": "eb4434ddb8515934dc2c7e017f1b27d9"
   },
   "loop-app/src/screens/QueueScreen.tsx": {
-    "mtime": 1788424105461.184,
-    "hash": "9f896dcd2e83e356ecf674a15fd6b6e4"
+    "mtime": 1788525154238.7603,
+    "hash": "17180d45c69c97b88cba88c9bc3e2791"
   },
   "loop-app/src/screens/SubmitScreen.tsx": {
-    "mtime": 1788424080370.7827,
-    "hash": "1ff239297a595095a4af0063774c90e0"
+    "mtime": 1788470721962.521,
+    "hash": "b9beb76a9240bb4e429ee4989f510e06"
   },
   "loop-app/src/theme/ThemeContext.tsx": {
-    "mtime": 1788292397724.4626,
-    "hash": "d6335863ee704b2d25aea8657500e36a"
+    "mtime": 1788459817779.2615,
+    "hash": "1793bbd3342b983e3e7af9b131fd3ae7"
   },
   "loop-app/src/theme/colors.ts": {
     "mtime": 1788424323732.7495,
@@ -144,16 +144,12 @@
     "hash": "a68ffe339d6ad9e48846193705ca1e75"
   },
   "loop-app/src/utils/calendar.ts": {
-    "mtime": 1788368577546.53,
-    "hash": "446ba1d8d4783b515e13569d736ae371"
+    "mtime": 1788459267032.7175,
+    "hash": "48e3ad3e07090e36fc89619c7ccc086c"
   },
   "loop-app/src/utils/geminiAI.ts": {
-    "mtime": 1788421320090.6763,
-    "hash": "56cbc5fad404250d572180083752e360"
-  },
-  "loop-app/src/utils/geminiParser.ts": {
-    "mtime": 1788423739564.6763,
-    "hash": "3ec953f9c53ce370ea8ef57d22d8fc60"
+    "mtime": 1788463671202.392,
+    "hash": "f2a7b39388c88c3728df7c44b45f487a"
   },
   "loop-app/src/utils/linking.ts": {
     "mtime": 1788368563549.8901,
@@ -162,70 +158,6 @@
   "loop-app/src/utils/storage.ts": {
     "mtime": 1788422709161.4695,
     "hash": "a92c88081912b93960f6cb28779eb6e4"
-  },
-  "loop-scraper/gemini_parser.py": {
-    "mtime": 1788366236183.6667,
-    "hash": "bc59cc19a42c98ac8b1cca09be6465a5"
-  },
-  "loop-scraper/generate_events_offline.py": {
-    "mtime": 1788366435280.774,
-    "hash": "30da5b260fb378b3ed7315a2c6548284"
-  },
-  "loop-scraper/generate_real_events.py": {
-    "mtime": 1788366393354.1604,
-    "hash": "781b3710fcd0e958bbdad0dd9dd5fc18"
-  },
-  "loop-scraper/harvest_avatars.py": {
-    "mtime": 1788421144966.7268,
-    "hash": "32f4e399ec03c69851273c11c5adc04e"
-  },
-  "loop-scraper/puppeteer_scraper.js": {
-    "mtime": 1788365995986.5984,
-    "hash": "5b5b6061e058d2237e0bdfe19858b175"
-  },
-  "loop-scraper/purge_and_reset.py": {
-    "mtime": 1788420093370.306,
-    "hash": "0875c26163489662844fe0e967cb3e7e"
-  },
-  "loop-scraper/scraper.py": {
-    "mtime": 1788421139024.7935,
-    "hash": "a5fd0ae4cd556616129c0b63eaa5533d"
-  },
-  "loop-scraper/seed_data.py": {
-    "mtime": 1788368562798.1167,
-    "hash": "7d9727e12e89c85209456c4fbb5f4a7a"
-  },
-  "loop-scraper/stock_scraper.py": {
-    "mtime": 1788363846230.773,
-    "hash": "43db924bd952e5dbc08e8bbc388fc3c5"
-  },
-  "loop-scraper/wipe_db.py": {
-    "mtime": 1788369386470.927,
-    "hash": "a61e07c8febe5fdb5ff994bc8ac3846c"
-  },
-  "README.md": {
-    "mtime": 1788368371245.6682,
-    "hash": "c857a5e3a8fb7d0df41e300d69e1d995"
-  },
-  "docs/insta_ids.md": {
-    "mtime": 1788421116977.5786,
-    "hash": "388db4eb400158ca233c88679a45fe1f"
-  },
-  "loop-scraper/requirements.txt": {
-    "mtime": 1788370695573.4878,
-    "hash": "cdc7d729338ee16ecd2c20626d76646f"
-  },
-  "skills/frontend-skill.md": {
-    "mtime": 1787917445518.4116,
-    "hash": "852432786289ec423b759a10c121e7c9"
-  },
-  "skills/insta_ids.md": {
-    "mtime": 1788346352078.457,
-    "hash": "5d0819dc76d0356231839b2c7a2ac3b5"
-  },
-  "skills/ui-ux-skill.md": {
-    "mtime": 1787917598729.766,
-    "hash": "11fc697f81e2973080294bc5f8b7cabc"
   },
   "loop-app/assets/android-icon-background.png": {
     "mtime": 1788290652580.0886,
@@ -259,75 +191,255 @@
     "mtime": 1788368429770.6055,
     "hash": "592ec67eed1c9c17a69af9d3ef4fbf5d"
   },
-  "loop-scraper/stock/images/ankahi_iitd_3962725682681240727_0.jpg": {
+  ".graphify/studio/assets/index-CU5cXRnL.js": {
+    "mtime": 1788425766309.6187,
+    "hash": "4a1731652aadc733229941e111688870"
+  },
+  "api/_lib/guard.ts": {
+    "mtime": 1788468808838.942,
+    "hash": "9fee5c2a594690c4977ebb4318bbe065"
+  },
+  "api/callGemini.ts": {
+    "mtime": 1788468829028.7356,
+    "hash": "0048c32b2ef558120b99e1ecb90d5859"
+  },
+  "api/getCloudinarySignature.ts": {
+    "mtime": 1788468829029.4749,
+    "hash": "1c688ff18e64f92689ecc87e6959e143"
+  },
+  "api/parseEventPoster.ts": {
+    "mtime": 1788468829029.033,
+    "hash": "b281948d13708953e12dd25931fcab48"
+  },
+  "loop-app/scraper/cli.py": {
+    "mtime": 1788460585306.8413,
+    "hash": "babf943753e74e4227c3f3fc1ca86929"
+  },
+  "loop-app/scraper/generate_events_offline.py": {
+    "mtime": 1788366435280.774,
+    "hash": "30da5b260fb378b3ed7315a2c6548284"
+  },
+  "loop-app/scraper/generate_real_events.py": {
+    "mtime": 1788366393354.1604,
+    "hash": "781b3710fcd0e958bbdad0dd9dd5fc18"
+  },
+  "loop-app/scraper/harvest_avatars.py": {
+    "mtime": 1788460696580.3013,
+    "hash": "343c85df94184fb406e6930806b07803"
+  },
+  "loop-app/scraper/puppeteer_scraper.js": {
+    "mtime": 1788365995986.5984,
+    "hash": "5b5b6061e058d2237e0bdfe19858b175"
+  },
+  "loop-app/scraper/purge_and_reset.py": {
+    "mtime": 1788420093370.306,
+    "hash": "0875c26163489662844fe0e967cb3e7e"
+  },
+  "loop-app/scraper/scraper.py": {
+    "mtime": 1788540143656.0178,
+    "hash": "344624fcc64206061793b1688643878f"
+  },
+  "loop-app/scraper/seed_data.py": {
+    "mtime": 1788460732488.5513,
+    "hash": "ed5affd8f784e48a3c1c07db3261e806"
+  },
+  "loop-app/scraper/set_admin.py": {
+    "mtime": 1788469144621.7454,
+    "hash": "2b6dd4e05bd8ea53809ff2a28e04167c"
+  },
+  "loop-app/scraper/shared.py": {
+    "mtime": 1788538330073.7058,
+    "hash": "0b3f538cccdea9d9fd764900137dc0a7"
+  },
+  "loop-app/scraper/stock_scraper.py": {
+    "mtime": 1788460634873.4321,
+    "hash": "4284400f8866e9a33c44da4e897291c8"
+  },
+  "loop-app/scraper/wipe_db.py": {
+    "mtime": 1788533588516.4631,
+    "hash": "ed6b33d6b566043d3c4180b6c0f0e55f"
+  },
+  "loop-app/scraper/wipe_events.py": {
+    "mtime": 1788468356360.6367,
+    "hash": "f29edb84cd0620a3378ecc447075f7be"
+  },
+  "loop-app/scripts/backfill_events.py": {
+    "mtime": 1788471018527.6868,
+    "hash": "1fad1d44b81e450f6fa54c5b7ddc6c63"
+  },
+  "loop-app/scripts/backfill_events.ts": {
+    "mtime": 1788540225155.229,
+    "hash": "89e57fe086095d169c08c47c2d14efe8"
+  },
+  "loop-app/src/components/ErrorBoundary.tsx": {
+    "mtime": 1788525605123.2927,
+    "hash": "b1b871f9177ae14448ea30af26fbdf9a"
+  },
+  "loop-app/src/utils/cloudinary.ts": {
+    "mtime": 1788460865401.0398,
+    "hash": "2a696cb297f2fc4fbdaae1471d8aec46"
+  },
+  "loop-app/src/utils/session.ts": {
+    "mtime": 1788470708198.2717,
+    "hash": "f29bbaade636cd5fcb8a864d3b0c55b4"
+  },
+  "loop-app/src/utils/useFonts.ts": {
+    "mtime": 1788461148663.173,
+    "hash": "9d9e56031ef8a1e89bdd0773f18d6404"
+  },
+  "loop-app/src/utils/vercelClient.ts": {
+    "mtime": 1788468846081.2473,
+    "hash": "ea6a015e24ba1024d1ab2298566e02b0"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1788524251966.8245,
+    "hash": "55a5ae15047307a1c81aee3399b49b94"
+  },
+  ".github/workflows/firebase-hosting-merge.yml": {
+    "mtime": 1788542976447.9456,
+    "hash": "da39bf5e18e700fd90477823ca5ebf62"
+  },
+  ".github/workflows/scraper.yml": {
+    "mtime": 1788543006607.192,
+    "hash": "f40261a7591e609bf639d41be3aaae8e"
+  },
+  ".graphify/GRAPH_REPORT.md": {
+    "mtime": 1788543223672.761,
+    "hash": "320059c2d414cefdcdd8f8ce8de31549"
+  },
+  ".graphify/description-instructions/batch-000.md": {
+    "mtime": 1788543223655.024,
+    "hash": "56b53839b3158374e307d66294ef70a2"
+  },
+  ".graphify/description-instructions/batch-001.md": {
+    "mtime": 1788543223655.2336,
+    "hash": "6e1056ac3b31ee8c8e73d3fc1e09baee"
+  },
+  ".graphify/description-instructions/batch-002.md": {
+    "mtime": 1788543223655.3901,
+    "hash": "83606450cbfb6a47258eae748a5ae87d"
+  },
+  ".graphify/description-instructions/batch-003.md": {
+    "mtime": 1788543223655.6592,
+    "hash": "4e1e97cbdeff2b7ca654966a23c16264"
+  },
+  ".graphify/description-instructions/batch-004.md": {
+    "mtime": 1788543223655.9185,
+    "hash": "73e03532f545013f343a2378707f2c1e"
+  },
+  ".graphify/description-instructions/batch-005.md": {
+    "mtime": 1788543223656.076,
+    "hash": "3e98f4689d5d6ed6b86b66051d142393"
+  },
+  ".graphify/scratch/assistant-extract-instructions.md": {
+    "mtime": 1788425645958.8625,
+    "hash": "bb34ff873ff3153635a4ed20e57d1dbe"
+  },
+  ".graphify/studio/index.html": {
+    "mtime": 1788425766306.8906,
+    "hash": "e0de6f474f81b1f12f740e284df72b38"
+  },
+  ".graphify/studio/studio-template.html": {
+    "mtime": 1788425766307.718,
+    "hash": "7c18608bfef6b2223ce0af585ad18e47"
+  },
+  ".graphify/studio/studio.html": {
+    "mtime": 1788425766380.463,
+    "hash": "7815af44161e50d9d1ab5fba23471c6a"
+  },
+  "loop-app/docs/deferred_items.md": {
+    "mtime": 1788469116540.596,
+    "hash": "4362501c3f8ce7dc13bca83a01495902"
+  },
+  "loop-app/docs/insta_ids.md": {
+    "mtime": 1788421116977.5786,
+    "hash": "388db4eb400158ca233c88679a45fe1f"
+  },
+  "loop-app/docs/remediation_brief.md": {
+    "mtime": 1788427623204.5437,
+    "hash": "e7f7edeb21066889b707ece313406d90"
+  },
+  "loop-app/docs/skills/frontend-skill.md": {
+    "mtime": 1787917445518.4116,
+    "hash": "852432786289ec423b759a10c121e7c9"
+  },
+  "loop-app/docs/skills/ui-ux-skill.md": {
+    "mtime": 1787917598729.766,
+    "hash": "11fc697f81e2973080294bc5f8b7cabc"
+  },
+  "loop-app/scraper/requirements.txt": {
+    "mtime": 1788541729091.6155,
+    "hash": "5624f65e7adfbba51331d362beabf033"
+  },
+  "loop-app/scraper/stock/images/ankahi_iitd_3962725682681240727_0.jpg": {
     "mtime": 1788365430234.3198,
     "hash": "df4fd23520a592c7521757fa286d03dc"
   },
-  "loop-scraper/stock/images/ankahi_iitd_3976957802786563076_0.jpg": {
+  "loop-app/scraper/stock/images/ankahi_iitd_3976957802786563076_0.jpg": {
     "mtime": 1788365452364.66,
     "hash": "fbc5b717737cf6003c709225a316c3fb"
   },
-  "loop-scraper/stock/images/axlr8r.formula.racing_3817576793755452511_0.jpg": {
+  "loop-app/scraper/stock/images/axlr8r.formula.racing_3817576793755452511_0.jpg": {
     "mtime": 1788365506715.6575,
     "hash": "838943f2b39921e83c411778305c1b0b"
   },
-  "loop-scraper/stock/images/axlr8r.formula.racing_3819959718325080505_0.jpg": {
+  "loop-app/scraper/stock/images/axlr8r.formula.racing_3819959718325080505_0.jpg": {
     "mtime": 1788365476873.416,
     "hash": "f60d83ebdcdfee5d6c3c3652954cd90a"
   },
-  "loop-scraper/stock/images/axlr8r.formula.racing_3819959718325080505_1.jpg": {
+  "loop-app/scraper/stock/images/axlr8r.formula.racing_3819959718325080505_1.jpg": {
     "mtime": 1788365477220.8433,
     "hash": "712f3fb11f903a7c26f32058590052d8"
   },
-  "loop-scraper/stock/images/axlr8r.formula.racing_3964430739479265182_0.jpg": {
+  "loop-app/scraper/stock/images/axlr8r.formula.racing_3964430739479265182_0.jpg": {
     "mtime": 1788365531476.6782,
     "hash": "af1cd6b4f7b9a4f89b5dedfc861b203c"
   },
-  "loop-scraper/stock/images/bhmiitd_3956920613322484312_0.jpg": {
+  "loop-app/scraper/stock/images/bhmiitd_3956920613322484312_0.jpg": {
     "mtime": 1788365579633.04,
     "hash": "d1bbba3414e389f706f8ecd69aab69d4"
   },
-  "loop-scraper/stock/images/bhmiitd_3963736410905559532_0.jpg": {
+  "loop-app/scraper/stock/images/bhmiitd_3963736410905559532_0.jpg": {
     "mtime": 1788365575459.2014,
     "hash": "591eee393b19062995262964afbb3343"
   },
-  "loop-scraper/stock/images/bhmiitd_3976815900372173736_0.jpg": {
+  "loop-app/scraper/stock/images/bhmiitd_3976815900372173736_0.jpg": {
     "mtime": 1788365554069.0938,
     "hash": "94abdf0f8b1c1216c3e566063698b8cf"
   },
-  "loop-scraper/stock/images/brcaiitd_3879193897285622040_0.jpg": {
+  "loop-app/scraper/stock/images/brcaiitd_3879193897285622040_0.jpg": {
     "mtime": 1788365600712.7964,
     "hash": "4505de00d354b977e6fb1298b610ce24"
   },
-  "loop-scraper/stock/images/brcaiitd_3879306774829947265_0.jpg": {
+  "loop-app/scraper/stock/images/brcaiitd_3879306774829947265_0.jpg": {
     "mtime": 1788365597240.4185,
     "hash": "8500388ff36d3f3a8fed60192bff4f8c"
   },
-  "loop-scraper/stock/images/brcaiitd_3894005702428143773_0.jpg": {
+  "loop-app/scraper/stock/images/brcaiitd_3894005702428143773_0.jpg": {
     "mtime": 1788365593094.5896,
     "hash": "b3e7c1a629b352306ee7961e7d14af3d"
   },
-  "loop-scraper/stock/images/brcaiitd_3894005702428143773_1.jpg": {
+  "loop-app/scraper/stock/images/brcaiitd_3894005702428143773_1.jpg": {
     "mtime": 1788365593432.5444,
     "hash": "8e22377b1dc644923a2c75ccb8179a98"
   },
-  "loop-scraper/stock/images/bsa.iitd_3965111609382675393_0.jpg": {
+  "loop-app/scraper/stock/images/bsa.iitd_3965111609382675393_0.jpg": {
     "mtime": 1788365623052.2012,
     "hash": "c636240598829b911f7f66cab75383d4"
   },
-  "loop-scraper/stock/images/bsa.iitd_3973563624194572950_0.jpg": {
+  "loop-app/scraper/stock/images/bsa.iitd_3973563624194572950_0.jpg": {
     "mtime": 1788365618548.2344,
     "hash": "11e25be16024f8455364e2adabc4405c"
   },
-  "loop-scraper/stock/images/bsa.iitd_3973563624194572950_1.jpg": {
+  "loop-app/scraper/stock/images/bsa.iitd_3973563624194572950_1.jpg": {
     "mtime": 1788365619363.9263,
     "hash": "ce3e9a8aefb5dc9af5b02a00a3019ea7"
   },
-  "loop-scraper/stock/images/bsa.iitd_3973566775517824145_0.jpg": {
+  "loop-app/scraper/stock/images/bsa.iitd_3973566775517824145_0.jpg": {
     "mtime": 1788365614914.6265,
     "hash": "ab6b9ef2d4cb3a36ff452f6e5b648433"
   },
-  "loop-scraper/stock/images/bsa.iitd_3973566775517824145_1.jpg": {
+  "loop-app/scraper/stock/images/bsa.iitd_3973566775517824145_1.jpg": {
     "mtime": 1788365615267.3406,
     "hash": "614ec834c3aafb209c7591f902a192d4"
   }

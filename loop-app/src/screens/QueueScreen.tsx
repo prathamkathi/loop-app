@@ -4,7 +4,8 @@ import {
   Text,
   Image,
   TextInput,
-  ScrollView, RefreshControl,
+  ScrollView,
+  RefreshControl,
   Pressable,
   Animated,
   StyleSheet,
@@ -13,15 +14,14 @@ import {
   PanResponder,
   Platform,
   Alert,
+  Modal,
 } from 'react-native';
 import {
-  Lock,
   Camera,
   Clock,
   Cpu,
   Check,
   X,
-  ArrowsClockwise,
   CheckCircle,
   ShieldCheck,
   SignOut,
@@ -30,12 +30,23 @@ import {
   Key,
   Stack,
   CalendarBlank,
+  ArrowCounterClockwise,
+  MagnifyingGlassPlus,
+  Plus,
+  Trash,
+  CaretDown,
+  LinkSimple,
+  Phone,
+  ArchiveBox,
 } from 'phosphor-react-native';
 import { getOptimizedImageUrl } from '../utils/cloudinary';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme, typography, radii, shadows, spacing } from '../theme';
+import { useTheme, typography, radii, shadows } from '../theme';
 import SectionLabel from '../components/SectionLabel';
+import PosterLightboxModal from '../components/PosterLightboxModal';
 import { type ScrapedItem } from '../data/queue';
+import { type EventContact } from '../data/events';
+import { CATEGORIES } from '../data/categories';
+import { getCategoryMeta } from '../utils/categoryMeta';
 import {
   collection,
   query,
@@ -44,7 +55,6 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
-  deleteDoc,
   limit,
 } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -54,35 +64,37 @@ import { httpsCallable } from '../utils/vercelClient';
 
 export default function QueueScreen() {
   const { colors, isDark } = useTheme();
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
-
   const { width } = useWindowDimensions();
-  const isDesktop = width >= 768;
+
+  const [activeTab, setActiveTab] = useState<'pending' | 'rejected'>('pending');
+  const [refreshing, setRefreshing] = useState(false);
 
   const [queue, setQueue] = useState<ScrapedItem[]>([]);
+  const [rejectedList, setRejectedList] = useState<ScrapedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [editableItem, setEditableItem] = useState<ScrapedItem | null>(null);
+
+  // Auth state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [studioUser, setStudioUser] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
+
+  // Inspection & Category Picker state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [lightboxVisible, setLightboxVisible] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState('');
+  const [lightboxTitle, setLightboxTitle] = useState('');
+  const [categoryPickerVisible, setCategoryPickerVisible] = useState(false);
 
   useEffect(() => {
     setImageError(false);
   }, [editableItem?.id]);
 
-  // Restore the coordinator session. Authorisation is the `coordinator` custom
-  // claim, not merely being signed in: the security rules gate on the claim, so
-  // trusting an email here would show the queue UI to someone whose every read
-  // and write is then denied.
+  // Restore coordinator session
   useEffect(() => {
     const unsubscribe = onCoordinatorChange(({ isCoordinator }) => {
       const user = auth.currentUser;
@@ -105,32 +117,65 @@ export default function QueueScreen() {
     if (!authenticated) return;
     setLoading(true);
     try {
-      const q = query(collection(db, 'events'), where("status", "==", "pending"), limit(50));
-      const snapshot = await getDocs(q);
-      const fetched = snapshot.docs.map(doc => {
-        const data = doc.data();
+      // 1. Fetch pending
+      const qPending = query(collection(db, 'events'), where("status", "==", "pending"), limit(50));
+      const snapshotPending = await getDocs(qPending);
+      const fetchedPending = snapshotPending.docs.map(docSnap => {
+        const data = docSnap.data();
         return {
-          id: doc.id,
+          id: docSnap.id,
           image: data.image,
           title: data.title || '',
           venue: data.venue || '',
           date: data.date || '',
           startTime: data.time || '',
-          endTime: '',
-          eventType: data.category || '',
+          endTime: data.endTime || '',
+          eventType: data.category || 'Campus Notices',
           confidence: data.confidence || 0,
-          tags: [],
+          tags: data.tags || [],
           rawCaption: data.blurb || '',
           sourceHandle: data.host || 'Submitted via App',
           sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
+          contacts: data.contacts || [],
+          actionUrl: data.actionUrl || '',
+          status: 'pending' as const,
         };
       }) as ScrapedItem[];
-      setQueue(fetched);
-      if (fetched.length > 0) {
-        setEditableItem({ ...fetched[0] });
+      setQueue(fetchedPending);
+      if (fetchedPending.length > 0) {
+        setEditableItem({ ...fetchedPending[0] });
+      } else {
+        setEditableItem(null);
       }
+
+      // 2. Fetch rejected archive
+      const qRejected = query(collection(db, 'events'), where("status", "==", "rejected"), limit(50));
+      const snapshotRejected = await getDocs(qRejected);
+      const fetchedRejected = snapshotRejected.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          image: data.image,
+          title: data.title || '',
+          venue: data.venue || '',
+          date: data.date || '',
+          startTime: data.time || '',
+          endTime: data.endTime || '',
+          eventType: data.category || 'Campus Notices',
+          confidence: data.confidence || 0,
+          tags: data.tags || [],
+          rawCaption: data.blurb || '',
+          sourceHandle: data.host || 'Submitted via App',
+          sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
+          contacts: data.contacts || [],
+          actionUrl: data.actionUrl || '',
+          status: 'rejected' as const,
+          rejectedAt: data.rejectedAt,
+        };
+      }) as ScrapedItem[];
+      setRejectedList(fetchedRejected);
     } catch (err) {
-      console.error('Error fetching queue:', err);
+      console.error('Error fetching queue & rejected:', err);
     } finally {
       setLoading(false);
     }
@@ -140,8 +185,13 @@ export default function QueueScreen() {
     fetchQueue();
   }, [fetchQueue]);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchQueue();
+    setRefreshing(false);
+  }, [fetchQueue]);
+
   const pan = React.useRef(new Animated.ValueXY()).current;
-  
   const resetPan = useCallback(() => {
     pan.setValue({ x: 0, y: 0 });
   }, [pan]);
@@ -174,12 +224,14 @@ export default function QueueScreen() {
         endTime: editableItem.endTime || '',
         category: editableItem.eventType,
         blurb: editableItem.rawCaption,
+        contacts: editableItem.contacts || [],
+        actionUrl: editableItem.actionUrl || '',
         approvedAt: serverTimestamp(),
       });
       handleNext();
     } catch (err) {
       console.error('Approve error:', err);
-      Alert.alert('Action Failed', 'Could not approve this event. Please try again or check your permissions.');
+      Alert.alert('Action Failed', 'Could not approve this event. Please check your permissions.');
     } finally {
       setIsProcessing(false);
     }
@@ -189,12 +241,57 @@ export default function QueueScreen() {
     if (isProcessing || !editableItem) return;
     setIsProcessing(true);
     try {
-      // F-25: Delete rejected events entirely to prevent DB bloat
-      await deleteDoc(doc(db, 'events', editableItem.id));
+      // Soft-delete: update status to 'rejected' for auditability & undo capability
+      await updateDoc(doc(db, 'events', editableItem.id), {
+        status: 'rejected',
+        rejectedAt: serverTimestamp(),
+      });
+      // Move to rejected archive
+      const rejectedItem = { ...editableItem, status: 'rejected' as const };
+      setRejectedList((prev) => [rejectedItem, ...prev]);
       handleNext();
     } catch (err) {
       console.error('Reject error:', err);
-      Alert.alert('Action Failed', 'Could not reject this event. Please try again or check your permissions.');
+      Alert.alert('Action Failed', 'Could not reject this event.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRestoreRejected = async (itemToRestore: ScrapedItem) => {
+    setIsProcessing(true);
+    try {
+      await updateDoc(doc(db, 'events', itemToRestore.id), {
+        status: 'pending',
+      });
+      // Move from rejected list back to pending queue
+      setRejectedList((prev) => prev.filter((i) => i.id !== itemToRestore.id));
+      const restored = { ...itemToRestore, status: 'pending' as const };
+      setQueue((prev) => [restored, ...prev]);
+      if (!editableItem) {
+        setEditableItem(restored);
+      }
+      Alert.alert('Event Restored', `"${itemToRestore.title || 'Event'}" has been moved back to Pending Review.`);
+    } catch (err) {
+      console.error('Error restoring event:', err);
+      Alert.alert('Action Failed', 'Could not restore this event.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleApproveRejected = async (itemToApprove: ScrapedItem) => {
+    setIsProcessing(true);
+    try {
+      await updateDoc(doc(db, 'events', itemToApprove.id), {
+        status: 'approved',
+        approvedAt: serverTimestamp(),
+      });
+      setRejectedList((prev) => prev.filter((i) => i.id !== itemToApprove.id));
+      Alert.alert('Event Approved', `"${itemToApprove.title || 'Event'}" is now live on the campus feed!`);
+    } catch (err) {
+      console.error('Error approving rejected event:', err);
+      Alert.alert('Action Failed', 'Could not approve this event.');
     } finally {
       setIsProcessing(false);
     }
@@ -226,14 +323,13 @@ export default function QueueScreen() {
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (e, gestureState) => {
-        return Math.abs(gestureState.dx) > 20;
+        return Math.abs(gestureState.dx) > 25;
       },
       onPanResponderMove: Animated.event([null, { dx: pan.x }], {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (e, gesture) => {
         if (gesture.dx > 120) {
-          // Swipe Right - Approve
           Animated.spring(pan, {
             toValue: { x: width + 100, y: 0 },
             useNativeDriver: false,
@@ -242,7 +338,6 @@ export default function QueueScreen() {
             handleApprove();
           });
         } else if (gesture.dx < -120) {
-          // Swipe Left - Reject
           Animated.spring(pan, {
             toValue: { x: -width - 100, y: 0 },
             useNativeDriver: false,
@@ -251,7 +346,6 @@ export default function QueueScreen() {
             handleReject();
           });
         } else {
-          // Spring back
           Animated.spring(pan, {
             toValue: { x: 0, y: 0 },
             useNativeDriver: false,
@@ -262,17 +356,44 @@ export default function QueueScreen() {
     })
   ).current;
 
-  const updateField = (field: keyof ScrapedItem, value: string) => {
+  const updateField = (field: keyof ScrapedItem, value: any) => {
     if (editableItem) {
       setEditableItem({ ...editableItem, [field]: value });
     }
+  };
+
+  const addContact = () => {
+    if (editableItem) {
+      const currentContacts = editableItem.contacts || [];
+      updateField('contacts', [...currentContacts, { name: '', phone: '', role: 'Coordinator' }]);
+    }
+  };
+
+  const updateContact = (index: number, field: keyof EventContact, val: string) => {
+    if (editableItem && editableItem.contacts) {
+      const updated = [...editableItem.contacts];
+      updated[index] = { ...updated[index], [field]: val };
+      updateField('contacts', updated);
+    }
+  };
+
+  const removeContact = (index: number) => {
+    if (editableItem && editableItem.contacts) {
+      const updated = editableItem.contacts.filter((_, i) => i !== index);
+      updateField('contacts', updated);
+    }
+  };
+
+  const openLightbox = (image: string, title: string) => {
+    setLightboxImage(image);
+    setLightboxTitle(title);
+    setLightboxVisible(true);
   };
 
   const handleReAnalyze = async () => {
     if (!editableItem) return;
     setIsAnalyzing(true);
     try {
-      // Fetch image to base64 and send to Cloud Function
       const response = await fetch(editableItem.image);
       const blob = await response.blob();
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -306,10 +427,6 @@ export default function QueueScreen() {
     }
   };
 
-  const item = editableItem;
-  const nextItem = queue.length > 1 ? queue[1] : null;
-  const thirdItem = queue.length > 2 ? queue[2] : null;
-
   const handleStudioLogin = async () => {
     setAuthError('');
     const cleanEmail = email.trim().toLowerCase();
@@ -334,6 +451,7 @@ export default function QueueScreen() {
     }
   };
 
+  // Auth gate
   if (!authenticated) {
     return (
       <View style={[styles.authContainer, Platform.OS === 'web' && ({ maxWidth: 500, width: '100%', alignSelf: 'center' } as any)]}>
@@ -360,7 +478,7 @@ export default function QueueScreen() {
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
-                placeholder="e.g. brca@iitd.ac.in"
+                placeholder="e.g. admin@loop.com"
                 placeholderTextColor={colors.muted}
                 style={[styles.authInput, { color: colors.foreground }]}
               />
@@ -393,7 +511,6 @@ export default function QueueScreen() {
           >
             <Text style={[styles.authBtnText, { color: colors.onPrimary }]}>Sign In to Studio</Text>
           </Pressable>
-
         </View>
       </View>
     );
@@ -407,54 +524,28 @@ export default function QueueScreen() {
     );
   }
 
-  if (!item || remaining <= 0) {
-    return (
-      <View style={[styles.centerContainer, Platform.OS === 'web' && ({ maxWidth: 600, width: '100%', alignSelf: 'center' } as any)]}>
-        <View style={[styles.zeroCircle, { backgroundColor: isDark ? 'rgba(138, 21, 56, 0.2)' : 'rgba(138, 21, 56, 0.08)' }]}>
-          <CheckCircle size={52} weight="duotone" color={colors.primary} />
-        </View>
-        <Text style={[styles.authTitle, { color: colors.foreground, marginTop: 20, textAlign: 'center' }]}>All Caught Up</Text>
-        <Text style={[styles.authSub, { color: colors.muted, maxWidth: 340 }]}>
-          The staging queue is completely cleared. All pending event submissions have been processed.
-        </Text>
-        <Pressable
-          onPress={fetchQueue}
-          style={({ pressed }) => [
-            { marginTop: 24, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 24, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 },
-            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-            pressed && { transform: [{ scale: 0.95 }] }
-          ]}
-        >
-          <Text style={{ color: colors.primary, fontWeight: '600' }}>Check for New Items</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
+  const catMeta = getCategoryMeta(editableItem?.eventType);
+  const CategoryIcon = catMeta.icon;
+  const nextItem = queue.length > 1 ? queue[1] : null;
+  const thirdItem = queue.length > 2 ? queue[2] : null;
 
   return (
-    <ScrollView
-      style={[
-        styles.scroll,
-        Platform.OS === 'web' && ({ maxWidth: 600, width: '100%', alignSelf: 'center' } as any),
-      ]}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
-    >
-      <View style={styles.header}>
-        <View>
-          <SectionLabel style={{ marginBottom: 0 }}>Staging Queue</SectionLabel>
-          <Text style={[styles.coordinatorTag, { color: colors.muted }]}>
-            Verified: <Text style={{ color: colors.primary, fontWeight: '700' }}>{studioUser}</Text>
-          </Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={[styles.counterBadge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={[styles.pulseDot, { backgroundColor: colors.primary }]} />
-            <Text style={[styles.counterText, { color: colors.muted }]}>
-              {remaining} Pending
+    <>
+      <ScrollView
+        style={[
+          styles.scroll,
+          Platform.OS === 'web' && ({ maxWidth: 640, width: '100%', alignSelf: 'center' } as any),
+        ]}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <SectionLabel style={{ marginBottom: 0 }}>Curator Cockpit</SectionLabel>
+            <Text style={[styles.coordinatorTag, { color: colors.muted }]}>
+              Verified: <Text style={{ color: colors.primary, fontWeight: '700' }}>{studioUser}</Text>
             </Text>
           </View>
 
@@ -471,299 +562,657 @@ export default function QueueScreen() {
             <SignOut size={16} color={colors.error} weight="bold" />
           </Pressable>
         </View>
-      </View>
 
-      {/* Queue Deck Meta Bar */}
-      <View style={styles.queueMetaBar}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Stack size={14} color={colors.primary} weight="bold" />
-          <Text style={[styles.queueProgressText, { color: colors.muted }]}>
-            Reviewing Card <Text style={{ color: colors.foreground, fontWeight: '700' }}>1</Text> of {remaining}
-          </Text>
-        </View>
-        <Text style={[styles.queueSwipeHint, { color: colors.muted }]}>
-          Swipe right to approve →
-        </Text>
-      </View>
+        {/* View Switcher: Pending Review vs Rejected Archive */}
+        <View style={[styles.tabBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Pressable
+            onPress={() => setActiveTab('pending')}
+            style={[
+              styles.tabBtn,
+              activeTab === 'pending' && { backgroundColor: colors.primary },
+              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+            ]}
+          >
+            <Stack size={16} color={activeTab === 'pending' ? colors.onPrimary : colors.muted} weight="bold" />
+            <Text
+              style={[
+                styles.tabBtnText,
+                { color: activeTab === 'pending' ? colors.onPrimary : colors.muted },
+              ]}
+            >
+              Pending ({queue.length})
+            </Text>
+          </Pressable>
 
-      {/* Main cockpit card */}
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.cockpit,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-          shadows.card,
-          {
-            transform: [
-              { translateX: pan.x },
-              {
-                rotate: pan.x.interpolate({
-                  inputRange: [-width / 2, 0, width / 2],
-                  outputRange: ['-10deg', '0deg', '10deg'],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        {/* Image Panel — Adaptive Dual-Layer */}
-        <View style={[styles.imagePanel, { backgroundColor: colors.highlight }]}>
-          {item.image && !imageError ? (
-            <>
-              <Image
-                source={{ uri: getOptimizedImageUrl(item.image, 600) }}
-                style={styles.imageBg}
-                blurRadius={14}
-                resizeMode="cover"
-                onError={() => setImageError(true)}
-              />
-              <Image
-                source={{ uri: getOptimizedImageUrl(item.image, 600) }}
-                style={styles.sourceImage}
-                resizeMode="contain"
-                onError={() => setImageError(true)}
-              />
-            </>
-          ) : (
-            <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#1C1917' : '#F5ECEE' }]}>
-              <CalendarBlank size={48} color={colors.primary} weight="duotone" style={{ opacity: 0.5 }} />
-              <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
-                {item.eventType || 'Campus Event'}
-              </Text>
-            </View>
-          )}
-
-          {/* Overlay Chips */}
-          <View style={styles.imageOverlay}>
-            <View style={styles.sourceChip}>
-              <Camera size={14} weight="regular" color="#FFFFFF" />
-              <Text style={styles.sourceHandle}>{item.sourceHandle}</Text>
-            </View>
-            <View style={styles.sourceChip}>
-              <Clock size={12} weight="regular" color="#FFFFFF" />
-              <Text style={styles.sourceTime}>{item.sourceTimestamp}</Text>
-            </View>
-          </View>
+          <Pressable
+            onPress={() => setActiveTab('rejected')}
+            style={[
+              styles.tabBtn,
+              activeTab === 'rejected' && { backgroundColor: colors.primary },
+              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+            ]}
+          >
+            <ArchiveBox size={16} color={activeTab === 'rejected' ? colors.onPrimary : colors.muted} weight="bold" />
+            <Text
+              style={[
+                styles.tabBtnText,
+                { color: activeTab === 'rejected' ? colors.onPrimary : colors.muted },
+              ]}
+            >
+              Rejected ({rejectedList.length})
+            </Text>
+          </Pressable>
         </View>
 
-        {/* Editing Panel */}
-        <View style={styles.editPanel}>
-          <View style={styles.editHeader}>
-            <View style={styles.editHeaderLeft}>
-              <Cpu size={20} weight="regular" color={colors.muted} />
-              <Text style={[styles.editTitle, { color: colors.foreground }]}>Gemini Parsing</Text>
-            </View>
-            <View style={styles.editHeaderRight}>
-              <Pressable
-                onPress={handleReAnalyze}
-                disabled={isAnalyzing}
-                style={({ pressed }) => [
-                  styles.reAnalyzeBtn,
-                  {
-                    backgroundColor: isAnalyzing ? colors.surface : colors.highlight,
-                    borderColor: colors.border,
-                    transform: [{ scale: pressed ? 0.95 : 1 }],
-                    opacity: isAnalyzing ? 0.7 : 1,
-                  },
-                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                ]}
-              >
-                <Sparkle size={14} weight={isAnalyzing ? "fill" : "regular"} color={colors.primary} />
-                <Text style={[styles.reAnalyzeText, { color: colors.primary }]}>
-                  {isAnalyzing ? 'Analyzing...' : 'Re-analyze'}
+        {/* TAB 1: PENDING REVIEW COCKPIT */}
+        {activeTab === 'pending' && (
+          <>
+            {queue.length === 0 || !editableItem ? (
+              <View style={styles.centerContainer}>
+                <View style={[styles.zeroCircle, { backgroundColor: isDark ? 'rgba(138, 21, 56, 0.2)' : 'rgba(138, 21, 56, 0.08)' }]}>
+                  <CheckCircle size={52} weight="duotone" color={colors.primary} />
+                </View>
+                <Text style={[styles.authTitle, { color: colors.foreground, marginTop: 20, textAlign: 'center' }]}>All Caught Up</Text>
+                <Text style={[styles.authSub, { color: colors.muted, maxWidth: 340 }]}>
+                  The staging queue is completely cleared. All pending event submissions have been processed.
                 </Text>
-              </Pressable>
-
-              <View style={[styles.confidenceBadge, { backgroundColor: colors.highlight, borderColor: colors.border }]}>
-                <Text style={[styles.confidenceText, { color: colors.foreground }]}>
-                  Confidence: {Math.round(item.confidence * 100)}%
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Editable Fields */}
-          <View style={styles.fields}>
-            <FieldRow label="Event Title" colors={colors}>
-              <TextInput
-                value={item.title}
-                onChangeText={(v) => updateField('title', v)}
-                style={[styles.fieldInput, { color: colors.foreground, borderColor: colors.border }]}
-              />
-            </FieldRow>
-            <FieldRow label="Location" colors={colors}>
-              <TextInput
-                value={item.venue}
-                onChangeText={(v) => updateField('venue', v)}
-                style={[styles.fieldInput, { color: colors.foreground, borderColor: colors.border }]}
-              />
-            </FieldRow>
-
-            {/* Date/Time Grid */}
-            <View style={[styles.dateTimeGrid, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <FieldRow label="Date" colors={colors} compact>
-                <TextInput
-                  value={item.date}
-                  onChangeText={(v) => updateField('date', v)}
-                  style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
-                />
-              </FieldRow>
-              <FieldRow label="Start" colors={colors} compact>
-                <TextInput
-                  value={item.startTime}
-                  onChangeText={(v) => updateField('startTime', v)}
-                  style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
-                />
-              </FieldRow>
-              <FieldRow label="End" colors={colors} compact>
-                <TextInput
-                  value={item.endTime}
-                  onChangeText={(v) => updateField('endTime', v)}
-                  style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
-                />
-              </FieldRow>
-              <FieldRow label="Type" colors={colors} compact>
-                <Text style={[styles.typeValue, { color: colors.foreground }]}>{item.eventType}</Text>
-              </FieldRow>
-            </View>
-
-            {/* Tags */}
-            <View style={styles.tagsSection}>
-              <Text style={[styles.fieldLabel, { color: colors.muted }]}>Extracted Tags</Text>
-              <View style={styles.tagsRow}>
-                {item.tags.map((tag) => (
-                  <View key={tag} style={[styles.tag, { backgroundColor: colors.highlight }]}>
-                    <Check size={12} weight="bold" color={colors.primary} />
-                    <Text style={[styles.tagText, { color: colors.primary }]}>{tag}</Text>
-                  </View>
-                ))}
                 <Pressable
-                  style={[styles.addTag, { borderColor: colors.border }]}
+                  onPress={fetchQueue}
+                  style={({ pressed }) => [
+                    { marginTop: 24, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 24, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 },
+                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                    pressed && { transform: [{ scale: 0.95 }] }
+                  ]}
                 >
-                  <Text style={[styles.addTagText, { color: colors.muted }]}>+ Add Tag</Text>
+                  <Text style={{ color: colors.primary, fontWeight: '600' }}>Check for New Items</Text>
                 </Pressable>
               </View>
-            </View>
-
-            {/* Raw Caption */}
-            <View>
-              <Text style={[styles.fieldLabel, { color: colors.muted }]}>Raw OCR / Caption</Text>
-              <TextInput
-                value={item.rawCaption}
-                onChangeText={(v) => updateField('rawCaption', v)}
-                multiline
-                numberOfLines={3}
-                style={[
-                  styles.rawInput,
-                  { color: colors.foregroundSecondary, backgroundColor: colors.background, borderColor: colors.border },
-                ]}
-              />
-            </View>
-          </View>
-
-          {/* Action Buttons */}
-          <View style={[styles.actions, { borderTopColor: colors.border }]}>
-            <Pressable
-              onPress={triggerReject}
-              disabled={isProcessing}
-              style={({ pressed }) => [
-                styles.actionBtn,
-                {
-                  borderColor: colors.error,
-                  transform: [{ scale: pressed ? 0.95 : 1 }],
-                  opacity: isProcessing ? 0.5 : 1,
-                },
-                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              ]}
-            >
-              <X size={20} weight="bold" color={colors.error} />
-              <Text style={[styles.actionBtnText, { color: colors.error }]}>Reject</Text>
-            </Pressable>
-            <Pressable
-              onPress={triggerApprove}
-              disabled={isProcessing}
-              style={({ pressed }) => [
-                styles.actionBtn,
-                styles.approveBtn,
-                {
-                  backgroundColor: colors.accent,
-                  borderColor: colors.accent,
-                  transform: [{ scale: pressed ? 0.95 : 1 }],
-                  opacity: isProcessing ? 0.5 : 1,
-                },
-                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-              ]}
-            >
-              {isProcessing ? (
-                <ActivityIndicator size="small" color={colors.onAccent} />
-              ) : (
-                <>
-                  <Check size={20} weight="bold" color={colors.onAccent} />
-                  <Text style={[styles.actionBtnText, { color: colors.onAccent }]}>Approve</Text>
-                </>
-              )}
-            </Pressable>
-          </View>
-        </View>
-      </Animated.View>
-
-      {/* Real Stacked Card Deck */}
-      {nextItem && (
-        <View style={styles.deckContainer}>
-          {/* Visual Layer 3 Peek (if queue has 3+ items) */}
-          {thirdItem && (
-            <View style={[styles.deckLayer3, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <Text style={[styles.deckLayer3Text, { color: colors.muted }]} numberOfLines={1}>
-                +{remaining - 2} more pending: "{thirdItem.title || 'Untitled'}" · {thirdItem.sourceHandle}
-              </Text>
-            </View>
-          )}
-
-          {/* Visual Layer 2: Next Card in Stack */}
-          <View style={[styles.deckCard, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.card]}>
-            <View style={styles.deckCardHeader}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Stack size={16} color={colors.primary} weight="bold" />
-                <Text style={[styles.deckLabel, { color: colors.primary }]}>UP NEXT IN STACK</Text>
-              </View>
-              <Text style={[styles.deckCounter, { color: colors.muted }]}>#{remaining - 1} remaining</Text>
-            </View>
-
-            <View style={styles.deckContent}>
-              {nextItem.image ? (
-                <Image source={{ uri: getOptimizedImageUrl(nextItem.image, 200) }} style={styles.deckThumb} resizeMode="cover" />
-              ) : (
-                <View style={[styles.deckThumb, { backgroundColor: colors.highlight, justifyContent: 'center', alignItems: 'center' }]}>
-                  <CalendarBlank size={22} color={colors.muted} />
+            ) : (
+              <>
+                {/* Meta Bar */}
+                <View style={styles.queueMetaBar}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Stack size={14} color={colors.primary} weight="bold" />
+                    <Text style={[styles.queueProgressText, { color: colors.muted }]}>
+                      Reviewing Card <Text style={{ color: colors.foreground, fontWeight: '700' }}>1</Text> of {remaining}
+                    </Text>
+                  </View>
+                  <Text style={[styles.queueSwipeHint, { color: colors.muted }]}>
+                    Swipe right to approve →
+                  </Text>
                 </View>
-              )}
-              <View style={{ flex: 1, gap: 4 }}>
-                <Text style={[styles.deckTitle, { color: colors.foreground }]} numberOfLines={1}>
-                  {nextItem.title || 'Untitled Event'}
+
+                {/* Main Cockpit Card */}
+                <Animated.View
+                  {...panResponder.panHandlers}
+                  style={[
+                    styles.cockpit,
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    shadows.card,
+                    {
+                      transform: [
+                        { translateX: pan.x },
+                        {
+                          rotate: pan.x.interpolate({
+                            inputRange: [-width / 2, 0, width / 2],
+                            outputRange: ['-10deg', '0deg', '10deg'],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                >
+                  {/* Image Panel — Adaptive Dual-Layer with High-Res Inspector Trigger */}
+                  <Pressable
+                    onPress={() => openLightbox(editableItem.image, editableItem.title)}
+                    style={[styles.imagePanel, { backgroundColor: colors.highlight }]}
+                  >
+                    {editableItem.image && !imageError ? (
+                      <>
+                        <Image
+                          source={{ uri: getOptimizedImageUrl(editableItem.image, 600) }}
+                          style={styles.imageBg}
+                          blurRadius={14}
+                          resizeMode="cover"
+                          onError={() => setImageError(true)}
+                        />
+                        <Image
+                          source={{ uri: getOptimizedImageUrl(editableItem.image, 600) }}
+                          style={styles.sourceImage}
+                          resizeMode="contain"
+                          onError={() => setImageError(true)}
+                        />
+                      </>
+                    ) : (
+                      <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#1C1917' : '#F5ECEE' }]}>
+                        <CalendarBlank size={48} color={colors.primary} weight="duotone" style={{ opacity: 0.5 }} />
+                        <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                          {editableItem.eventType || 'Campus Event'}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Overlay Chips */}
+                    <View style={styles.imageOverlay}>
+                      <View style={styles.sourceChip}>
+                        <Camera size={14} weight="regular" color="#FFFFFF" />
+                        <Text style={styles.sourceHandle}>{editableItem.sourceHandle}</Text>
+                      </View>
+                      <View style={styles.sourceChip}>
+                        <Clock size={12} weight="regular" color="#FFFFFF" />
+                        <Text style={styles.sourceTime}>{editableItem.sourceTimestamp}</Text>
+                      </View>
+                    </View>
+
+                    {/* Inspect High-Res Flyer Overlay Button */}
+                    <Pressable
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        openLightbox(editableItem.image, editableItem.title);
+                      }}
+                      style={({ pressed }) => [
+                        styles.inspectBadge,
+                        Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                        pressed && { transform: [{ scale: 0.94 }] },
+                      ]}
+                    >
+                      <MagnifyingGlassPlus size={14} color="#FFFFFF" weight="bold" />
+                      <Text style={styles.inspectBadgeText}>Inspect Flyer</Text>
+                    </Pressable>
+                  </Pressable>
+
+                  {/* Editing Panel */}
+                  <View style={styles.editPanel}>
+                    <View style={styles.editHeader}>
+                      <View style={styles.editHeaderLeft}>
+                        <Cpu size={20} weight="regular" color={colors.muted} />
+                        <Text style={[styles.editTitle, { color: colors.foreground }]}>Curator Review</Text>
+                      </View>
+                      <View style={styles.editHeaderRight}>
+                        <Pressable
+                          onPress={handleReAnalyze}
+                          disabled={isAnalyzing}
+                          style={({ pressed }) => [
+                            styles.reAnalyzeBtn,
+                            {
+                              backgroundColor: isAnalyzing ? colors.surface : colors.highlight,
+                              borderColor: colors.border,
+                              transform: [{ scale: pressed ? 0.95 : 1 }],
+                              opacity: isAnalyzing ? 0.7 : 1,
+                            },
+                            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                          ]}
+                        >
+                          <Sparkle size={14} weight={isAnalyzing ? "fill" : "regular"} color={colors.primary} />
+                          <Text style={[styles.reAnalyzeText, { color: colors.primary }]}>
+                            {isAnalyzing ? 'Analyzing...' : 'Re-analyze'}
+                          </Text>
+                        </Pressable>
+
+                        <View style={[styles.confidenceBadge, { backgroundColor: colors.highlight, borderColor: colors.border }]}>
+                          <Text style={[styles.confidenceText, { color: colors.foreground }]}>
+                            {Math.round(editableItem.confidence * 100)}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Editable Fields */}
+                    <View style={styles.fields}>
+                      <FieldRow label="Event Title" colors={colors}>
+                        <TextInput
+                          value={editableItem.title}
+                          onChangeText={(v) => updateField('title', v)}
+                          placeholder="Event Title"
+                          placeholderTextColor={colors.muted}
+                          style={[styles.fieldInput, { color: colors.foreground, borderColor: colors.border }]}
+                        />
+                      </FieldRow>
+
+                      {/* Interactive Category Selector Pill */}
+                      <View>
+                        <Text style={[fieldStyles.label, { color: colors.muted }]}>CANONICAL CATEGORY</Text>
+                        <Pressable
+                          onPress={() => setCategoryPickerVisible(true)}
+                          style={({ pressed }) => [
+                            styles.categorySelectBtn,
+                            {
+                              borderColor: catMeta.color,
+                              backgroundColor: isDark ? catMeta.bgDark : catMeta.bgLight,
+                            },
+                            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                            pressed && { opacity: 0.8 },
+                          ]}
+                        >
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <CategoryIcon size={16} color={catMeta.color} weight="bold" />
+                            <Text style={[styles.categorySelectText, { color: catMeta.color }]}>
+                              {catMeta.label}
+                            </Text>
+                          </View>
+                          <CaretDown size={16} color={catMeta.color} weight="bold" />
+                        </Pressable>
+                      </View>
+
+                      <FieldRow label="Location / Venue" colors={colors}>
+                        <TextInput
+                          value={editableItem.venue}
+                          onChangeText={(v) => updateField('venue', v)}
+                          placeholder="e.g. Seminar Hall / Dogra Hall"
+                          placeholderTextColor={colors.muted}
+                          style={[styles.fieldInput, { color: colors.foreground, borderColor: colors.border }]}
+                        />
+                      </FieldRow>
+
+                      {/* Date/Time Grid */}
+                      <View style={[styles.dateTimeGrid, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                        <FieldRow label="Date / Deadline" colors={colors} compact>
+                          <TextInput
+                            value={editableItem.date}
+                            onChangeText={(v) => updateField('date', v)}
+                            placeholder="e.g. 15 Sep"
+                            placeholderTextColor={colors.muted}
+                            style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
+                          />
+                        </FieldRow>
+                        <FieldRow label="Start Time" colors={colors} compact>
+                          <TextInput
+                            value={editableItem.startTime}
+                            onChangeText={(v) => updateField('startTime', v)}
+                            placeholder="e.g. 6:00 PM"
+                            placeholderTextColor={colors.muted}
+                            style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
+                          />
+                        </FieldRow>
+                        <FieldRow label="End Time" colors={colors} compact>
+                          <TextInput
+                            value={editableItem.endTime}
+                            onChangeText={(v) => updateField('endTime', v)}
+                            placeholder="e.g. 9:00 PM"
+                            placeholderTextColor={colors.muted}
+                            style={[styles.fieldInputCompact, { color: colors.foreground, borderColor: colors.border }]}
+                          />
+                        </FieldRow>
+                      </View>
+
+                      {/* Action / Registration URL Field */}
+                      <FieldRow label="Action URL / Registration Form (Optional)" colors={colors}>
+                        <View style={[styles.urlInputWrap, { borderColor: colors.border, backgroundColor: colors.background }]}>
+                          <LinkSimple size={16} color={colors.muted} />
+                          <TextInput
+                            value={editableItem.actionUrl || ''}
+                            onChangeText={(v) => updateField('actionUrl', v)}
+                            placeholder="https://forms.gle/... or official link"
+                            placeholderTextColor={colors.muted}
+                            autoCapitalize="none"
+                            style={[styles.urlInput, { color: colors.foreground }]}
+                          />
+                        </View>
+                      </FieldRow>
+
+                      {/* Organizer Contacts Editor */}
+                      <View style={styles.contactsSection}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text style={[fieldStyles.label, { color: colors.muted }]}>COORDINATOR CONTACTS (WHATSAPP)</Text>
+                          <Pressable
+                            onPress={addContact}
+                            style={({ pressed }) => [
+                              styles.addContactBtn,
+                              { backgroundColor: colors.highlight },
+                              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                              pressed && { opacity: 0.7 },
+                            ]}
+                          >
+                            <Plus size={13} color={colors.primary} weight="bold" />
+                            <Text style={[styles.addContactText, { color: colors.primary }]}>Add Contact</Text>
+                          </Pressable>
+                        </View>
+
+                        {editableItem.contacts && editableItem.contacts.length > 0 ? (
+                          editableItem.contacts.map((contact, idx) => (
+                            <View key={idx} style={[styles.contactRow, { borderColor: colors.border, backgroundColor: colors.background }]}>
+                              <TextInput
+                                value={contact.name}
+                                onChangeText={(val) => updateContact(idx, 'name', val)}
+                                placeholder="Name (e.g. Rahul)"
+                                placeholderTextColor={colors.muted}
+                                style={[styles.contactNameInput, { color: colors.foreground }]}
+                              />
+                              <TextInput
+                                value={contact.phone}
+                                onChangeText={(val) => updateContact(idx, 'phone', val)}
+                                placeholder="10-digit Phone"
+                                placeholderTextColor={colors.muted}
+                                keyboardType="phone-pad"
+                                style={[styles.contactPhoneInput, { color: colors.foreground }]}
+                              />
+                              <Pressable
+                                onPress={() => removeContact(idx)}
+                                style={({ pressed }) => [
+                                  styles.contactRemoveBtn,
+                                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                                  pressed && { opacity: 0.5 },
+                                ]}
+                              >
+                                <Trash size={15} color={colors.error} />
+                              </Pressable>
+                            </View>
+                          ))
+                        ) : (
+                          <Text style={{ ...typography.caption, color: colors.muted, fontStyle: 'italic' }}>
+                            No contacts attached. Click "Add Contact" to provide direct WhatsApp chat buttons.
+                          </Text>
+                        )}
+                      </View>
+
+                      {/* Raw OCR / Blurb */}
+                      <View>
+                        <Text style={[styles.fieldLabel, { color: colors.muted }]}>Description & OCR Caption</Text>
+                        <TextInput
+                          value={editableItem.rawCaption}
+                          onChangeText={(v) => updateField('rawCaption', v)}
+                          multiline
+                          numberOfLines={3}
+                          style={[
+                            styles.rawInput,
+                            { color: colors.foregroundSecondary, backgroundColor: colors.background, borderColor: colors.border },
+                          ]}
+                        />
+                      </View>
+                    </View>
+
+                    {/* Action Buttons: Soft Reject & Approve */}
+                    <View style={[styles.actions, { borderTopColor: colors.border }]}>
+                      <Pressable
+                        onPress={triggerReject}
+                        disabled={isProcessing}
+                        style={({ pressed }) => [
+                          styles.actionBtn,
+                          {
+                            borderColor: colors.error,
+                            transform: [{ scale: pressed ? 0.95 : 1 }],
+                            opacity: isProcessing ? 0.5 : 1,
+                          },
+                          Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                        ]}
+                      >
+                        <X size={20} weight="bold" color={colors.error} />
+                        <Text style={[styles.actionBtnText, { color: colors.error }]}>Reject</Text>
+                      </Pressable>
+
+                      <Pressable
+                        onPress={triggerApprove}
+                        disabled={isProcessing}
+                        style={({ pressed }) => [
+                          styles.actionBtn,
+                          styles.approveBtn,
+                          {
+                            backgroundColor: colors.accent,
+                            borderColor: colors.accent,
+                            transform: [{ scale: pressed ? 0.95 : 1 }],
+                            opacity: isProcessing ? 0.5 : 1,
+                          },
+                          Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                        ]}
+                      >
+                        {isProcessing ? (
+                          <ActivityIndicator size="small" color={colors.onAccent} />
+                        ) : (
+                          <>
+                            <Check size={20} weight="bold" color={colors.onAccent} />
+                            <Text style={[styles.actionBtnText, { color: colors.onAccent }]}>Approve</Text>
+                          </>
+                        )}
+                      </Pressable>
+                    </View>
+                  </View>
+                </Animated.View>
+
+                {/* Stacked Card Deck Below Cockpit */}
+                {nextItem && (
+                  <View style={styles.deckContainer}>
+                    {thirdItem && (
+                      <View style={[styles.deckLayer3, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                        <Text style={[styles.deckLayer3Text, { color: colors.muted }]} numberOfLines={1}>
+                          +{remaining - 2} more: "{thirdItem.title || 'Untitled'}" · {thirdItem.sourceHandle}
+                        </Text>
+                      </View>
+                    )}
+
+                    <View style={[styles.deckCard, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.card]}>
+                      <View style={styles.deckCardHeader}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                          <Stack size={16} color={colors.primary} weight="bold" />
+                          <Text style={[styles.deckLabel, { color: colors.primary }]}>UP NEXT IN STACK</Text>
+                        </View>
+                        <Text style={[styles.deckCounter, { color: colors.muted }]}>#{remaining - 1} remaining</Text>
+                      </View>
+
+                      <View style={styles.deckContent}>
+                        {nextItem.image ? (
+                          <Image source={{ uri: getOptimizedImageUrl(nextItem.image, 200) }} style={styles.deckThumb} resizeMode="cover" />
+                        ) : (
+                          <View style={[styles.deckThumb, { backgroundColor: colors.highlight, justifyContent: 'center', alignItems: 'center' }]}>
+                            <CalendarBlank size={22} color={colors.muted} />
+                          </View>
+                        )}
+                        <View style={{ flex: 1, gap: 4 }}>
+                          <Text style={[styles.deckTitle, { color: colors.foreground }]} numberOfLines={1}>
+                            {nextItem.title || 'Untitled Event'}
+                          </Text>
+                          <Text style={[styles.deckMeta, { color: colors.muted }]} numberOfLines={1}>
+                            {nextItem.sourceHandle} · {nextItem.date || 'Date TBA'} · {nextItem.venue || 'Venue TBA'}
+                          </Text>
+                        </View>
+                        <Pressable
+                          onPress={() => {
+                            setQueue((prev) => [prev[1], prev[0], ...prev.slice(2)]);
+                            setEditableItem({ ...nextItem });
+                          }}
+                          style={({ pressed }) => [
+                            styles.deckSwitchBtn,
+                            { backgroundColor: colors.highlight, borderColor: colors.border },
+                            Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                            pressed && { opacity: 0.7 },
+                          ]}
+                        >
+                          <Text style={[styles.deckSwitchText, { color: colors.foreground }]}>Review</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              </>
+            )}
+          </>
+        )}
+
+        {/* TAB 2: REJECTED ARCHIVE WITH FULL UNDO & RESTORE */}
+        {activeTab === 'rejected' && (
+          <View style={styles.rejectedContainer}>
+            {rejectedList.length === 0 ? (
+              <View style={styles.centerContainer}>
+                <View style={[styles.zeroCircle, { backgroundColor: colors.highlight }]}>
+                  <ArchiveBox size={44} color={colors.primary} weight="duotone" />
+                </View>
+                <Text style={[styles.authTitle, { color: colors.foreground, marginTop: 16, textAlign: 'center' }]}>
+                  No Rejected Items
                 </Text>
-                <Text style={[styles.deckMeta, { color: colors.muted }]} numberOfLines={1}>
-                  {nextItem.sourceHandle} · {nextItem.date || 'Date TBA'} · {nextItem.venue || 'Venue TBA'}
+                <Text style={[styles.authSub, { color: colors.muted, maxWidth: 320 }]}>
+                  Events rejected during review are safely stored here. You can undo and restore them back to the active queue at any time.
                 </Text>
               </View>
-              <Pressable
-                onPress={() => {
-                  setQueue((prev) => [prev[1], prev[0], ...prev.slice(2)]);
-                  setEditableItem({ ...nextItem });
-                }}
-                style={({ pressed }) => [
-                  styles.deckSwitchBtn,
-                  { backgroundColor: colors.highlight, borderColor: colors.border },
-                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                  pressed && { opacity: 0.7 },
-                ]}
-              >
-                <Text style={[styles.deckSwitchText, { color: colors.foreground }]}>Review Next</Text>
+            ) : (
+              <View style={{ gap: 14 }}>
+                <Text style={[styles.queueProgressText, { color: colors.muted, marginBottom: 4 }]}>
+                  {rejectedList.length} soft-deleted items in archive. Tap Undo to restore to Pending Review.
+                </Text>
+
+                {rejectedList.map((item) => {
+                  const itemCatMeta = getCategoryMeta(item.eventType);
+                  const ItemCatIcon = itemCatMeta.icon;
+
+                  return (
+                    <View
+                      key={item.id}
+                      style={[
+                        styles.rejectedCard,
+                        { backgroundColor: colors.surface, borderColor: colors.border },
+                        shadows.card,
+                      ]}
+                    >
+                      {/* Left: Thumbnail (tappable to view high-res lightbox) */}
+                      <Pressable
+                        onPress={() => openLightbox(item.image, item.title)}
+                        style={[styles.rejectedThumbWrap, { backgroundColor: colors.highlight }]}
+                      >
+                        {item.image ? (
+                          <Image
+                            source={{ uri: getOptimizedImageUrl(item.image, 200) }}
+                            style={styles.rejectedThumb}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <CalendarBlank size={24} color={colors.muted} />
+                        )}
+                        <View style={styles.rejectedZoomOverlay}>
+                          <MagnifyingGlassPlus size={14} color="#FFFFFF" weight="bold" />
+                        </View>
+                      </Pressable>
+
+                      {/* Right: Info & Actions */}
+                      <View style={{ flex: 1, gap: 6 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                          <View style={[styles.categoryMiniBadge, { backgroundColor: itemCatMeta.color }]}>
+                            <ItemCatIcon size={10} color="#FFFFFF" weight="bold" />
+                            <Text style={styles.categoryMiniBadgeText}>{itemCatMeta.tag}</Text>
+                          </View>
+                          <Text style={[styles.sourceHandle, { color: colors.muted }]} numberOfLines={1}>
+                            {item.sourceHandle}
+                          </Text>
+                        </View>
+
+                        <Text style={[styles.rejectedTitle, { color: colors.foreground }]} numberOfLines={2}>
+                          {item.title || 'Untitled Event'}
+                        </Text>
+
+                        <Text style={[styles.rejectedMeta, { color: colors.muted }]} numberOfLines={1}>
+                          {item.venue || 'Venue TBA'} · {item.date || 'Date TBA'}
+                        </Text>
+
+                        {/* Action Buttons: Undo Restore & Direct Approve */}
+                        <View style={styles.rejectedActionsRow}>
+                          <Pressable
+                            onPress={() => handleRestoreRejected(item)}
+                            disabled={isProcessing}
+                            style={({ pressed }) => [
+                              styles.restoreBtn,
+                              { backgroundColor: colors.highlight, borderColor: colors.border },
+                              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                              pressed && { opacity: 0.7 },
+                            ]}
+                          >
+                            <ArrowCounterClockwise size={14} color={colors.primary} weight="bold" />
+                            <Text style={[styles.restoreBtnText, { color: colors.primary }]}>Undo / Restore</Text>
+                          </Pressable>
+
+                          <Pressable
+                            onPress={() => handleApproveRejected(item)}
+                            disabled={isProcessing}
+                            style={({ pressed }) => [
+                              styles.restoreApproveBtn,
+                              { backgroundColor: colors.accent },
+                              Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                              pressed && { opacity: 0.8 },
+                            ]}
+                          >
+                            <CheckCircle size={14} color={colors.onAccent} weight="bold" />
+                            <Text style={[styles.restoreApproveText, { color: colors.onAccent }]}>Approve Now</Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Category Selector Modal */}
+      <Modal
+        visible={categoryPickerVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setCategoryPickerVisible(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setCategoryPickerVisible(false)}>
+          <Pressable
+            style={[
+              styles.pickerSheet,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+              shadows.card,
+              Platform.OS === 'web' && ({ maxWidth: 440, width: '90%', alignSelf: 'center' } as any),
+            ]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.pickerHeader}>
+              <Text style={[styles.pickerTitle, { color: colors.foreground }]}>Select Category</Text>
+              <Pressable onPress={() => setCategoryPickerVisible(false)}>
+                <X size={18} color={colors.foreground} weight="bold" />
               </Pressable>
             </View>
-          </View>
-        </View>
-      )}
-    </ScrollView>
+
+            <ScrollView contentContainerStyle={{ gap: 8, padding: 16 }}>
+              {CATEGORIES.filter((c) => c !== 'All').map((cat) => {
+                const meta = getCategoryMeta(cat);
+                const Icon = meta.icon;
+                const isSelected = editableItem?.eventType === cat;
+
+                return (
+                  <Pressable
+                    key={cat}
+                    onPress={() => {
+                      updateField('eventType', cat);
+                      setCategoryPickerVisible(false);
+                    }}
+                    style={({ pressed }) => [
+                      styles.categoryOption,
+                      {
+                        backgroundColor: isSelected ? meta.color : colors.background,
+                        borderColor: isSelected ? meta.color : colors.border,
+                      },
+                      Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                      pressed && { opacity: 0.75 },
+                    ]}
+                  >
+                    <Icon size={18} color={isSelected ? '#FFFFFF' : meta.color} weight="bold" />
+                    <Text
+                      style={[
+                        styles.categoryOptionText,
+                        { color: isSelected ? '#FFFFFF' : colors.foreground, fontWeight: isSelected ? '700' : '500' },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* High-Resolution Poster Lightbox Modal */}
+      <PosterLightboxModal
+        visible={lightboxVisible}
+        imageUri={lightboxImage}
+        title={lightboxTitle}
+        subtitle="Curator High-Res Flyer Inspector"
+        onClose={() => setLightboxVisible(false)}
+      />
+    </>
   );
 }
 
@@ -814,7 +1263,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
-    minHeight: 450,
+    minHeight: 400,
   },
   zeroCircle: {
     width: 88,
@@ -883,33 +1332,6 @@ const styles = StyleSheet.create({
     ...typography.labelMd,
     fontWeight: '700',
   },
-  authDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginVertical: 4,
-  },
-  divLine: {
-    flex: 1,
-    height: 1,
-  },
-  orText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  rejectBtn: {
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  rejectText: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
   errorBox: {
     backgroundColor: 'rgba(220, 38, 38, 0.1)',
     borderWidth: 1,
@@ -923,6 +1345,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
+    color: '#DC2626',
   },
   coordinatorTag: {
     ...typography.caption,
@@ -941,25 +1364,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  counterBadge: {
+  tabBar: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
     borderRadius: radii.full,
     borderWidth: 1,
+    padding: 4,
+    marginBottom: 16,
+    gap: 4,
   },
-  pulseDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  tabBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    borderRadius: radii.full,
   },
-  counterText: {
-    ...typography.labelMd,
-    fontSize: 13,
+  tabBtnText: {
+    ...typography.labelSm,
+    fontWeight: '700',
+  },
+  queueMetaBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  queueProgressText: {
+    ...typography.labelSm,
+    fontSize: 12,
+  },
+  queueSwipeHint: {
+    ...typography.labelSm,
+    fontSize: 11,
+    opacity: 0.7,
   },
   cockpit: {
     borderRadius: radii.xxl,
@@ -968,12 +1410,16 @@ const styles = StyleSheet.create({
   },
   imagePanel: {
     width: '100%',
-    height: 260,
+    height: 270,
     position: 'relative',
   },
+  imageBg: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.45,
+  },
   sourceImage: {
-    ...StyleSheet.absoluteFill,
-    resizeMode: 'cover',
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: 'contain',
   },
   imageOverlay: {
     position: 'absolute',
@@ -990,7 +1436,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: radii.md,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   sourceHandle: {
     ...typography.labelMd,
@@ -1001,6 +1447,25 @@ const styles = StyleSheet.create({
     ...typography.labelSm,
     color: '#FFFFFF',
     fontSize: 10,
+  },
+  inspectBadge: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radii.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.70)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  inspectBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
   },
   editPanel: {
     padding: 20,
@@ -1068,9 +1533,19 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 0,
   },
-  typeValue: {
-    ...typography.bodyMd,
-    paddingVertical: 6,
+  categorySelectBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderRadius: radii.lg,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 4,
+  },
+  categorySelectText: {
+    ...typography.labelMd,
+    fontWeight: '700',
   },
   dateTimeGrid: {
     flexDirection: 'row',
@@ -1080,36 +1555,53 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     padding: 12,
   },
-  tagsSection: {
-    gap: 8,
-  },
-  tagsRow: {
+  urlInputWrap: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: radii.md,
+    paddingHorizontal: 10,
+    height: 42,
+  },
+  urlInput: {
+    flex: 1,
+    fontSize: 13,
+  },
+  contactsSection: {
     gap: 8,
   },
-  tag: {
+  addContactBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: radii.md,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radii.full,
   },
-  tagText: {
-    ...typography.bodySm,
-    fontSize: 12,
+  addContactText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
-  addTag: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: radii.md,
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     borderWidth: 1,
-    borderStyle: 'dashed',
+    borderRadius: radii.md,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
-  addTagText: {
-    ...typography.bodySm,
-    fontSize: 12,
+  contactNameInput: {
+    flex: 1,
+    fontSize: 13,
+  },
+  contactPhoneInput: {
+    flex: 1,
+    fontSize: 13,
+  },
+  contactRemoveBtn: {
+    padding: 4,
   },
   rawInput: {
     ...typography.labelMd,
@@ -1143,26 +1635,6 @@ const styles = StyleSheet.create({
   actionBtnText: {
     ...typography.labelMd,
     fontWeight: '700',
-  },
-  queueMetaBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  queueProgressText: {
-    ...typography.labelSm,
-    fontSize: 12,
-  },
-  queueSwipeHint: {
-    ...typography.labelSm,
-    fontSize: 11,
-    opacity: 0.7,
-  },
-  imageBg: {
-    ...StyleSheet.absoluteFill,
-    opacity: 0.45,
   },
   deckContainer: {
     marginTop: 20,
@@ -1237,5 +1709,132 @@ const styles = StyleSheet.create({
     ...typography.labelSm,
     fontSize: 11,
     fontWeight: '600',
+  },
+  rejectedContainer: {
+    marginTop: 8,
+    marginBottom: 40,
+  },
+  rejectedCard: {
+    flexDirection: 'row',
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    padding: 12,
+    gap: 12,
+    alignItems: 'center',
+  },
+  rejectedThumbWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rejectedThumb: {
+    width: '100%',
+    height: '100%',
+  },
+  rejectedZoomOverlay: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: radii.full,
+    padding: 4,
+  },
+  categoryMiniBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radii.full,
+  },
+  categoryMiniBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  rejectedTitle: {
+    ...typography.titleSm,
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  rejectedMeta: {
+    ...typography.caption,
+    fontSize: 11,
+  },
+  rejectedActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
+  },
+  restoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radii.md,
+    borderWidth: 1,
+  },
+  restoreBtnText: {
+    ...typography.labelSm,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  restoreApproveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radii.md,
+  },
+  restoreApproveText: {
+    ...typography.labelSm,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  pickerSheet: {
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
+    maxHeight: '80%',
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(150, 150, 150, 0.2)',
+  },
+  pickerTitle: {
+    ...typography.titleSm,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  categoryOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+  },
+  categoryOptionText: {
+    fontSize: 13,
   },
 });

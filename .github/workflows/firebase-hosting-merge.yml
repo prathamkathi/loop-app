@@ -18,8 +18,23 @@ jobs:
       # reach Firestore at all, silently replacing a working site.
       - name: Verify build secrets are configured
         env:
-          REQUIRED: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          # Every value the bundle needs. Checking only the service account is
+          # not enough: that secret exists, so the guard passed while the
+          # EXPO_PUBLIC_* values were empty, and CI deployed a bundle with
+          # apiKey:"" over a working site.
+          A: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          B: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          C: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+          D: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          E: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          for v in A B C D E; do
+            if [ -z "${!v}" ]; then
+              echo "::error::A required repository secret is empty. Add every EXPO_PUBLIC_FIREBASE_* value and FIREBASE_SERVICE_ACCOUNT under Settings > Secrets and variables > Actions."
+              exit 1
+            fi
+          done
+          REQUIRED=set
           if [ -z "$REQUIRED" ]; then
             echo "::error::Repository secrets are not configured. Add the EXPO_PUBLIC_FIREBASE_* values and FIREBASE_SERVICE_ACCOUNT_LOOP_IITD under Settings > Secrets and variables > Actions before this workflow can deploy."
             exit 1
@@ -47,6 +62,10 @@ jobs:
       - name: Scan bundle for leaked secrets
         working-directory: ./loop-app
         run: |
+          if grep -rq 'apiKey:""' dist; then
+            echo "::error::Built bundle has an empty Firebase apiKey — the EXPO_PUBLIC_* secrets did not reach the build."
+            exit 1
+          fi
           FOUND=$(grep -rhoE "AIza[0-9A-Za-z_-]{35}" dist | sort -u | grep -v "^${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}$" || true)
           if [ -n "$FOUND" ]; then
             echo "::error::Bundle contains an unexpected API key."

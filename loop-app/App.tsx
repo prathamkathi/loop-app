@@ -10,8 +10,13 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { type TabId } from './src/navigation/BottomTabBar';
 import TopBar from './src/components/TopBar';
 import EventDetailModal from './src/components/EventDetailModal';
-import NotificationModal, { INITIAL_NOTIFICATIONS } from './src/components/NotificationModal';
+import NotificationModal from './src/components/NotificationModal';
 import StudentAuthModal from './src/components/StudentAuthModal';
+import {
+  generateCampusNotifications,
+  saveReadNotificationIds,
+  type NotificationItem,
+} from './src/utils/notifications';
 import AICampusConcierge from './src/components/AICampusConcierge';
 import HomeScreen from './src/screens/HomeScreen';
 import PulseScreen from './src/screens/PulseScreen';
@@ -51,7 +56,7 @@ function AppContent() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAIConcierge, setShowAIConcierge] = useState(false);
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -129,6 +134,42 @@ function AppContent() {
 
     return () => unsubscribe();
   }, []);
+
+  // F-42: Dynamic campus notifications sync
+  useEffect(() => {
+    generateCampusNotifications(liveEvents, saved, interests).then((notifs) => {
+      setNotifications(notifs);
+    });
+  }, [liveEvents, saved, interests]);
+
+  const handleMarkAllRead = useCallback(() => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
+      saveReadNotificationIds(updated.map((n) => n.id));
+      return updated;
+    });
+  }, []);
+
+  const handleMarkRead = useCallback((id: string) => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      saveReadNotificationIds(updated.filter((n) => n.read).map((n) => n.id));
+      return updated;
+    });
+  }, []);
+
+  const handleSelectNotification = useCallback(
+    (item: NotificationItem) => {
+      if (item.eventId) {
+        const matched = liveEvents.find((e) => e.id === item.eventId);
+        if (matched) {
+          setShowNotifications(false);
+          setActiveEvent(matched);
+        }
+      }
+    },
+    [liveEvents]
+  );
 
   // Toggle mode
   const toggleMode = useCallback(() => {
@@ -262,8 +303,9 @@ function AppContent() {
         visible={showNotifications}
         onClose={() => setShowNotifications(false)}
         notifications={notifications}
-        onMarkAllRead={() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))}
-        onMarkRead={(id) => setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))}
+        onMarkAllRead={handleMarkAllRead}
+        onMarkRead={handleMarkRead}
+        onSelectNotification={handleSelectNotification}
       />
 
       {/* Student Authentication & Profile Modal */}

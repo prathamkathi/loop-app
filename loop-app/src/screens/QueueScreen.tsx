@@ -37,7 +37,7 @@ import {
   CaretDown,
   LinkSimple,
   Phone,
-  ArchiveBox,
+  Archive,
 } from 'phosphor-react-native';
 import { getOptimizedImageUrl } from '../utils/cloudinary';
 import { useTheme, typography, radii, shadows } from '../theme';
@@ -592,7 +592,7 @@ export default function QueueScreen() {
               Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
             ]}
           >
-            <ArchiveBox size={16} color={activeTab === 'rejected' ? colors.onPrimary : colors.muted} weight="bold" />
+            <Archive size={16} color={activeTab === 'rejected' ? colors.onPrimary : colors.muted} weight="bold" />
             <Text
               style={[
                 styles.tabBtnText,
@@ -1033,7 +1033,7 @@ export default function QueueScreen() {
             {rejectedList.length === 0 ? (
               <View style={styles.centerContainer}>
                 <View style={[styles.zeroCircle, { backgroundColor: colors.highlight }]}>
-                  <ArchiveBox size={44} color={colors.primary} weight="duotone" />
+                  <Archive size={44} color={colors.primary} weight="duotone" />
                 </View>
                 <Text style={[styles.authTitle, { color: colors.foreground, marginTop: 16, textAlign: 'center' }]}>
                   No Rejected Items
@@ -1414,11 +1414,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   imageBg: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     opacity: 0.45,
   },
   sourceImage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     resizeMode: 'contain',
   },
   imageOverlay: {

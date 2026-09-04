@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(10, 10, 12, 0.88)',
   },
   topBar: {

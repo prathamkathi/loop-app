@@ -6,7 +6,7 @@ import * as path from 'path';
 // Run with: npx ts-node scripts/backfill_events.ts [--apply]
 
 // Configure Firebase Admin
-const serviceAccountPath = path.resolve(__dirname, '../../loop-scraper/serviceAccountKey.json');
+const serviceAccountPath = path.resolve(__dirname, '../scraper/serviceAccountKey.json');
 let serviceAccount;
 try {
   serviceAccount = require(serviceAccountPath);

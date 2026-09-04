@@ -135,7 +135,7 @@ def parse_with_gemini(image_paths, caption):
             }
         }
 
-        models = ["gemini-flash-lite-latest", "gemini-flash-latest", "gemini-2.5-flash"]
+        models = ["gemini-2.5-flash", "gemini-flash-latest"]
         headers = {'Content-Type': 'application/json'}
 
         result_json = None

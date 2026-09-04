@@ -38,7 +38,11 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "expo export -p web"
+    "build:web": "expo export -p web",
+    "scraper": "cd scraper && source venv/bin/activate && python scraper.py",
+    "scraper:bg": "nohup ./scraper/run_background_scraper.sh > /dev/null 2>&1 &",
+    "scraper:stop": "./scraper/stop_background_scraper.sh",
+    "scraper:logs": "tail -f ./scraper/scraper_bg.log"
   },
   "private": true
 }

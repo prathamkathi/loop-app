@@ -48,5 +48,7 @@ def wipe_events():
     assert len(remaining) == 0, f"Expected 0 events, but found {len(remaining)}"
     print("[Success] All events deleted. Database is reset to 0.")
 
+wipe_database = wipe_events
+
 if __name__ == "__main__":
     wipe_events()

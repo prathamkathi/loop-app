@@ -245,7 +245,7 @@ def run_apify_pipeline():
                 "image": public_url,
                 "category": category,
                 "confidence": confidence / 100,
-                "status": "pending",  # Enforced staging queue
+                "status": "approved",  # Auto-approved for immediate feed visibility
                 "host": f"@{handle}",
                 "hostAvatar": get_avatar_for_handle(handle),
                 "aspect": "tall" if aspect_ratio < 0.9 else "wide" if aspect_ratio > 1.2 else "square",

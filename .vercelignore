@@ -1,0 +1,21 @@
+# Vercel hosts only the serverless API. The web app is deployed to Firebase
+# Hosting, so nothing else in this repo should be uploaded — and anything
+# uploaded is publicly fetchable as a static file.
+loop-app/src
+loop-app/assets
+loop-app/scraper
+loop-app/docs
+loop-app/dist
+loop-app/.expo
+loop-app/node_modules
+loop-app/app.json
+loop-app/eas.json
+loop-app/firebase.json
+loop-app/firestore.rules
+loop-app/firestore.indexes.json
+loop-app/App.tsx
+loop-app/index.ts
+loop-app/scripts
+.graphify
+.github
+loop-app/api

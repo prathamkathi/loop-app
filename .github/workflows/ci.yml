@@ -17,19 +17,15 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install app dependencies
+      - name: Install dependencies
         working-directory: ./loop-app
         run: npm ci
 
-      - name: Typecheck app
+      - name: Typecheck app & API
         working-directory: ./loop-app
-        run: npx tsc --noEmit
-
-      - name: Install API dependencies
-        run: npm ci
-
-      - name: Typecheck API
-        run: npx tsc --noEmit
+        run: |
+          npx tsc --noEmit
+          npx tsc --noEmit -p api/tsconfig.json
 
   secret-scan:
     runs-on: ubuntu-latest

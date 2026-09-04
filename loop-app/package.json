@@ -18,6 +18,9 @@
     "expo-splash-screen": "~57.0.2",
     "expo-status-bar": "~57.0.1",
     "firebase": "^12.18.0",
+    "firebase-admin": "^12.7.0",
+    "@google/generative-ai": "^0.24.1",
+    "cloudinary": "^2.0.0",
     "phosphor-react-native": "^3.0.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -26,6 +29,7 @@
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
   },

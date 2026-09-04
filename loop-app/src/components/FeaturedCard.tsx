@@ -45,15 +45,32 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
       ]}
     >
       {/* Ambient background + contained foreground */}
-      {imgError ? (
-        <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#262626' }]}>
-          <ImageSquare size={32} color="rgba(255,255,255,0.2)" weight="light" />
-          <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 8 }}>Image not available</Text>
-        </View>
+      {!event.image || imgError ? (
+        <LinearGradient
+          colors={isDark ? ['#3A0E1A', '#1F0B12', '#14070B'] : ['#8A1538', '#5A0D23', '#2D0611']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        >
+          <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', opacity: 0.14 }]}>
+            <CalendarBlank size={160} color="#FFFFFF" weight="duotone" />
+          </View>
+        </LinearGradient>
       ) : (
         <>
-          <Image source={{ uri: getOptimizedImageUrl(event.image) }} style={styles.imageBg} blurRadius={12} resizeMode="cover" onError={() => setImgError(true)} />
-          <Image source={{ uri: getOptimizedImageUrl(event.image) }} style={styles.image} resizeMode="contain" />
+          <Image
+            source={{ uri: getOptimizedImageUrl(event.image) }}
+            style={styles.imageBg}
+            blurRadius={12}
+            resizeMode="cover"
+            onError={() => setImgError(true)}
+          />
+          <Image
+            source={{ uri: getOptimizedImageUrl(event.image) }}
+            style={styles.image}
+            resizeMode="contain"
+            onError={() => setImgError(true)}
+          />
         </>
       )}
 

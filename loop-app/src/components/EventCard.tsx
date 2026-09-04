@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Animated, Easing, Platform, Linking } from 'react-native';
-import { MapPin, WhatsappLogo, ImageSquare } from 'phosphor-react-native';
+import { MapPin, WhatsappLogo, ImageSquare, CalendarBlank } from 'phosphor-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, typography, radii, shadows } from '../theme';
 import SaveButton from './SaveButton';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
@@ -138,11 +139,18 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
       >
         {/* Adaptive Dual-Layer Poster Container (Zero Cropping) */}
         <View style={[styles.imageWrap, { aspectRatio: computedAspect, backgroundColor: colors.highlight }]}>
-          {imgError ? (
-            <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
-              <ImageSquare size={32} color={colors.muted} weight="light" />
-              <Text style={{ color: colors.muted, fontSize: 12, marginTop: 8 }}>Image not available</Text>
-            </View>
+          {!event.image || imgError ? (
+            <LinearGradient
+              colors={isDark ? ['#2D0B16', '#1A080E', '#100508'] : ['#F8E9ED', '#EED4DC', '#E5C0CB']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}
+            >
+              <CalendarBlank size={48} color={colors.primary} weight="duotone" style={{ opacity: 0.4 }} />
+              <Text style={{ color: colors.primary, fontSize: 11, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                {event.category || 'Campus Event'}
+              </Text>
+            </LinearGradient>
           ) : (
             <>
               <Image

@@ -28,7 +28,10 @@ import {
   Sparkle,
   User,
   Key,
+  Stack,
+  CalendarBlank,
 } from 'phosphor-react-native';
+import { getOptimizedImageUrl } from '../utils/cloudinary';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, typography, radii, shadows, spacing } from '../theme';
 import SectionLabel from '../components/SectionLabel';
@@ -70,6 +73,11 @@ export default function QueueScreen() {
   const [studioUser, setStudioUser] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [editableItem?.id]);
 
   // Restore the coordinator session. Authorisation is the `coordinator` custom
   // claim, not merely being signed in: the security rules gate on the claim, so
@@ -299,6 +307,8 @@ export default function QueueScreen() {
   };
 
   const item = editableItem;
+  const nextItem = queue.length > 1 ? queue[1] : null;
+  const thirdItem = queue.length > 2 ? queue[2] : null;
 
   const handleStudioLogin = async () => {
     setAuthError('');
@@ -463,6 +473,19 @@ export default function QueueScreen() {
         </View>
       </View>
 
+      {/* Queue Deck Meta Bar */}
+      <View style={styles.queueMetaBar}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Stack size={14} color={colors.primary} weight="bold" />
+          <Text style={[styles.queueProgressText, { color: colors.muted }]}>
+            Reviewing Card <Text style={{ color: colors.foreground, fontWeight: '700' }}>1</Text> of {remaining}
+          </Text>
+        </View>
+        <Text style={[styles.queueSwipeHint, { color: colors.muted }]}>
+          Swipe right to approve →
+        </Text>
+      </View>
+
       {/* Main cockpit card */}
       <Animated.View
         {...panResponder.panHandlers}
@@ -483,9 +506,33 @@ export default function QueueScreen() {
           },
         ]}
       >
-        {/* Image Panel */}
+        {/* Image Panel — Adaptive Dual-Layer */}
         <View style={[styles.imagePanel, { backgroundColor: colors.highlight }]}>
-          <Image source={{ uri: item.image }} style={styles.sourceImage} />
+          {item.image && !imageError ? (
+            <>
+              <Image
+                source={{ uri: getOptimizedImageUrl(item.image, 600) }}
+                style={styles.imageBg}
+                blurRadius={14}
+                resizeMode="cover"
+                onError={() => setImageError(true)}
+              />
+              <Image
+                source={{ uri: getOptimizedImageUrl(item.image, 600) }}
+                style={styles.sourceImage}
+                resizeMode="contain"
+                onError={() => setImageError(true)}
+              />
+            </>
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#1C1917' : '#F5ECEE' }]}>
+              <CalendarBlank size={48} color={colors.primary} weight="duotone" style={{ opacity: 0.5 }} />
+              <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700', marginTop: 8, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                {item.eventType || 'Campus Event'}
+              </Text>
+            </View>
+          )}
+
           {/* Overlay Chips */}
           <View style={styles.imageOverlay}>
             <View style={styles.sourceChip}>
@@ -660,11 +707,60 @@ export default function QueueScreen() {
         </View>
       </Animated.View>
 
-      {/* Stacked Next Card */}
-      {remaining > 1 && (
-        <View style={[styles.nextCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <ArrowsClockwise size={28} weight="regular" color={colors.muted} />
-          <Text style={[styles.nextText, { color: colors.muted }]}>Loading Next...</Text>
+      {/* Real Stacked Card Deck */}
+      {nextItem && (
+        <View style={styles.deckContainer}>
+          {/* Visual Layer 3 Peek (if queue has 3+ items) */}
+          {thirdItem && (
+            <View style={[styles.deckLayer3, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <Text style={[styles.deckLayer3Text, { color: colors.muted }]} numberOfLines={1}>
+                +{remaining - 2} more pending: "{thirdItem.title || 'Untitled'}" · {thirdItem.sourceHandle}
+              </Text>
+            </View>
+          )}
+
+          {/* Visual Layer 2: Next Card in Stack */}
+          <View style={[styles.deckCard, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.card]}>
+            <View style={styles.deckCardHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Stack size={16} color={colors.primary} weight="bold" />
+                <Text style={[styles.deckLabel, { color: colors.primary }]}>UP NEXT IN STACK</Text>
+              </View>
+              <Text style={[styles.deckCounter, { color: colors.muted }]}>#{remaining - 1} remaining</Text>
+            </View>
+
+            <View style={styles.deckContent}>
+              {nextItem.image ? (
+                <Image source={{ uri: getOptimizedImageUrl(nextItem.image, 200) }} style={styles.deckThumb} resizeMode="cover" />
+              ) : (
+                <View style={[styles.deckThumb, { backgroundColor: colors.highlight, justifyContent: 'center', alignItems: 'center' }]}>
+                  <CalendarBlank size={22} color={colors.muted} />
+                </View>
+              )}
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text style={[styles.deckTitle, { color: colors.foreground }]} numberOfLines={1}>
+                  {nextItem.title || 'Untitled Event'}
+                </Text>
+                <Text style={[styles.deckMeta, { color: colors.muted }]} numberOfLines={1}>
+                  {nextItem.sourceHandle} · {nextItem.date || 'Date TBA'} · {nextItem.venue || 'Venue TBA'}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  setQueue((prev) => [prev[1], prev[0], ...prev.slice(2)]);
+                  setEditableItem({ ...nextItem });
+                }}
+                style={({ pressed }) => [
+                  styles.deckSwitchBtn,
+                  { backgroundColor: colors.highlight, borderColor: colors.border },
+                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <Text style={[styles.deckSwitchText, { color: colors.foreground }]}>Review Next</Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
       )}
     </ScrollView>
@@ -1048,22 +1144,98 @@ const styles = StyleSheet.create({
     ...typography.labelMd,
     fontWeight: '700',
   },
-  nextCard: {
-    marginTop: -20,
-    marginHorizontal: 16,
-    height: 80,
-    borderRadius: radii.xxl,
-    borderWidth: 1,
+  queueMetaBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.5,
-    transform: [{ scale: 0.95 }],
-    zIndex: -1,
-    gap: 8,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  queueProgressText: {
+    ...typography.labelSm,
+    fontSize: 12,
+  },
+  queueSwipeHint: {
+    ...typography.labelSm,
+    fontSize: 11,
+    opacity: 0.7,
+  },
+  imageBg: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.45,
+  },
+  deckContainer: {
+    marginTop: 20,
+    width: '100%',
+    position: 'relative',
     marginBottom: 40,
   },
-  nextText: {
-    ...typography.labelCaps,
+  deckLayer3: {
+    marginHorizontal: 16,
+    marginBottom: -18,
+    paddingTop: 8,
+    paddingBottom: 26,
+    paddingHorizontal: 16,
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
+  },
+  deckLayer3Text: {
+    ...typography.labelSm,
     fontSize: 11,
+    textAlign: 'center',
+  },
+  deckCard: {
+    borderRadius: radii.xxl,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  deckCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deckLabel: {
+    ...typography.labelCaps,
+    fontSize: 10,
+    letterSpacing: 1.1,
+    fontWeight: '800',
+  },
+  deckCounter: {
+    ...typography.labelSm,
+    fontSize: 11,
+  },
+  deckContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  deckThumb: {
+    width: 52,
+    height: 52,
+    borderRadius: radii.md,
+    overflow: 'hidden',
+  },
+  deckTitle: {
+    ...typography.titleSm,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  deckMeta: {
+    ...typography.bodySm,
+    fontSize: 12,
+  },
+  deckSwitchBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: radii.md,
+    borderWidth: 1,
+  },
+  deckSwitchText: {
+    ...typography.labelSm,
+    fontSize: 11,
+    fontWeight: '600',
   },
 });

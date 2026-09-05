@@ -12,6 +12,7 @@ import tempfile
 from dotenv import load_dotenv
 from apify_client import ApifyClient
 from shared import db, parse_with_gemini, upload_image_to_cloudinary, get_image_aspect_ratio
+from date_parser import parse_date_and_time
 from firebase_admin import credentials, firestore
 import cloudinary
 import cloudinary.uploader
@@ -224,24 +225,8 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                     print(f"[Validation Skip] Post {ig_post_id} rejected: Unusable title ('{title}').")
                     continue
 
-                # Parse date into starts_at timestamp
-                starts_at = None
-                if _usable(date):
-                    try:
-                        now = datetime.now()
-                        year = now.year
-                        date_with_year = f"{date} {year}" if str(year) not in date else date
-                        for fmt in ["%d %b %Y", "%d %B %Y", "%Y-%m-%d"]:
-                            try:
-                                dt = datetime.strptime(date_with_year, fmt)
-                                if now.month in [11, 12] and dt.month in [1, 2]:
-                                    dt = dt.replace(year=year + 1)
-                                starts_at = dt
-                                break
-                            except ValueError:
-                                continue
-                    except Exception:
-                        starts_at = None
+                # Parse date into starts_at timestamp using canonical date parser (X1, T3.3)
+                starts_at = parse_date_and_time(date, time_str)
 
                 # Deterministic Completeness Gate (T2.2)
                 is_complete = (

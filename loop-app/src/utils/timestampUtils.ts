@@ -53,42 +53,13 @@ export function getEventTimeMillis(val: any): number | null {
   return d ? d.getTime() : null;
 }
 
+import { parseDateAndTimeString } from './dateParser';
+
 /**
  * Parse human date strings like "15 Oct", "21 April", "2026-10-15" + time "6:30 PM" into a Date.
- * If year is missing, uses current year (with Nov/Dec -> Jan/Feb rollover).
+ * Consolidates into canonical date parser without implementation-defined Date.parse().
  */
 export function parseDateTimeStrings(dateStr: string, timeStr?: string): Date | null {
-  if (!dateStr || dateStr.length < 3) return null;
-
-  try {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-
-    let normalizedDate = dateStr.trim();
-    if (!/\b20\d\d\b/.test(normalizedDate)) {
-      normalizedDate = `${normalizedDate} ${currentYear}`;
-    }
-
-    let combinedStr = normalizedDate;
-    if (timeStr && timeStr !== 'TBA') {
-      combinedStr = `${normalizedDate} ${timeStr.trim()}`;
-    }
-
-    let parsedTime = Date.parse(combinedStr);
-    if (isNaN(parsedTime)) {
-      parsedTime = Date.parse(normalizedDate);
-    }
-
-    if (!isNaN(parsedTime)) {
-      const d = new Date(parsedTime);
-      if (now.getMonth() >= 10 && d.getMonth() <= 1) {
-        d.setFullYear(currentYear + 1);
-      }
-      return d;
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
+  const result = parseDateAndTimeString(dateStr, timeStr);
+  return result ? result.date : null;
 }

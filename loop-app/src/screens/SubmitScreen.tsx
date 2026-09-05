@@ -24,6 +24,7 @@ import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firesto
 import { httpsCallable, apiErrorMessage } from '../utils/vercelClient';
 import { onCoordinatorChange } from '../utils/session';
 import { getClubAvatar } from '../data/avatars';
+import { parseDateAndTimeString } from '../utils/dateParser';
 
 type Props = {
   onNavigate?: (tab: string) => void;
@@ -206,9 +207,9 @@ export default function SubmitScreen(props: Props) {
       // Parse date+time into a Firestore Timestamp for sorting/expiry (F-14, F-15)
       let startsAt: Timestamp | null = null;
       try {
-        const combined = new Date(date + ' ' + time);
-        if (!isNaN(combined.getTime())) {
-          startsAt = Timestamp.fromDate(combined);
+        const parsed = parseDateAndTimeString(date, time);
+        if (parsed && !isNaN(parsed.date.getTime())) {
+          startsAt = Timestamp.fromDate(parsed.date);
         }
       } catch { /* startsAt stays null — will be filled by backfill or coordinator */ }
 

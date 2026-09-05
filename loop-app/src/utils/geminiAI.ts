@@ -7,13 +7,12 @@ import { httpsCallable } from './vercelClient';
 // stays server-side and is never bundled into the client.
 
 async function callGeminiViaFunction(prompt: string, systemInstruction?: string): Promise<string> {
-  try {
-    const geminiCall = httpsCallable('callGemini');
-    const { data }: any = await geminiCall({ prompt, systemInstruction });
-    return data.text || 'I am temporarily unable to reach the campus AI servers. Please try again in a few moments.';
-  } catch {
-    return 'I am temporarily unable to reach the campus AI servers. Please try again in a few moments.';
+  const geminiCall = httpsCallable('callGemini');
+  const { data }: any = await geminiCall({ prompt, systemInstruction });
+  if (!data?.text) {
+    throw new Error('No response text received from AI assistant.');
   }
+  return data.text;
 }
 
 export async function askCampusAI(
@@ -64,7 +63,12 @@ ${JSON.stringify(directoryContext, null, 2)}
 Answer the student's question accurately based on the campus data above:
 `.trim();
 
-  return callGeminiViaFunction(prompt, systemInstruction);
+  try {
+    return await callGeminiViaFunction(prompt, systemInstruction);
+  } catch (err) {
+    console.error('askCampusAI error:', err);
+    return 'I am temporarily unable to reach the campus AI servers. Please try again in a few moments.';
+  }
 }
 
 export async function generateEventPitch(

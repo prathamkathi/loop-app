@@ -24,6 +24,7 @@ export default async function handler(req: any, res: any) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
+    let lastError: any = null;
     for (const modelName of TEXT_MODELS) {
       try {
         const model = genAI.getGenerativeModel({
@@ -38,13 +39,18 @@ export default async function handler(req: any, res: any) {
         const result = await model.generateContent(prompt);
         const text = result.response.text();
         if (text) return res.status(200).json({ data: { text: text.trim() } });
-      } catch (e) {
-        // Try next model
+      } catch (e: any) {
+        console.error(`[callGemini] Model ${modelName} failed:`, e?.message || e);
+        lastError = e;
       }
     }
 
-    res.status(200).json({ data: { text: 'I am temporarily unable to reach the campus AI servers. Please try again in a few moments.' } });
+    return res.status(502).json({
+      error: 'All AI models failed to respond. Please try again in a few moments.',
+      details: lastError?.message || 'Upstream models unavailable',
+    });
   } catch (error: any) {
+    console.error('[callGemini] Fatal handler error:', error);
     res.status(500).json({ error: error.message });
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Platform, useWindowDimensions, Linking } from 'react-native';
 import { CalendarBlank, ArrowUpRight, WhatsappLogo, MagnifyingGlassPlus, ArrowSquareOut } from 'phosphor-react-native';
-import { useTheme, typography, radii } from '../theme';
+import { useTheme, typography, radii, palette } from '../theme';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import SaveButton from './SaveButton';
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#1C1917',
+    backgroundColor: palette.stone900,
   },
   imageBg: {
     position: 'absolute',

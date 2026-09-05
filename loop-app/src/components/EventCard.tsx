@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Animated, Easing, Platform, Linking } from 'react-native';
 import { MapPin, WhatsappLogo, CalendarBlank, MagnifyingGlassPlus, ArrowSquareOut, ClockCounterClockwise } from 'phosphor-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, typography, radii, shadows } from '../theme';
+import { useTheme, typography, radii, shadows, palette } from '../theme';
 import SaveButton from './SaveButton';
 import PosterLightboxModal from './PosterLightboxModal';
 import { getOptimizedImageUrl, getBackdropImageUrl } from "../utils/cloudinary";
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
   },
   whatsAppText: {
-    color: '#FFFFFF',
+    color: palette.white,
     fontSize: 11,
     fontWeight: '700',
   },

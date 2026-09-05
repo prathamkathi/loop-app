@@ -50,15 +50,13 @@ export async function guard(
 ): Promise<Caller | null> {
   const origin = req.headers?.origin;
 
-  // Native apps send no Origin header; browsers must be on the allowlist.
-  if (origin) {
-    if (!ALLOWED_ORIGINS.includes(origin)) {
-      res.status(403).json({ error: 'Origin not allowed' });
-      return null;
-    }
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
+  // Browsers and API callers must provide an allowed origin to prevent bypassing CORS
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    res.status(403).json({ error: 'Origin not allowed' });
+    return null;
   }
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Max-Age', '86400');
@@ -98,3 +96,41 @@ export async function guard(
     return null;
   }
 }
+
+/**
+ * Per-UID rate limiter using Firestore.
+ * Capped at limitPerHour requests per rolling hour window.
+ */
+export async function checkRateLimit(uid: string, limitPerHour: number = 20): Promise<boolean> {
+  try {
+    initAdmin();
+    const db = admin.firestore();
+    const docRef = db.collection('system').doc('ratelimit').collection('uids').doc(uid);
+    const now = Date.now();
+    const windowStart = now - 60 * 60 * 1000;
+
+    return await db.runTransaction(async (t: admin.firestore.Transaction) => {
+      const snap = await t.get(docRef);
+      let timestamps: number[] = [];
+      if (snap.exists) {
+        const data = snap.data();
+        if (Array.isArray(data?.timestamps)) {
+          timestamps = data.timestamps.filter((ts: any) => typeof ts === 'number' && ts > windowStart);
+        }
+      }
+      if (timestamps.length >= limitPerHour) {
+        return false;
+      }
+      timestamps.push(now);
+      t.set(docRef, {
+        timestamps,
+        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return true;
+    });
+  } catch (err) {
+    console.error('Rate limit error:', err);
+    return true; // Fail-open on transient database failure
+  }
+}
+

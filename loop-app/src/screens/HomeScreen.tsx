@@ -21,7 +21,7 @@ import EventCard from '../components/EventCard';
 import EmptyState from '../components/EmptyState';
 import { type EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
-import { getEventTimeMillis } from '../utils/timestampUtils';
+import { getEventTimeMillis, toValidDate } from '../utils/timestampUtils';
 
 type Props = {
   interests: Set<string>;
@@ -58,7 +58,15 @@ export default function HomeScreen({
   const isWideDesktop = width >= 1120;
 
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
+  const [timeHorizon, setTimeHorizon] = useState<'all' | 'today' | 'weekend' | 'week'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const HORIZONS = [
+    { id: 'all' as const, label: 'All Dates' },
+    { id: 'today' as const, label: 'Happening Today' },
+    { id: 'weekend' as const, label: 'This Weekend' },
+    { id: 'week' as const, label: 'Next 7 Days' },
+  ];
 
   // F-41: Filter chips keyed by stable ID, not mutable display strings
   const allChips = useMemo(() => [
@@ -67,7 +75,7 @@ export default function HomeScreen({
     ...CATEGORIES.filter((c) => c !== 'All').map((c) => ({ id: c, label: c })),
   ], [saved.size]);
 
-  // Combined Search & Category & Saved Filtering
+  // Combined Search & Category & Saved & Horizon Filtering
   const filtered = useMemo(() => {
     let result = liveEvents;
 
@@ -85,6 +93,34 @@ export default function HomeScreen({
         const timeB = getEventTimeMillis(b.startsAt) ?? Number.MAX_SAFE_INTEGER;
         return timeA - timeB;
       });
+
+    // Filter by Time Horizon
+    if (timeHorizon === 'today') {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const endOfToday = new Date();
+      endOfToday.setHours(23, 59, 59, 999);
+      result = result.filter((e) => {
+        const d = toValidDate(e.startsAt);
+        if (!d) return false;
+        return d >= startOfToday && d <= endOfToday;
+      });
+    } else if (timeHorizon === 'weekend') {
+      result = result.filter((e) => {
+        const d = toValidDate(e.startsAt);
+        if (!d) return false;
+        const day = d.getDay();
+        return day === 0 || day === 6; // Sunday or Saturday
+      });
+    } else if (timeHorizon === 'week') {
+      const now = new Date();
+      const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      result = result.filter((e) => {
+        const d = toValidDate(e.startsAt);
+        if (!d) return false;
+        return d >= now && d <= in7Days;
+      });
+    }
 
     // Filter by category, saved, or interests (F-41 / F-11)
     if (activeCategoryId === 'saved') {
@@ -109,7 +145,7 @@ export default function HomeScreen({
     }
 
     return result;
-  }, [activeCategoryId, searchQuery, interests, liveEvents, saved]);
+  }, [activeCategoryId, timeHorizon, searchQuery, interests, liveEvents, saved]);
 
   // Featured selection: requires explicit featured: true OR startsAt within 48h
   const featured = useMemo(() => {
@@ -166,10 +202,10 @@ export default function HomeScreen({
 
   const handleReset = () => {
     setActiveCategoryId('all');
+    setTimeHorizon('all');
     setSearchQuery('');
     onResetFilters();
   };
-
 
   return (
     <ScrollView
@@ -206,6 +242,44 @@ export default function HomeScreen({
             </Pressable>
           )}
         </View>
+      </View>
+
+      {/* Quick Time Horizon Pills */}
+      <View style={styles.horizonSection}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizonScroll}>
+          {HORIZONS.map((h) => {
+            const isSelected = timeHorizon === h.id;
+            return (
+              <Pressable
+                key={h.id}
+                onPress={() => setTimeHorizon(h.id)}
+                style={({ pressed }) => [
+                  styles.horizonPill,
+                  {
+                    backgroundColor: isSelected ? (isDark ? 'rgba(196, 77, 106, 0.22)' : 'rgba(138, 21, 56, 0.12)') : 'transparent',
+                    borderColor: isSelected ? colors.primary : colors.border,
+                    transform: [{ scale: pressed ? 0.96 : 1 }],
+                  },
+                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${h.label}`}
+              >
+                <Text
+                  style={[
+                    styles.horizonText,
+                    {
+                      color: isSelected ? colors.primary : colors.muted,
+                      fontWeight: isSelected ? '700' : '500',
+                    },
+                  ]}
+                >
+                  {h.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {/* Category & Saved Filter Chips */}
@@ -352,6 +426,27 @@ const styles = StyleSheet.create({
   },
   clearBtn: {
     padding: 4,
+  },
+  horizonSection: {
+    marginBottom: 12,
+    marginHorizontal: -20,
+  },
+  horizonScroll: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  horizonPill: {
+    paddingHorizontal: 13,
+    paddingVertical: 6,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 32,
+  },
+  horizonText: {
+    ...typography.labelSm,
+    fontSize: 12,
   },
   filterSection: {
     marginBottom: 24,

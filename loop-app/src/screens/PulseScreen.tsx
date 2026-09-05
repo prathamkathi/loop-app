@@ -3,7 +3,7 @@ import { View, Text, ScrollView, RefreshControl, Pressable, StyleSheet, Animated
 import { ArrowUpRight } from 'phosphor-react-native';
 import { useTheme, typography } from '../theme';
 import SectionLabel from '../components/SectionLabel';
-import { type PulseItem } from '../data/pulse';
+import { type PulseItem, PULSE } from '../data/pulse';
 import { openExternalLink } from '../utils/linking';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -35,8 +35,9 @@ function AnimatedWrapper({ index, children }: { index: number; children: React.R
 
 export default function PulseScreen() {
   const { colors, isDark } = useTheme();
-  const [pulseItems, setPulseItems] = useState<PulseItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Initialize with curated campus notices to eliminate cold-start blank states
+  const [pulseItems, setPulseItems] = useState<PulseItem[]>(PULSE);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, 'pulse'), orderBy("createdAt", "desc"), limit(50));
@@ -45,10 +46,12 @@ export default function PulseScreen() {
       snapshot.forEach((doc) => {
         items.push({ id: doc.id, ...doc.data() } as PulseItem);
       });
-      setPulseItems(items);
+      if (items.length > 0) {
+        setPulseItems(items);
+      }
       setLoading(false);
     }, (error) => {
-      console.error('Error fetching pulse:', error);
+      console.warn('Live pulse sync fallback to cached/static data:', error);
       setLoading(false);
     });
 
@@ -106,6 +109,8 @@ export default function PulseScreen() {
             <AnimatedWrapper key={p.id} index={index}>
               <Pressable
                 onPress={() => openExternalLink(p.url)}
+                accessibilityRole="link"
+                accessibilityLabel={`${p.kind}: ${p.title} from ${p.source}`}
                 style={({ pressed }) => [
                   styles.row,
                   !isLast && [styles.rowBorder, { borderBottomColor: colors.borderSubtle }],

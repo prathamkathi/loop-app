@@ -2,10 +2,12 @@
  * Calendar Utility — Zero-Auth Google Calendar URL
  *
  * Generates a Google Calendar event URL that can be opened via openExternalLink.
- * Handles diverse date/time formats reliably without NaN values.
+ * Handles diverse date/time formats and Firestore Timestamp objects reliably.
  */
 
 import { openExternalLink } from './linking';
+import type { EventItem } from '../data/events';
+import { toValidDate } from './timestampUtils';
 
 export type CalendarEvent = {
   title: string;
@@ -14,6 +16,7 @@ export type CalendarEvent = {
   venue: string;
   description?: string;
   durationHours?: number;
+  startsAt?: any;
 };
 
 const MONTH_NAMES: Record<string, number> = {
@@ -42,7 +45,7 @@ export function parseDateAndTime(dateStr: string, timeStr: string): Date {
   let hours = 18;
   let minutes = 0;
 
-  const rawDate = (dateStr || '').trim();
+  const rawDate = (dateStr || '').trim().replace(/(\d+)(st|nd|rd|th)/gi, '$1');
   const rawTime = (timeStr || '').trim();
 
   // Try direct Date parse first (e.g. ISO format "2026-10-15")
@@ -113,36 +116,42 @@ export function parseDateAndTime(dateStr: string, timeStr: string): Date {
 }
 
 /**
- * Format a Date to Google Calendar's required format: YYYYMMDDTHHmmSSZ (UTC or local)
+ * Format a Date to Google Calendar's required format: YYYYMMDDTHHmmSSZ
  */
 function toGoogleCalendarFormat(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}00`;
+  return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}00Z`;
 }
 
 /**
- * Generate a Google Calendar URL for the given event.
+ * Generate a Google Calendar URL for the given event (supports both EventItem and CalendarEvent).
  */
-export function getGoogleCalendarUrl(event: CalendarEvent): string {
-  const start = parseDateAndTime(event.date, event.time);
-  const durationMs = (event.durationHours ?? 2) * 60 * 60 * 1000;
-  const end = new Date(start.getTime() + durationMs);
+export function getGoogleCalendarUrl(event: CalendarEvent | EventItem): string {
+  const startDate = toValidDate((event as any).startsAt) || parseDateAndTime((event as any).date, (event as any).time);
+  const durationMs = ((event as any).durationHours ?? 2) * 60 * 60 * 1000;
+  const endDate = new Date(startDate.getTime() + durationMs);
+
+  const title = event.title || 'IIT Delhi Campus Event';
+  const location = event.venue && !/^tba$/i.test(event.venue) ? `${event.venue}, IIT Delhi` : 'IIT Delhi Campus';
+  const description = (event as any).blurb || (event as any).description || `Campus event at ${location}. Curated on LOOP (https://loop-iitd.web.app).`;
 
   const params = new URLSearchParams({
     action: 'TEMPLATE',
-    text: event.title || 'Campus Event',
-    dates: `${toGoogleCalendarFormat(start)}/${toGoogleCalendarFormat(end)}`,
-    location: event.venue || 'IIT Delhi',
-    details: event.description ?? `Event at ${event.venue || 'IIT Delhi'}. Curated on Loop.`,
+    text: title,
+    dates: `${toGoogleCalendarFormat(startDate)}/${toGoogleCalendarFormat(endDate)}`,
+    location,
+    details: description,
   });
 
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
 /**
- * Open Google Calendar in the browser with the event pre-filled.
+ * Open Google Calendar in the browser or native calendar app with the event pre-filled.
  */
-export async function openGoogleCalendar(event: CalendarEvent): Promise<void> {
+export async function openGoogleCalendar(event: CalendarEvent | EventItem): Promise<void> {
   const url = getGoogleCalendarUrl(event);
   await openExternalLink(url);
 }
+
+export const addToGoogleCalendar = openGoogleCalendar;

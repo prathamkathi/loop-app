@@ -46,6 +46,8 @@ export function parseEventTimestamp(val: any): Date | null {
   return null;
 }
 
+export const toValidDate = parseEventTimestamp;
+
 export function getEventTimeMillis(val: any): number | null {
   const d = parseEventTimestamp(val);
   return d ? d.getTime() : null;

@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, Platform, Animated } from 'react-nat
 import { House, Pulse, Compass, SlidersHorizontal, PlusCircle, Stack } from 'phosphor-react-native';
 import { useTheme, typography, radii, shadows } from '../theme';
 import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type TabId = 'home' | 'pulse' | 'directory' | 'curate' | 'submit' | 'queue' | 'studio_home' | 'studio_pulse';
 
@@ -33,32 +34,37 @@ type Props = {
   visible?: boolean;
 };
 
+// U2: Hoisted outside component body to prevent unmounting/remounting subtree on render
+const PlatformBlur = ({ children, style, isDark }: { children: React.ReactNode; style?: any; isDark: boolean }) => {
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[style, { backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }]}>
+        {children}
+      </View>
+    );
+  }
+  return (
+    <BlurView intensity={90} tint={isDark ? 'dark' : 'light'} style={style}>
+      {children}
+    </BlurView>
+  );
+};
+
 export default function BottomTabBar({ tabs, activeTab, onTabChange, visible = true }: Props) {
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
 
   if (!visible) return null;
 
   const glassBg = isDark ? 'rgba(22, 22, 24, 0.88)' : 'rgba(255, 255, 255, 0.90)';
   const glassBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(138, 21, 56, 0.15)';
-
-  const PlatformBlur = ({ children, style }: any) => {
-    if (Platform.OS === 'web') {
-      return (
-        <View style={[style, { backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }]}>
-          {children}
-        </View>
-      );
-    }
-    return (
-      <BlurView intensity={90} tint={isDark ? 'dark' : 'light'} style={style}>
-        {children}
-      </BlurView>
-    );
-  };
+  // U1: Respect safe-area-inset on mobile web (Safari toolbar) and native
+  const bottomOffset = Math.max(insets.bottom + 10, Platform.OS === 'ios' ? 28 : 20);
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <View style={[styles.container, { bottom: bottomOffset }]} pointerEvents="box-none">
       <PlatformBlur
+        isDark={isDark}
         style={[
           styles.navContainer,
           { backgroundColor: glassBg, borderColor: glassBorder },
@@ -106,7 +112,6 @@ export default function BottomTabBar({ tabs, activeTab, onTabChange, visible = t
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 28 : 20,
     left: 0,
     right: 0,
     alignItems: 'center',

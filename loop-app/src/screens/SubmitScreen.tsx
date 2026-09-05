@@ -263,23 +263,25 @@ export default function SubmitScreen(props: Props) {
   };
 
   const formattedMonth = React.useMemo(() => {
-    if (!date) return 'DATE';
+    if (!date) return '—';
     try {
       const d = new Date(date);
       if (!isNaN(d.getTime())) return d.toLocaleString('default', { month: 'short' }).toUpperCase();
     } catch (_) {}
     const parts = date.split(/[\s-/]+/);
-    return parts[1]?.slice(0, 3)?.toUpperCase() || 'OCT';
+    const candidate = parts[1]?.slice(0, 3)?.toUpperCase();
+    if (candidate && /^[A-Z]{3}$/.test(candidate)) return candidate;
+    return '—';
   }, [date]);
 
   const formattedDay = React.useMemo(() => {
-    if (!date) return '00';
+    if (!date) return '—';
     try {
       const d = new Date(date);
       if (!isNaN(d.getTime())) return d.getDate().toString().padStart(2, '0');
     } catch (_) {}
-    const match = date.match(/\d{1,2}/);
-    return match ? match[0].padStart(2, '0') : '01';
+    const match = date.match(/\b\d{1,2}\b/);
+    return match ? match[0].padStart(2, '0') : '—';
   }, [date]);
 
   if (coordinator === false) {

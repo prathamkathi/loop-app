@@ -37,16 +37,28 @@ const MONTH_NAMES: Record<string, number> = {
 /**
  * Robustly parse date & time strings into a valid Date object.
  */
-export function parseDateAndTime(dateStr: string, timeStr: string): Date {
+export type ParsedDateTime = {
+  date: Date;
+  hasTime: boolean;
+};
+
+/**
+ * Parse date & time strings into a valid Date object.
+ * Returns null if the date cannot be parsed, and flags hasTime honestly.
+ */
+export function parseDateAndTime(dateStr?: string, timeStr?: string): ParsedDateTime | null {
+  const rawDate = (dateStr || '').trim().replace(/(\d+)(st|nd|rd|th)/gi, '$1');
+  const rawTime = (timeStr || '').trim();
+
+  if (!rawDate) return null;
+
   const now = new Date();
   let year = now.getFullYear();
   let month = now.getMonth();
   let day = now.getDate();
-  let hours = 18;
+  let hours = 0;
   let minutes = 0;
-
-  const rawDate = (dateStr || '').trim().replace(/(\d+)(st|nd|rd|th)/gi, '$1');
-  const rawTime = (timeStr || '').trim();
+  let hasTime = false;
 
   // Try direct Date parse first (e.g. ISO format "2026-10-15")
   const directDate = new Date(rawDate);
@@ -91,10 +103,12 @@ export function parseDateAndTime(dateStr: string, timeStr: string): Date {
       if (!explicitYear && month < now.getMonth()) {
         year += 1;
       }
+    } else {
+      return null;
     }
   }
 
-  // Parse time: "8:30 PM", "8:30pm", "8 PM", "18:30", "18:00", "6"
+  // Parse time: "8:30 PM", "8:30pm", "8 PM", "18:30", "18:00"
   const ampmMatch = rawTime.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
   if (ampmMatch) {
     hours = parseInt(ampmMatch[1], 10);
@@ -102,21 +116,25 @@ export function parseDateAndTime(dateStr: string, timeStr: string): Date {
     const isPM = ampmMatch[3].toUpperCase() === 'PM';
     if (isPM && hours !== 12) hours += 12;
     if (!isPM && hours === 12) hours = 0;
+    hasTime = true;
   } else {
     // 24h format: "18:30" or "09:00"
-    const militaryMatch = rawTime.match(/(\d{1,2}):(\d{2})/);
+    const militaryMatch = rawTime.match(/^(\d{1,2}):(\d{2})$/);
     if (militaryMatch) {
       hours = parseInt(militaryMatch[1], 10);
       minutes = parseInt(militaryMatch[2], 10);
+      hasTime = true;
     }
   }
 
   const result = new Date(year, month, day, hours, minutes, 0);
-  return isNaN(result.getTime()) ? now : result;
+  if (isNaN(result.getTime())) return null;
+
+  return { date: result, hasTime };
 }
 
 /**
- * Format a Date to Google Calendar's required format: YYYYMMDDTHHmmSSZ
+ * Format a Date to Google Calendar's timed format: YYYYMMDDTHHmmSSZ
  */
 function toGoogleCalendarFormat(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
@@ -124,21 +142,57 @@ function toGoogleCalendarFormat(date: Date): string {
 }
 
 /**
+ * Format a Date to Google Calendar's all-day format: YYYYMMDD
+ */
+function toGoogleCalendarDateOnly(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
+}
+
+/**
  * Generate a Google Calendar URL for the given event (supports both EventItem and CalendarEvent).
+ * Emits an all-day entry (dates=YYYYMMDD/YYYYMMDD) if no valid time was announced.
  */
 export function getGoogleCalendarUrl(event: CalendarEvent | EventItem): string {
-  const startDate = toValidDate((event as any).startsAt) || parseDateAndTime((event as any).date, (event as any).time);
-  const durationMs = ((event as any).durationHours ?? 2) * 60 * 60 * 1000;
-  const endDate = new Date(startDate.getTime() + durationMs);
+  const parsed = parseDateAndTime((event as any).date, (event as any).time);
+  const startsAtDate = toValidDate((event as any).startsAt);
+
+  let startDate: Date;
+  let hasTime = false;
+
+  if (startsAtDate && parsed?.hasTime) {
+    startDate = startsAtDate;
+    hasTime = true;
+  } else if (parsed) {
+    startDate = parsed.date;
+    hasTime = parsed.hasTime;
+  } else if (startsAtDate) {
+    startDate = startsAtDate;
+    const timeParsed = parseDateAndTime('2026-01-01', (event as any).time);
+    hasTime = Boolean(timeParsed?.hasTime);
+  } else {
+    startDate = new Date();
+  }
 
   const title = event.title || 'IIT Delhi Campus Event';
-  const location = event.venue && !/^tba$/i.test(event.venue) ? `${event.venue}, IIT Delhi` : 'IIT Delhi Campus';
+  const location = event.venue && !/^tba$|^venue not announced$/i.test(event.venue) ? `${event.venue}, IIT Delhi` : 'IIT Delhi Campus';
   const description = (event as any).blurb || (event as any).description || `Campus event at ${location}. Curated on LOOP (https://loop-iitd.web.app).`;
+
+  let datesParam: string;
+  if (hasTime) {
+    const durationMs = ((event as any).durationHours ?? 2) * 60 * 60 * 1000;
+    const endDate = new Date(startDate.getTime() + durationMs);
+    datesParam = `${toGoogleCalendarFormat(startDate)}/${toGoogleCalendarFormat(endDate)}`;
+  } else {
+    // All-day event: YYYYMMDD/YYYYMMDD (end date is the next day)
+    const nextDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 1);
+    datesParam = `${toGoogleCalendarDateOnly(startDate)}/${toGoogleCalendarDateOnly(nextDay)}`;
+  }
 
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: title,
-    dates: `${toGoogleCalendarFormat(startDate)}/${toGoogleCalendarFormat(endDate)}`,
+    dates: datesParam,
     location,
     details: description,
   });

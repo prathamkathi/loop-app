@@ -46,20 +46,23 @@ graph TD
 *No code. Nothing downstream is stable until these clear, and three of them are invisible from
 inside the repo — which is why they are easy to leave out of a plan.*
 
-- [ ] **B—01 · Rotate the Gemini API key**
-  It is in public git history at commit `d61170a`, 89 times. The scraper writes request URLs — which
-  embed the key as a query parameter — into `scraper_bg.log`, and that log was committed. Treat as
-  compromised.
+- [ ] **B—01 · Rotate the Gemini API key** — hygiene, not an emergency
+  **Correction (5 Sep):** an earlier revision of this document claimed the key was in public git
+  history at `d61170a` "89 times". That was wrong — the check that produced it compared against an
+  empty variable and counted the file's 89 *lines*. Verified since: **no commit on `origin/main`
+  contains any credential-shaped string.**
+  The key does appear twice, in `scraper_bg.log`, inside local commit `93813ca` — which **GitHub
+  push protection blocked**, so it never reached the remote. The log is now untracked and `*.log` is
+  ignored. Rotate as hygiene, since it existed in a local commit, but it was never published.
 
 - [ ] **B—02 · Gemini quota** — paid tier, or cut usage
   `gemini-2.5-flash` returns **`429 RESOURCE_EXHAUSTED`**. This matters for a fix below: swapping the
   poster parser to `gemini-2.5-flash` trades a 404 for a 429. Quota is per-project, so rotating the
   key (B—01) does not restore it.
 
-- [ ] **B—03 · Cloudinary key with upload permission**
-  Key `4216…719` is rejected for both `actions=["create"]` and `actions=["read"]`. **Every poster
-  upload fails** — scraper and Club Studio alike. This is why feed cards read "NOT AVAILABLE" and
-  why all 15 queued events are imageless.
+- [x] **B—03 · Cloudinary key with upload permission** — RESOLVED
+  A working key is in place. Verified 5 Sep by performing a signed upload end to end; every event in
+  the live database now carries an image (0 missing).
 
 - [ ] **B—04 · GitHub Actions secrets** — every `EXPO_PUBLIC_FIREBASE_*` plus `FIREBASE_SERVICE_ACCOUNT`
   CI fails closed by design since the 4 Sep outage, when it built and deployed a bundle with
@@ -162,8 +165,10 @@ holds, not whether it looks finished.
 
 **Genuinely open:**
 
-- [ ] **F—31 · Accessibility sweep** — 12 `accessibilityLabel` across 138 `Pressable` elements.
-      Largest item here; one systematic pass for labels, roles and states.
+- [ ] **F—31 · Accessibility sweep** — **26 labels + 13 roles across 197 `Pressable` elements (13%)**
+      as of 5 Sep. A partial pass has landed across 12 files; the remaining ~85% is the largest single
+      item in this phase. Pressable count grew from 138 as new UI shipped, so the gap widened even as
+      labels were added.
 - [x] **F—35 · Studio tabs reuse student tab ids**
       `TabId` expanded with `studio_home` and `studio_pulse`, routed cleanly in `BottomTabBar` and `App.tsx`.
 - [x] **F—29 · WhatsApp pill opens the modal too**

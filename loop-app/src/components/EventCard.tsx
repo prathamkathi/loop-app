@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Animated, Easing, Platform, Linking } from 'react-native';
-import { MapPin, WhatsappLogo, CalendarBlank, MagnifyingGlassPlus, ArrowSquareOut } from 'phosphor-react-native';
+import { MapPin, WhatsappLogo, CalendarBlank, MagnifyingGlassPlus, ArrowSquareOut, ClockCounterClockwise } from 'phosphor-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, typography, radii, shadows } from '../theme';
 import SaveButton from './SaveButton';
 import PosterLightboxModal from './PosterLightboxModal';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
+import { getEventTimeMillis } from '../utils/timestampUtils';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
   onToggleSave: () => void;
   onPress: () => void;
   index: number;
+  isPast?: boolean;
 };
 
 function PulseDot({ color }: { color: string }) {
@@ -71,12 +73,15 @@ export function openWhatsApp(rawPhone: string, name: string, eventTitle: string)
   }
 }
 
-export default function EventCard({ event, saved, onToggleSave, onPress, index }: Props) {
+export default function EventCard({ event, saved, onToggleSave, onPress, index, isPast }: Props) {
   const { colors, isDark } = useTheme();
   const [imgError, setImgError] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+
+  const eventTimeMs = getEventTimeMillis(event.startsAt);
+  const isConcluded = isPast ?? (eventTimeMs !== null && eventTimeMs + 12 * 60 * 60 * 1000 < Date.now());
 
   const catMeta = getCategoryMeta(event.category);
   const CategoryIcon = catMeta.icon;
@@ -145,7 +150,13 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
           ]}
         >
           {/* Adaptive Dual-Layer Poster Container (Zero Cropping) */}
-          <View style={[styles.imageWrap, { aspectRatio: computedAspect, backgroundColor: colors.highlight }]}>
+          <View
+            style={[
+              styles.imageWrap,
+              { aspectRatio: computedAspect, backgroundColor: colors.highlight },
+              Platform.OS === 'web' && isConcluded && ({ filter: 'grayscale(70%)', opacity: 0.92 } as any),
+            ]}
+          >
             {!event.image || imgError ? (
               <LinearGradient
                 colors={isDark ? ['#2D0B16', '#1A080E', '#100508'] : ['#F8E9ED', '#EED4DC', '#E5C0CB']}
@@ -187,46 +198,62 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
               styles.categoryPill,
               {
                 backgroundColor: isDark ? 'rgba(18, 18, 20, 0.82)' : 'rgba(255, 255, 255, 0.92)',
-                borderColor: catMeta.color,
+                borderColor: isConcluded ? colors.border : catMeta.color,
               }
             ]}>
-              <CategoryIcon size={12} color={catMeta.color} weight="bold" />
-              <Text style={[styles.categoryPillText, { color: catMeta.color }]}>
+              <CategoryIcon size={12} color={isConcluded ? colors.muted : catMeta.color} weight="bold" />
+              <Text style={[styles.categoryPillText, { color: isConcluded ? colors.muted : catMeta.color }]}>
                 {catMeta.tag}
               </Text>
             </View>
 
-            {event.fillingFast && (
-              <View style={[styles.fillingBadge, { backgroundColor: colors.surface }]}>
-                <PulseDot color={colors.primary} />
-                <Text style={[styles.fillingText, { color: colors.foreground }]}>Filling Fast</Text>
+            {isConcluded ? (
+              <View style={[styles.concludedBadge, { backgroundColor: isDark ? 'rgba(24, 24, 27, 0.88)' : 'rgba(255, 255, 255, 0.92)', borderColor: colors.border }]}>
+                <ClockCounterClockwise size={11} color={colors.muted} weight="bold" />
+                <Text style={[styles.concludedText, { color: colors.muted }]}>Concluded</Text>
               </View>
+            ) : (
+              event.fillingFast && (
+                <View style={[styles.fillingBadge, { backgroundColor: colors.surface }]}>
+                  <PulseDot color={colors.primary} />
+                  <Text style={[styles.fillingText, { color: colors.foreground }]}>Filling Fast</Text>
+                </View>
+              )
             )}
           </View>
 
           <View style={styles.content}>
             {/* Adaptive Date / Notice Line */}
-            <View style={styles.dateLine}>
-              <Text 
-                style={[
-                  styles.dateText, 
-                  { color: isNotice ? catMeta.color : colors.primary, fontWeight: isNotice ? '700' : '600' }
-                ]} 
-                numberOfLines={1}
-              >
-                {datePrimary}
-              </Text>
-              <View style={[styles.dotSep, { backgroundColor: isNotice ? catMeta.color : colors.primary }]} />
-              <Text 
-                style={[
-                  styles.dateText, 
-                  { color: isNotice ? colors.muted : colors.primary }
-                ]} 
-                numberOfLines={1}
-              >
-                {dateSecondary}
-              </Text>
-            </View>
+            {isConcluded ? (
+              <View style={styles.dateLine}>
+                <ClockCounterClockwise size={12} color={colors.muted} weight="bold" />
+                <Text style={[styles.dateText, { color: colors.muted, fontWeight: '600' }]} numberOfLines={1}>
+                  Concluded · {datePrimary}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.dateLine}>
+                <Text 
+                  style={[
+                    styles.dateText, 
+                    { color: isNotice ? catMeta.color : colors.primary, fontWeight: isNotice ? '700' : '600' }
+                  ]} 
+                  numberOfLines={1}
+                >
+                  {datePrimary}
+                </Text>
+                <View style={[styles.dotSep, { backgroundColor: isNotice ? catMeta.color : colors.primary }]} />
+                <Text 
+                  style={[
+                    styles.dateText, 
+                    { color: isNotice ? colors.muted : colors.primary }
+                  ]} 
+                  numberOfLines={1}
+                >
+                  {dateSecondary}
+                </Text>
+              </View>
+            )}
 
             <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={2} ellipsizeMode="tail">
               {event.title}
@@ -288,14 +315,19 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
               }}
               style={({ pressed }) => [
                 styles.actionUrlBtn,
-                { backgroundColor: isDark ? catMeta.bgDark : catMeta.bgLight, borderColor: catMeta.color },
+                {
+                  backgroundColor: isConcluded
+                    ? (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)')
+                    : (isDark ? catMeta.bgDark : catMeta.bgLight),
+                  borderColor: isConcluded ? colors.border : catMeta.color,
+                },
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { opacity: 0.8 },
               ]}
             >
-              <ArrowSquareOut size={13} color={catMeta.color} weight="bold" />
-              <Text style={[styles.actionUrlText, { color: catMeta.color }]} numberOfLines={1}>
-                {catMeta.actionText || 'Open Official Link'}
+              <ArrowSquareOut size={13} color={isConcluded ? colors.muted : catMeta.color} weight="bold" />
+              <Text style={[styles.actionUrlText, { color: isConcluded ? colors.muted : catMeta.color }]} numberOfLines={1}>
+                {isConcluded ? 'View Concluded Link' : (catMeta.actionText || 'Open Official Link')}
               </Text>
             </Pressable>
           </View>
@@ -406,6 +438,23 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radii.full,
     elevation: 3,
+  },
+  concludedBadge: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radii.full,
+    borderWidth: 1,
+  },
+  concludedText: {
+    ...typography.labelCaps,
+    fontSize: 9,
+    fontWeight: '700',
   },
   pulseDot: {
     width: 6,

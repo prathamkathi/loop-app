@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { MagnifyingGlass, X, BookmarkSimple, WarningCircle } from 'phosphor-react-native';
+import { MagnifyingGlass, X, BookmarkSimple, WarningCircle, CalendarBlank, ClockCounterClockwise } from 'phosphor-react-native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useTheme, typography, radii, shadows } from '../theme';
@@ -57,9 +57,27 @@ export default function HomeScreen({
   const isDesktop = width >= 768;
   const isWideDesktop = width >= 1120;
 
+  const [tabMode, setTabMode] = useState<'upcoming' | 'past'>('upcoming');
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [timeHorizon, setTimeHorizon] = useState<'all' | 'today' | 'weekend' | 'week'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const nowMs = Date.now();
+
+  // Separate upcoming vs past counts for Luma-style switcher
+  const { upcomingCount, pastCount } = useMemo(() => {
+    let up = 0;
+    let pst = 0;
+    for (const e of liveEvents) {
+      const ms = getEventTimeMillis(e.startsAt);
+      if (ms === null || ms + 12 * 60 * 60 * 1000 >= nowMs) {
+        up++;
+      } else {
+        pst++;
+      }
+    }
+    return { upcomingCount: up, pastCount: pst };
+  }, [liveEvents, nowMs]);
 
   const HORIZONS = [
     { id: 'all' as const, label: 'All Dates' },
@@ -75,51 +93,63 @@ export default function HomeScreen({
     ...CATEGORIES.filter((c) => c !== 'All').map((c) => ({ id: c, label: c })),
   ], [saved.size]);
 
-  // Combined Search & Category & Saved & Horizon Filtering
+  // Combined Search & Category & Saved & Horizon & TabMode Filtering
   const filtered = useMemo(() => {
     let result = liveEvents;
 
-    // F-50 / F-13: Drop past events and sort by startsAt
-    const nowMs = Date.now();
-    result = result
-      .filter((e) => {
-        const eventTimeMs = getEventTimeMillis(e.startsAt);
-        if (eventTimeMs === null) return true; // keep undated events
-        // keep if event is in the future or started within the last 12 hours
-        return eventTimeMs + 12 * 60 * 60 * 1000 >= nowMs;
-      })
-      .sort((a, b) => {
-        const timeA = getEventTimeMillis(a.startsAt) ?? Number.MAX_SAFE_INTEGER;
-        const timeB = getEventTimeMillis(b.startsAt) ?? Number.MAX_SAFE_INTEGER;
-        return timeA - timeB;
-      });
+    if (tabMode === 'upcoming') {
+      // Upcoming events: future or ongoing within last 12h, soonest first
+      result = result
+        .filter((e) => {
+          const eventTimeMs = getEventTimeMillis(e.startsAt);
+          if (eventTimeMs === null) return true; // keep undated campus notices
+          return eventTimeMs + 12 * 60 * 60 * 1000 >= nowMs;
+        })
+        .sort((a, b) => {
+          const timeA = getEventTimeMillis(a.startsAt) ?? Number.MAX_SAFE_INTEGER;
+          const timeB = getEventTimeMillis(b.startsAt) ?? Number.MAX_SAFE_INTEGER;
+          return timeA - timeB;
+        });
 
-    // Filter by Time Horizon
-    if (timeHorizon === 'today') {
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      const endOfToday = new Date();
-      endOfToday.setHours(23, 59, 59, 999);
-      result = result.filter((e) => {
-        const d = toValidDate(e.startsAt);
-        if (!d) return false;
-        return d >= startOfToday && d <= endOfToday;
-      });
-    } else if (timeHorizon === 'weekend') {
-      result = result.filter((e) => {
-        const d = toValidDate(e.startsAt);
-        if (!d) return false;
-        const day = d.getDay();
-        return day === 0 || day === 6; // Sunday or Saturday
-      });
-    } else if (timeHorizon === 'week') {
-      const now = new Date();
-      const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      result = result.filter((e) => {
-        const d = toValidDate(e.startsAt);
-        if (!d) return false;
-        return d >= now && d <= in7Days;
-      });
+      // Filter by Time Horizon (Upcoming mode only)
+      if (timeHorizon === 'today') {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+        result = result.filter((e) => {
+          const d = toValidDate(e.startsAt);
+          if (!d) return false;
+          return d >= startOfToday && d <= endOfToday;
+        });
+      } else if (timeHorizon === 'weekend') {
+        result = result.filter((e) => {
+          const d = toValidDate(e.startsAt);
+          if (!d) return false;
+          const day = d.getDay();
+          return day === 0 || day === 6; // Sunday or Saturday
+        });
+      } else if (timeHorizon === 'week') {
+        const now = new Date();
+        const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        result = result.filter((e) => {
+          const d = toValidDate(e.startsAt);
+          if (!d) return false;
+          return d >= now && d <= in7Days;
+        });
+      }
+    } else {
+      // Past Archive mode: concluded events, reverse chronological (most recently concluded first)
+      result = result
+        .filter((e) => {
+          const eventTimeMs = getEventTimeMillis(e.startsAt);
+          return eventTimeMs !== null && eventTimeMs + 12 * 60 * 60 * 1000 < nowMs;
+        })
+        .sort((a, b) => {
+          const timeA = getEventTimeMillis(a.startsAt) ?? 0;
+          const timeB = getEventTimeMillis(b.startsAt) ?? 0;
+          return timeB - timeA;
+        });
     }
 
     // Filter by category, saved, or interests (F-41 / F-11)
@@ -127,8 +157,8 @@ export default function HomeScreen({
       result = result.filter((e) => saved.has(e.id));
     } else if (activeCategoryId !== 'all') {
       result = result.filter((e) => e.category === activeCategoryId);
-    } else if (interests.size > 0) {
-      // F-11: Wire interests into the filter body when viewing 'All'
+    } else if (interests.size > 0 && tabMode === 'upcoming') {
+      // F-11: Wire interests into the filter body when viewing 'All' in upcoming mode
       result = result.filter((e) => interests.has(e.category));
     }
 
@@ -145,21 +175,21 @@ export default function HomeScreen({
     }
 
     return result;
-  }, [activeCategoryId, timeHorizon, searchQuery, interests, liveEvents, saved]);
+  }, [tabMode, activeCategoryId, timeHorizon, searchQuery, interests, liveEvents, saved, nowMs]);
 
-  // Featured selection: requires explicit featured: true OR startsAt within 48h
+  // Featured selection: requires explicit featured: true OR startsAt within 48h (upcoming only)
   const featured = useMemo(() => {
+    if (tabMode === 'past') return null; // No featured hero card in past archive view
+
     const explicitlyFeatured = filtered.find((e) => e.featured);
     if (explicitlyFeatured) return explicitlyFeatured;
 
-    const nowMs = Date.now();
     const fortyEightHoursMs = 48 * 60 * 60 * 1000;
-    
     return filtered.find((e) => {
       const timeMs = getEventTimeMillis(e.startsAt);
       return timeMs !== null && timeMs >= nowMs - (6 * 60 * 60 * 1000) && timeMs <= nowMs + fortyEightHoursMs;
-    });
-  }, [filtered]);
+    }) || null;
+  }, [filtered, tabMode, nowMs]);
 
   const rest = useMemo(() => {
     return featured ? filtered.filter((e) => e.id !== featured.id) : filtered;
@@ -217,6 +247,87 @@ export default function HomeScreen({
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
     >
+      {/* Luma-Style View Mode Switcher (Upcoming vs Concluded Campus Archive) */}
+      <View style={styles.lumaSwitcherWrapper}>
+        <View
+          style={[
+            styles.lumaSwitcher,
+            {
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Pressable
+            onPress={() => setTabMode('upcoming')}
+            style={[
+              styles.lumaSwitchBtn,
+              tabMode === 'upcoming' && [
+                styles.lumaSwitchActive,
+                {
+                  backgroundColor: isDark ? colors.surface : '#FFFFFF',
+                  borderColor: isDark ? colors.border : 'rgba(0, 0, 0, 0.08)',
+                  ...(Platform.OS === 'web' ? { boxShadow: '0 2px 8px rgba(0,0,0,0.08)' } : shadows.card),
+                },
+              ],
+            ]}
+            accessibilityRole="tab"
+            accessibilityLabel={`Upcoming Events (${upcomingCount})`}
+          >
+            <CalendarBlank
+              size={15}
+              color={tabMode === 'upcoming' ? colors.primary : colors.muted}
+              weight={tabMode === 'upcoming' ? 'bold' : 'regular'}
+            />
+            <Text
+              style={[
+                styles.lumaSwitchText,
+                {
+                  color: tabMode === 'upcoming' ? colors.foreground : colors.muted,
+                  fontWeight: tabMode === 'upcoming' ? '700' : '500',
+                },
+              ]}
+            >
+              Upcoming ({upcomingCount})
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setTabMode('past')}
+            style={[
+              styles.lumaSwitchBtn,
+              tabMode === 'past' && [
+                styles.lumaSwitchActive,
+                {
+                  backgroundColor: isDark ? colors.surface : '#FFFFFF',
+                  borderColor: isDark ? colors.border : 'rgba(0, 0, 0, 0.08)',
+                  ...(Platform.OS === 'web' ? { boxShadow: '0 2px 8px rgba(0,0,0,0.08)' } : shadows.card),
+                },
+              ],
+            ]}
+            accessibilityRole="tab"
+            accessibilityLabel={`Past Archive (${pastCount})`}
+          >
+            <ClockCounterClockwise
+              size={15}
+              color={tabMode === 'past' ? colors.primary : colors.muted}
+              weight={tabMode === 'past' ? 'bold' : 'regular'}
+            />
+            <Text
+              style={[
+                styles.lumaSwitchText,
+                {
+                  color: tabMode === 'past' ? colors.foreground : colors.muted,
+                  fontWeight: tabMode === 'past' ? '700' : '500',
+                },
+              ]}
+            >
+              Past Archive ({pastCount})
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
       {/* Search Bar */}
       <View style={styles.searchSection}>
         <View
@@ -244,43 +355,45 @@ export default function HomeScreen({
         </View>
       </View>
 
-      {/* Quick Time Horizon Pills */}
-      <View style={styles.horizonSection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizonScroll}>
-          {HORIZONS.map((h) => {
-            const isSelected = timeHorizon === h.id;
-            return (
-              <Pressable
-                key={h.id}
-                onPress={() => setTimeHorizon(h.id)}
-                style={({ pressed }) => [
-                  styles.horizonPill,
-                  {
-                    backgroundColor: isSelected ? (isDark ? 'rgba(196, 77, 106, 0.22)' : 'rgba(138, 21, 56, 0.12)') : 'transparent',
-                    borderColor: isSelected ? colors.primary : colors.border,
-                    transform: [{ scale: pressed ? 0.96 : 1 }],
-                  },
-                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel={`Filter by ${h.label}`}
-              >
-                <Text
-                  style={[
-                    styles.horizonText,
+      {/* Quick Time Horizon Pills (Only in Upcoming view) */}
+      {tabMode === 'upcoming' && (
+        <View style={styles.horizonSection}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizonScroll}>
+            {HORIZONS.map((h) => {
+              const isSelected = timeHorizon === h.id;
+              return (
+                <Pressable
+                  key={h.id}
+                  onPress={() => setTimeHorizon(h.id)}
+                  style={({ pressed }) => [
+                    styles.horizonPill,
                     {
-                      color: isSelected ? colors.primary : colors.muted,
-                      fontWeight: isSelected ? '700' : '500',
+                      backgroundColor: isSelected ? (isDark ? 'rgba(196, 77, 106, 0.22)' : 'rgba(138, 21, 56, 0.12)') : 'transparent',
+                      borderColor: isSelected ? colors.primary : colors.border,
+                      transform: [{ scale: pressed ? 0.96 : 1 }],
                     },
+                    Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
                   ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${h.label}`}
                 >
-                  {h.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+                  <Text
+                    style={[
+                      styles.horizonText,
+                      {
+                        color: isSelected ? colors.primary : colors.muted,
+                        fontWeight: isSelected ? '700' : '500',
+                      },
+                    ]}
+                  >
+                    {h.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {/* Category & Saved Filter Chips */}
       <View style={styles.filterSection}>
@@ -320,6 +433,27 @@ export default function HomeScreen({
           })}
         </ScrollView>
       </View>
+
+      {/* Concluded Archive Notice Banner */}
+      {tabMode === 'past' && (
+        <View
+          style={[
+            styles.archiveBanner,
+            {
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ClockCounterClockwise size={20} color={colors.primary} weight="duotone" />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[styles.archiveBannerTitle, { color: colors.foreground }]}>Campus Event Archive</Text>
+            <Text style={[styles.archiveBannerSubtitle, { color: colors.muted }]}>
+              Concluded events and talks from IIT Delhi clubs. Event details, contacts, and posters are preserved.
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Empty State when no events match */}
       {filtered.length === 0 ? (
@@ -362,9 +496,11 @@ export default function HomeScreen({
 
           {/* Grid Header */}
           <View style={styles.weekHeader}>
-            <SectionLabel style={{ marginBottom: 0 }}>UPCOMING FEED</SectionLabel>
+            <SectionLabel style={{ marginBottom: 0 }}>
+              {tabMode === 'upcoming' ? 'UPCOMING FEED' : 'CAMPUS ARCHIVE'}
+            </SectionLabel>
             <Text style={[styles.count, { color: colors.muted }]}>
-              {rest.length} events curated for you
+              {tabMode === 'upcoming' ? `${rest.length} events curated for you` : `${rest.length} concluded events preserved`}
             </Text>
           </View>
 
@@ -385,6 +521,7 @@ export default function HomeScreen({
                     saved={saved.has(e.id)}
                     onToggleSave={() => onToggleSave(e.id)}
                     onPress={() => onOpenEvent(e)}
+                    isPast={tabMode === 'past'}
                   />
                 </View>
               );
@@ -405,8 +542,59 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 120,
   },
-  searchSection: {
+  lumaSwitcherWrapper: {
     marginTop: 8,
+    marginBottom: 10,
+    alignItems: 'center',
+    width: '100%',
+  },
+  lumaSwitcher: {
+    flexDirection: 'row',
+    padding: 3,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    width: '100%',
+    maxWidth: 420,
+    gap: 4,
+  },
+  lumaSwitchBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: radii.full,
+  },
+  lumaSwitchActive: {
+    borderWidth: 1,
+  },
+  lumaSwitchText: {
+    ...typography.labelSm,
+    fontSize: 13,
+  },
+  archiveBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    marginBottom: 20,
+  },
+  archiveBannerTitle: {
+    ...typography.labelMd,
+    fontWeight: '700',
+  },
+  archiveBannerSubtitle: {
+    ...typography.bodySm,
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  searchSection: {
+    marginTop: 4,
     marginBottom: 16,
   },
   searchBar: {

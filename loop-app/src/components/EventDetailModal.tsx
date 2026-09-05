@@ -28,6 +28,7 @@ import {
   ArrowSquareOut,
   MagnifyingGlassPlus,
   FileText,
+  ClockCounterClockwise,
 } from 'phosphor-react-native';
 import { BlurView } from 'expo-blur';
 import { useTheme, typography, radii, shadows } from '../theme';
@@ -38,6 +39,7 @@ import { generateEventPitch } from '../utils/geminiAI';
 import { CLUBS } from '../data/clubs';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
+import { getEventTimeMillis } from '../utils/timestampUtils';
 import PosterLightboxModal from './PosterLightboxModal';
 import type { EventItem } from '../data/events';
 
@@ -63,6 +65,9 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   const CategoryIcon = catMeta.icon;
   const { primary: datePrimary, secondary: dateSecondary, isNotice } = formatCardDateLine(event);
   const venueDisplay = formatCardVenue(event.venue, event.category);
+
+  const eventTimeMs = getEventTimeMillis(event.startsAt);
+  const isConcluded = eventTimeMs !== null && eventTimeMs + 12 * 60 * 60 * 1000 < Date.now();
 
   useEffect(() => {
     let isMounted = true;
@@ -193,10 +198,14 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
             </Pressable>
 
             {/* Category Adaptive Overlay Badge */}
-            <View style={[styles.categoryOverlay, { backgroundColor: catMeta.color }]}>
-              <CategoryIcon size={13} color="#FFFFFF" weight="bold" />
-              <Text style={styles.categoryText} numberOfLines={1} ellipsizeMode="tail">
-                {catMeta.label}
+            <View style={[styles.categoryOverlay, { backgroundColor: isConcluded ? (isDark ? 'rgba(30, 30, 35, 0.9)' : 'rgba(240, 240, 245, 0.95)') : catMeta.color }]}>
+              {isConcluded ? (
+                <ClockCounterClockwise size={13} color={isDark ? '#FFFFFF' : '#18181B'} weight="bold" />
+              ) : (
+                <CategoryIcon size={13} color="#FFFFFF" weight="bold" />
+              )}
+              <Text style={[styles.categoryText, isConcluded && { color: isDark ? '#FFFFFF' : '#18181B' }]} numberOfLines={1} ellipsizeMode="tail">
+                {isConcluded ? `Concluded · ${catMeta.label}` : catMeta.label}
               </Text>
             </View>
 
@@ -209,6 +218,23 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
 
           {/* Content */}
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+            {isConcluded && (
+              <View
+                style={[
+                  styles.concludedNoticeBanner,
+                  {
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <ClockCounterClockwise size={18} color={colors.primary} weight="duotone" />
+                <Text style={[styles.concludedNoticeText, { color: colors.muted }]}>
+                  This event has concluded. Details, poster, and organizer contacts are preserved for reference.
+                </Text>
+              </View>
+            )}
+
             <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={3} ellipsizeMode="tail">
               {event.title}
             </Text>
@@ -382,19 +408,26 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
             </Pressable>
 
             <Pressable
-              onPress={handleCalendar}
+              onPress={isConcluded ? undefined : handleCalendar}
+              disabled={isConcluded}
               style={({ pressed }) => [
                 styles.calBtn,
                 {
-                  backgroundColor: colors.primary,
+                  backgroundColor: isConcluded ? (isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)') : colors.primary,
+                  borderColor: isConcluded ? colors.border : 'transparent',
+                  borderWidth: isConcluded ? 1 : 0,
                 },
-                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                pressed && { transform: [{ scale: 0.98 }] },
+                Platform.OS === 'web' && ({ cursor: isConcluded ? 'default' : 'pointer' } as any),
+                pressed && !isConcluded && { transform: [{ scale: 0.98 }] },
               ]}
             >
-              <CalendarPlus size={19} color={colors.onPrimary} weight="bold" />
-              <Text style={[styles.calText, { color: colors.onPrimary }]}>
-                {isNotice ? 'Add Notice Reminder' : 'Add to Google Calendar'}
+              {isConcluded ? (
+                <ClockCounterClockwise size={18} color={colors.muted} weight="bold" />
+              ) : (
+                <CalendarPlus size={19} color={colors.onPrimary} weight="bold" />
+              )}
+              <Text style={[styles.calText, { color: isConcluded ? colors.muted : colors.onPrimary }]}>
+                {isConcluded ? 'Event Concluded' : isNotice ? 'Add Notice Reminder' : 'Add to Google Calendar'}
               </Text>
             </Pressable>
 
@@ -543,6 +576,22 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 11,
     fontWeight: '600',
+  },
+  concludedNoticeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  concludedNoticeText: {
+    ...typography.bodySm,
+    fontSize: 12,
+    lineHeight: 16,
+    flex: 1,
   },
   title: {
     ...typography.displayMd,

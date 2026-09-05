@@ -11,9 +11,9 @@ import {
   Easing,
   Share,
   Platform,
-  Alert,
   Linking,
 } from 'react-native';
+import { showAlert } from '../utils/alert';
 import {
   X,
   CalendarBlank,
@@ -131,14 +131,14 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
     try {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
         await navigator.clipboard.writeText(shareMessage);
-        Alert.alert('Link Copied', 'Event invitation copied to clipboard!');
+        showAlert('Link Copied', 'Event invitation copied to clipboard!');
         return;
       }
       await Share.share({ message: shareMessage });
     } catch (error) {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
         await navigator.clipboard.writeText(shareMessage);
-        Alert.alert('Link Copied', 'Event invitation copied to clipboard!');
+        showAlert('Link Copied', 'Event invitation copied to clipboard!');
       }
     }
   };

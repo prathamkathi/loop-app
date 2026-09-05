@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Modal,
   Platform,
-  Alert,
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
+import { showAlert } from '../utils/alert';
 import { X, User, IdentificationBadge, Buildings, SignOut, CheckCircle, Sparkle } from 'phosphor-react-native';
 import { useTheme, typography, radii } from '../theme';
 import { StudentProfile } from '../utils/auth';
@@ -51,7 +51,7 @@ export default function StudentAuthModal({
 
   const handleManualSignIn = () => {
     if (!name.trim()) {
-      Alert.alert('Name Required', 'Please enter your full name.');
+      showAlert('Name Required', 'Please enter your full name.');
       return;
     }
     const cleanName = name.trim();
@@ -62,7 +62,7 @@ export default function StudentAuthModal({
     }
 
     if (!/^[a-z]{2,4}\d{5,8}@iitd\.ac\.in$/.test(cleanKerberos)) {
-      Alert.alert('Invalid Kerberos ID', 'Please enter a valid IITD email or ID (e.g. cs1210123 or cs1210123@iitd.ac.in).');
+      showAlert('Invalid Kerberos ID', 'Please enter a valid IITD email or ID (e.g. cs1210123 or cs1210123@iitd.ac.in).');
       return;
     }
 

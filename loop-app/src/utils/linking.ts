@@ -1,4 +1,5 @@
-import { Linking, Platform, Alert } from 'react-native';
+import { Linking, Platform } from 'react-native';
+import { showAlert } from './alert';
 
 /**
  * Open external URL reliably across Web, iOS, and Android.
@@ -26,9 +27,9 @@ export async function openExternalLink(url: string): Promise<void> {
     console.error(`Failed to open URL "${url}":`, err);
     if (url.startsWith('tel:')) {
       const phoneNumber = url.replace('tel:', '');
-      Alert.alert('Phone Number', `Contact: ${phoneNumber}`);
+      showAlert('Phone Number', `Contact: ${phoneNumber}`);
     } else {
-      Alert.alert('Unable to open link', `Could not navigate to ${url}`);
+      showAlert('Unable to open link', `Could not navigate to ${url}`);
     }
   }
 }

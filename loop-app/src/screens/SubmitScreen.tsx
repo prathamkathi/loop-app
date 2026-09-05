@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Image,
   ActivityIndicator,
-  Alert,
   Platform,
   useWindowDimensions,
 } from 'react-native';
+import { showAlert } from '../utils/alert';
 import { ImageSquare, Clock, MapPin, Sparkle, ShieldWarning, CalendarBlank } from 'phosphor-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -95,14 +95,6 @@ export default function SubmitScreen(props: Props) {
       showAlert('AI Polish Unavailable', apiErrorMessage(error));
     } finally {
       setIsPolishing(false);
-    }
-  };
-
-  const showAlert = (title: string, message?: string) => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      window.alert(message ? `${title}\n\n${message}` : title);
-    } else {
-      Alert.alert(title, message);
     }
   };
 
@@ -264,7 +256,7 @@ export default function SubmitScreen(props: Props) {
       }
     } catch (error) {
       console.error('Submit Error:', error);
-      Alert.alert('Submission Failed', 'An error occurred while submitting the event. Please try again.');
+      showAlert('Submission Failed', 'An error occurred while submitting the event. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

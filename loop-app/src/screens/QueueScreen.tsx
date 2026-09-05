@@ -13,9 +13,9 @@ import {
   ActivityIndicator,
   PanResponder,
   Platform,
-  Alert,
   Modal,
 } from 'react-native';
+import { showAlert } from '../utils/alert';
 import {
   Camera,
   Clock,
@@ -241,7 +241,7 @@ export default function QueueScreen() {
       handleNext();
     } catch (err) {
       console.error('Approve error:', err);
-      Alert.alert('Action Failed', 'Could not approve this event. Please check your permissions.');
+      showAlert('Action Failed', 'Could not approve this event. Please check your permissions.');
     } finally {
       setIsProcessing(false);
     }
@@ -262,7 +262,7 @@ export default function QueueScreen() {
       handleNext();
     } catch (err) {
       console.error('Reject error:', err);
-      Alert.alert('Action Failed', 'Could not reject this event.');
+      showAlert('Action Failed', 'Could not reject this event.');
     } finally {
       setIsProcessing(false);
     }
@@ -281,10 +281,10 @@ export default function QueueScreen() {
       if (!editableItem) {
         setEditableItem(restored);
       }
-      Alert.alert('Event Restored', `"${itemToRestore.title || 'Event'}" has been moved back to Pending Review.`);
+      showAlert('Event Restored', `"${itemToRestore.title || 'Event'}" has been moved back to Pending Review.`);
     } catch (err) {
       console.error('Error restoring event:', err);
-      Alert.alert('Action Failed', 'Could not restore this event.');
+      showAlert('Action Failed', 'Could not restore this event.');
     } finally {
       setIsProcessing(false);
     }
@@ -304,10 +304,10 @@ export default function QueueScreen() {
 
       await updateDoc(doc(db, 'events', itemToApprove.id), updateData);
       setRejectedList((prev) => prev.filter((i) => i.id !== itemToApprove.id));
-      Alert.alert('Event Approved', `"${itemToApprove.title || 'Event'}" is now live on the campus feed!`);
+      showAlert('Event Approved', `"${itemToApprove.title || 'Event'}" is now live on the campus feed!`);
     } catch (err) {
       console.error('Error approving rejected event:', err);
-      Alert.alert('Action Failed', 'Could not approve this event.');
+      showAlert('Action Failed', 'Could not approve this event.');
     } finally {
       setIsProcessing(false);
     }

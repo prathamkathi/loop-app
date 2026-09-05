@@ -2,6 +2,8 @@ import os
 import json
 import time
 import base64
+import socket
+import urllib3.util.connection as urllib3_cn
 import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -9,6 +11,9 @@ import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
 from PIL import Image
+
+# Force IPv4 resolution to prevent macOS IPv6 route hang on googleapis.com
+urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
 
 def get_image_aspect_ratio(image_path: str) -> float:
     """Calculate the aspect ratio (width / height) of an image file using Pillow."""
@@ -66,8 +71,13 @@ def parse_with_gemini(image_paths, caption):
     """Parses poster images and caption using Gemini Vision with structured WhatsApp contact extraction."""
     try:
         prompt_text = (
-            "Extract the following event details from the poster image(s) and caption.\n"
-            "CRITICAL: If there are organizer/coordinator names and phone numbers on the poster, extract up to 2 of them.\n"
+            "Analyze the poster image(s) and caption to extract campus event metadata.\n"
+            "CRITICAL:\n"
+            "1. Determine whether this post is an authentic upcoming campus event (isEvent: true) or an announcement, recruitment, sponsor ad, competition result, or recap (isEvent: false).\n"
+            "2. Classify postKind accurately: 'event', 'announcement', 'recruitment', 'sponsor', 'result', or 'other'.\n"
+            "3. Do NOT hallucinate or fabricate dates, times, or venues. If a date, time, or venue is not announced or missing, output null or empty string.\n"
+            "4. If there are organizer/coordinator names and phone numbers on the poster, extract up to 2 of them.\n"
+            "5. Provide a crisp 1-2 sentence summary.\n"
             f"Caption: {caption}"
         )
         parts = [{"text": prompt_text}]
@@ -90,11 +100,26 @@ def parse_with_gemini(image_paths, caption):
                 "responseSchema": {
                     "type": "OBJECT",
                     "properties": {
+                        "isEvent": {
+                            "type": "BOOLEAN",
+                            "description": "True if this post announces an upcoming campus event/workshop/session. False for sponsorships, recruitment drives, results, general notices, or recaps."
+                        },
+                        "postKind": {
+                            "type": "STRING",
+                            "enum": [
+                                "event",
+                                "announcement",
+                                "recruitment",
+                                "sponsor",
+                                "result",
+                                "other"
+                            ]
+                        },
                         "title": {"type": "STRING"},
-                        "date": {"type": "STRING", "description": "Short date, e.g. 21 Apr, 16 August"},
-                        "startTime": {"type": "STRING", "description": "e.g. 7:30 PM"},
+                        "date": {"type": "STRING", "description": "Short date, e.g. 21 Apr, 16 August, or empty if unannounced"},
+                        "startTime": {"type": "STRING", "description": "e.g. 7:30 PM, or empty if unannounced"},
                         "endTime": {"type": "STRING"},
-                        "venue": {"type": "STRING"},
+                        "venue": {"type": "STRING", "description": "Specific campus venue, or empty if unannounced"},
                         "summary": {"type": "STRING"},
                         "category": {
                             "type": "STRING",
@@ -124,7 +149,7 @@ def parse_with_gemini(image_paths, caption):
                         },
                         "confidenceScore": {"type": "INTEGER"}
                     },
-                    "required": ["title", "date", "startTime", "venue", "category", "confidenceScore"]
+                    "required": ["isEvent", "postKind", "title", "category", "confidenceScore"]
                 }
             }
         }
@@ -136,23 +161,22 @@ def parse_with_gemini(image_paths, caption):
         result_json = None
         for model in models:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
-            max_retries = 3
-            backoff = 60
+            max_retries = 2
+            backoff = 2
             for attempt in range(max_retries):
                 try:
-                    response = requests.post(url, headers=headers, json=payload, timeout=30)
+                    response = requests.post(url, headers=headers, json=payload, timeout=20)
                     if response.status_code == 429:
-                        print(f"[Gemini 429] Rate limited on {model}. Retrying in {backoff}s...")
-                        time.sleep(backoff)
-                        backoff *= 2
-                        continue
+                        print(f"[Gemini 429] Rate limited on {model}. Failing over to next model in chain...")
+                        break
                     response.raise_for_status()
                     result_json = response.json()
                     break
                 except Exception as req_err:
                     print(f"[Gemini Error] Attempt {attempt+1} on {model} failed: {req_err}")
                     if attempt < max_retries - 1:
-                        time.sleep(5)
+                        time.sleep(backoff)
+                        backoff *= 2
             if result_json:
                 break
 

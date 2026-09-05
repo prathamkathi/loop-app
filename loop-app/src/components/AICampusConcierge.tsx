@@ -174,7 +174,16 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
                       { color: isUser ? colors.onPrimary : colors.foreground },
                     ]}
                   >
-                    {m.text}
+                    {m.text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+                      if (part.startsWith('**') && part.endsWith('**')) {
+                        return (
+                          <Text key={i} style={{ fontWeight: '700', color: isUser ? colors.onPrimary : colors.primary }}>
+                            {part.slice(2, -2)}
+                          </Text>
+                        );
+                      }
+                      return part;
+                    })}
                   </Text>
                   <Text
                     style={[
@@ -389,7 +398,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     height: 42,
     outlineStyle: 'none' as any,
   },

@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { guard } from './_lib/guard';
 
-const TEXT_MODELS = ['gemini-2.5-flash', 'gemini-flash-lite-latest'];
+// Prioritize flash-lite models to prevent 429 quota exhaustion on free/dev tiers
+const TEXT_MODELS = ['gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-2.5-flash'];
 
 export default async function handler(req: any, res: any) {
   // Any signed-in user may ask the concierge (students sign in anonymously).

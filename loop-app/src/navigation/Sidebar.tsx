@@ -42,6 +42,9 @@ export default function Sidebar({
             <Pressable
               key={tab.id}
               onPress={() => onTabChange(tab.id)}
+              accessibilityRole="tab"
+              accessibilityLabel={tab.label}
+              accessibilityState={{ selected: active }}
               style={({ pressed }) => [
                 styles.navItem,
                 active && [
@@ -83,6 +86,8 @@ export default function Sidebar({
         {/* Mode Toggle */}
         <Pressable
           onPress={onToggleMode}
+          accessibilityRole="button"
+          accessibilityLabel={`Switch to ${mode === 'student' ? 'Club Studio' : 'Student View'}`}
           style={({ pressed }) => [
             styles.modeToggle,
             {

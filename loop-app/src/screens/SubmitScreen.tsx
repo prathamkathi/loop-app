@@ -11,8 +11,9 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import { ImageSquare, Clock, MapPin, Sparkle, ShieldWarning } from 'phosphor-react-native';
+import { ImageSquare, Clock, MapPin, Sparkle, ShieldWarning, CalendarBlank } from 'phosphor-react-native';
 import * as ImagePicker from 'expo-image-picker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { BlurView } from 'expo-blur';
 import { useTheme, typography, radii, shadows } from '../theme';
 import SectionLabel from '../components/SectionLabel';
@@ -22,6 +23,7 @@ import { db, auth } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { httpsCallable, apiErrorMessage } from '../utils/vercelClient';
 import { onCoordinatorChange } from '../utils/session';
+import { getClubAvatar } from '../data/avatars';
 
 type Props = {
   onNavigate?: (tab: string) => void;
@@ -45,6 +47,33 @@ export default function SubmitScreen(props: Props) {
   const [geminiCategory, setGeminiCategory] = useState<string>('Independent');
   const [geminiConfidence, setGeminiConfidence] = useState<number>(0);
   const [aspectRatio, setAspectRatio] = useState<number>(0.8);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (event.type === 'set' && selectedDate) {
+      const day = selectedDate.getDate();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[selectedDate.getMonth()];
+      const year = selectedDate.getFullYear();
+      setDate(`${day} ${month} ${year}`);
+    }
+  };
+
+  const handleTimeChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
+    setShowTimePicker(Platform.OS === 'ios');
+    if (event.type === 'set' && selectedTime) {
+      let hours = selectedTime.getHours();
+      const minutes = selectedTime.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+      setTime(`${hours}:${minStr} ${ampm}`);
+    }
+  };
+
   const [coordinator, setCoordinator] = useState<boolean | null>(null);
 
   // F-34: Submit writes to Firestore under rules that require the coordinator
@@ -193,12 +222,12 @@ export default function SubmitScreen(props: Props) {
 
       // Read real club identity from claims (F-19)
       let realHost = 'Campus Club';
-      let realAvatar = 'https://res.cloudinary.com/dnse1yvqq/image/upload/v1788420220/loop_avatars/avatar_iitdelhi.jpg';
+      let realAvatar = getClubAvatar('iitdelhi');
       try {
         const tokenResult = await auth.currentUser?.getIdTokenResult();
         if (tokenResult?.claims?.clubId) {
           realHost = tokenResult.claims.clubId as string;
-          // Optionally, mapping clubId to an avatar can be done here or server-side
+          realAvatar = getClubAvatar(realHost);
         }
       } catch (e) {
         console.error('Failed to get club claims', e);
@@ -350,10 +379,59 @@ export default function SubmitScreen(props: Props) {
             <FloatingField label="Event Name" value={title} onChangeText={setTitle} />
             <View style={styles.row}>
               <View style={{ flex: 1 }}>
-                <FloatingField label="Date (e.g. 15 Oct)" value={date} onChangeText={setDate} />
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }}>
+                  <View style={{ flex: 1 }}>
+                    <FloatingField label="Date (e.g. 15 Oct)" value={date} onChangeText={setDate} />
+                  </View>
+                  <Pressable
+                    onPress={() => setShowDatePicker(true)}
+                    style={({ pressed }) => [
+                      styles.pickerBtn,
+                      { borderColor: colors.border, backgroundColor: colors.surface },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                    accessibilityLabel="Pick date from calendar"
+                    accessibilityRole="button"
+                  >
+                    <CalendarBlank size={18} color={colors.primary} weight="bold" />
+                  </Pressable>
+                </View>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateChange}
+                  />
+                )}
               </View>
+
               <View style={{ flex: 1 }}>
-                <FloatingField label="Time (e.g. 6:30 PM)" value={time} onChangeText={setTime} />
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }}>
+                  <View style={{ flex: 1 }}>
+                    <FloatingField label="Time (e.g. 6:30 PM)" value={time} onChangeText={setTime} />
+                  </View>
+                  <Pressable
+                    onPress={() => setShowTimePicker(true)}
+                    style={({ pressed }) => [
+                      styles.pickerBtn,
+                      { borderColor: colors.border, backgroundColor: colors.surface },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                    accessibilityLabel="Pick time"
+                    accessibilityRole="button"
+                  >
+                    <Clock size={18} color={colors.primary} weight="bold" />
+                  </Pressable>
+                </View>
+                {showTimePicker && (
+                  <DateTimePicker
+                    value={new Date()}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleTimeChange}
+                  />
+                )}
               </View>
             </View>
             <FloatingField label="Venue Location" value={venue} onChangeText={setVenue} />
@@ -688,11 +766,20 @@ const styles = StyleSheet.create({
   aiPolishBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: radii.full,
     borderWidth: 1,
+  },
+  pickerBtn: {
+    height: 48,
+    width: 44,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
   },
   aiPolishBtnText: {
     fontSize: 11,

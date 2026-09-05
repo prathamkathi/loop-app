@@ -34,7 +34,7 @@ export default function TopBar({
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
-  // Dynamic greeting: only show Aarav / student name if signed in!
+  // Dynamic greeting: show student name if signed in, otherwise campus greeting
   const greetingText =
     mode === 'studio'
       ? 'Club Studio'
@@ -127,6 +127,8 @@ export default function TopBar({
         {onToggleMode && (
           <Pressable
             onPress={onToggleMode}
+            accessibilityRole="button"
+            accessibilityLabel={`Switch to ${mode === 'student' ? 'Club Studio mode' : 'Student View'}`}
             style={({ pressed }) => [
               styles.modePill,
               {
@@ -152,13 +154,14 @@ export default function TopBar({
         {onNotification && (
           <Pressable
             onPress={onNotification}
+            accessibilityRole="button"
+            accessibilityLabel={`Campus Notifications${notificationCount ? `, ${notificationCount} unread` : ''}`}
             style={({ pressed }) => [
               styles.iconBtn,
               { borderColor: colors.border, backgroundColor: colors.surface },
               Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
               pressed && { transform: [{ scale: 0.92 }] },
             ]}
-            accessibilityLabel="Campus Notifications"
           >
             <Bell size={20} color={colors.foreground} weight="regular" />
             {notificationCount && notificationCount > 0 ? (
@@ -170,13 +173,14 @@ export default function TopBar({
         {/* Single Theme Toggle */}
         <Pressable
           onPress={onToggleTheme}
+          accessibilityRole="button"
+          accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           style={({ pressed }) => [
             styles.iconBtn,
             { borderColor: colors.border, backgroundColor: colors.surface },
             Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
             pressed && { transform: [{ scale: 0.92 }] },
           ]}
-          accessibilityLabel="Toggle dark/light theme"
         >
           {isDark ? (
             <Sun size={20} color={colors.primary} weight="bold" />

@@ -55,8 +55,10 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
+  Timestamp,
   limit,
 } from 'firebase/firestore';
+import { parseDateTimeStrings } from '../utils/timestampUtils';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { onCoordinatorChange } from '../utils/session';
 import { db, auth } from '../config/firebase';
@@ -215,7 +217,7 @@ export default function QueueScreen() {
     if (isProcessing || !editableItem) return;
     setIsProcessing(true);
     try {
-      await updateDoc(doc(db, 'events', editableItem.id), {
+      const updateData: any = {
         status: 'approved',
         title: editableItem.title,
         venue: editableItem.venue,
@@ -227,7 +229,15 @@ export default function QueueScreen() {
         contacts: editableItem.contacts || [],
         actionUrl: editableItem.actionUrl || '',
         approvedAt: serverTimestamp(),
-      });
+      };
+
+      // F-56: Calculate startsAt on approval to preserve chronological feed order
+      const startsAtDate = parseDateTimeStrings(editableItem.date, editableItem.startTime);
+      if (startsAtDate) {
+        updateData.startsAt = Timestamp.fromDate(startsAtDate);
+      }
+
+      await updateDoc(doc(db, 'events', editableItem.id), updateData);
       handleNext();
     } catch (err) {
       console.error('Approve error:', err);
@@ -283,10 +293,16 @@ export default function QueueScreen() {
   const handleApproveRejected = async (itemToApprove: ScrapedItem) => {
     setIsProcessing(true);
     try {
-      await updateDoc(doc(db, 'events', itemToApprove.id), {
+      const updateData: any = {
         status: 'approved',
         approvedAt: serverTimestamp(),
-      });
+      };
+      const startsAtDate = parseDateTimeStrings(itemToApprove.date, itemToApprove.startTime);
+      if (startsAtDate) {
+        updateData.startsAt = Timestamp.fromDate(startsAtDate);
+      }
+
+      await updateDoc(doc(db, 'events', itemToApprove.id), updateData);
       setRejectedList((prev) => prev.filter((i) => i.id !== itemToApprove.id));
       Alert.alert('Event Approved', `"${itemToApprove.title || 'Event'}" is now live on the campus feed!`);
     } catch (err) {

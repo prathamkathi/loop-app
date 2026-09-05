@@ -21,6 +21,7 @@ import EventCard from '../components/EventCard';
 import EmptyState from '../components/EmptyState';
 import { type EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
+import { getEventTimeMillis } from '../utils/timestampUtils';
 
 type Props = {
   interests: Set<string>;
@@ -56,38 +57,40 @@ export default function HomeScreen({
   const isDesktop = width >= 768;
   const isWideDesktop = width >= 1120;
 
-  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Filter chips including ★ Saved
-  const allChips = useMemo(() => {
-    return ['All', `★ Saved (${saved.size})`, ...CATEGORIES.filter((c) => c !== 'All')];
-  }, [saved.size]);
+  // F-41: Filter chips keyed by stable ID, not mutable display strings
+  const allChips = useMemo(() => [
+    { id: 'all', label: 'All' },
+    { id: 'saved', label: `★ Saved (${saved.size})` },
+    ...CATEGORIES.filter((c) => c !== 'All').map((c) => ({ id: c, label: c })),
+  ], [saved.size]);
 
   // Combined Search & Category & Saved Filtering
   const filtered = useMemo(() => {
     let result = liveEvents;
 
-    // F-13: Drop past events and sort by startsAt
-    const now = new Date();
+    // F-50 / F-13: Drop past events and sort by startsAt
+    const nowMs = Date.now();
     result = result
       .filter((e) => {
-        if (!e.startsAt) return true; // keep if no timestamp
-        const eventTime = e.startsAt.toDate ? e.startsAt.toDate() : new Date(e.startsAt);
+        const eventTimeMs = getEventTimeMillis(e.startsAt);
+        if (eventTimeMs === null) return true; // keep undated events
         // keep if event is in the future or started within the last 12 hours
-        return eventTime.getTime() + 12 * 60 * 60 * 1000 >= now.getTime();
+        return eventTimeMs + 12 * 60 * 60 * 1000 >= nowMs;
       })
       .sort((a, b) => {
-        const timeA = a.startsAt?.toDate ? a.startsAt.toDate().getTime() : 0;
-        const timeB = b.startsAt?.toDate ? b.startsAt.toDate().getTime() : 0;
+        const timeA = getEventTimeMillis(a.startsAt) ?? Number.MAX_SAFE_INTEGER;
+        const timeB = getEventTimeMillis(b.startsAt) ?? Number.MAX_SAFE_INTEGER;
         return timeA - timeB;
       });
 
-    // Filter by category, saved, or interests (F-11)
-    if (activeCategory.startsWith('★ Saved')) {
+    // Filter by category, saved, or interests (F-41 / F-11)
+    if (activeCategoryId === 'saved') {
       result = result.filter((e) => saved.has(e.id));
-    } else if (activeCategory !== 'All') {
-      result = result.filter((e) => e.category === activeCategory);
+    } else if (activeCategoryId !== 'all') {
+      result = result.filter((e) => e.category === activeCategoryId);
     } else if (interests.size > 0) {
       // F-11: Wire interests into the filter body when viewing 'All'
       result = result.filter((e) => interests.has(e.category));
@@ -106,10 +109,25 @@ export default function HomeScreen({
     }
 
     return result;
-  }, [activeCategory, searchQuery, interests, liveEvents, saved]);
+  }, [activeCategoryId, searchQuery, interests, liveEvents, saved]);
 
-  const featured = filtered.find((e) => e.featured) ?? filtered[0];
-  const rest = filtered.filter((e) => e.id !== featured?.id);
+  // Featured selection: requires explicit featured: true OR startsAt within 48h
+  const featured = useMemo(() => {
+    const explicitlyFeatured = filtered.find((e) => e.featured);
+    if (explicitlyFeatured) return explicitlyFeatured;
+
+    const nowMs = Date.now();
+    const fortyEightHoursMs = 48 * 60 * 60 * 1000;
+    
+    return filtered.find((e) => {
+      const timeMs = getEventTimeMillis(e.startsAt);
+      return timeMs !== null && timeMs >= nowMs - (6 * 60 * 60 * 1000) && timeMs <= nowMs + fortyEightHoursMs;
+    });
+  }, [filtered]);
+
+  const rest = useMemo(() => {
+    return featured ? filtered.filter((e) => e.id !== featured.id) : filtered;
+  }, [filtered, featured]);
 
   // F-23: a failed load must not look like a campus with nothing on tonight.
   if (error && liveEvents.length === 0) {
@@ -147,7 +165,7 @@ export default function HomeScreen({
   }
 
   const handleReset = () => {
-    setActiveCategory('All');
+    setActiveCategoryId('all');
     setSearchQuery('');
     onResetFilters();
   };
@@ -194,13 +212,12 @@ export default function HomeScreen({
       <View style={styles.filterSection}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
           {allChips.map((chip) => {
-            const isSelected = activeCategory === chip;
-            const isSavedChip = chip.startsWith('★ Saved');
+            const isSelected = activeCategoryId === chip.id;
 
             return (
               <Pressable
-                key={chip}
-                onPress={() => setActiveCategory(chip)}
+                key={chip.id}
+                onPress={() => setActiveCategoryId(chip.id)}
                 style={({ pressed }) => [
                   styles.chip,
                   {
@@ -211,7 +228,7 @@ export default function HomeScreen({
                   Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
                 ]}
                 accessibilityRole="button"
-                accessibilityLabel={`Filter by ${chip}`}
+                accessibilityLabel={`Filter by ${chip.label}`}
               >
                 <Text
                   style={[
@@ -222,7 +239,7 @@ export default function HomeScreen({
                     },
                   ]}
                 >
-                  {chip}
+                  {chip.label}
                 </Text>
               </Pressable>
             );
@@ -232,7 +249,7 @@ export default function HomeScreen({
 
       {/* Empty State when no events match */}
       {filtered.length === 0 ? (
-        activeCategory.startsWith('★ Saved') ? (
+        activeCategoryId === 'saved' ? (
           <View style={[styles.emptySavedBox, { borderColor: colors.border }]}>
             <BookmarkSimple size={44} color={colors.primary} weight="light" />
             <Text style={[styles.emptySavedTitle, { color: colors.foreground }]}>No Saved Events Yet</Text>
@@ -240,7 +257,7 @@ export default function HomeScreen({
               Bookmark any event card with the ribbon icon to easily track it here.
             </Text>
             <Pressable
-              onPress={() => setActiveCategory('All')}
+              onPress={() => setActiveCategoryId('all')}
               style={({ pressed }) => [
                 styles.browseBtn,
                 { backgroundColor: colors.primary },
@@ -329,7 +346,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     height: '100%',
     outlineStyle: 'none' as any,
   },

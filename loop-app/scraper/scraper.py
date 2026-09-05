@@ -169,14 +169,19 @@ def run_apify_pipeline():
         category = (parsed_data.get("category") or "Cultural & Arts").strip()
         confidence = parsed_data.get("confidenceScore", 0)
 
-        invalid_markers = ["not specified", "none", "null", "tbd", "tba", "unknown", "n/a", ""]
+        # F-53: Expanded invalid markers to filter out circulars and non-events
+        invalid_markers = [
+            "not specified", "none", "null", "tbd", "tba", "unknown", "n/a", "",
+            "not available", "ongoing", "not provided", "tbc"
+        ]
         if not title or title.lower() in invalid_markers:
             print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid title ('{title}').")
             if temp_img_path and os.path.exists(temp_img_path):
                 os.remove(temp_img_path)
             continue
 
-        if not date or date.lower() in invalid_markers or len(date) < 3:
+        date_lower = date.lower()
+        if not date or date_lower in invalid_markers or any(m in date_lower for m in ["not available", "ongoing", "not specified"]) or len(date) < 3:
             print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid date ('{date}').")
             if temp_img_path and os.path.exists(temp_img_path):
                 os.remove(temp_img_path)
@@ -194,38 +199,35 @@ def run_apify_pipeline():
                 os.remove(temp_img_path)
             continue
 
+        # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
+        try:
+            existing_matches = db.collection('events').where('host', '==', f"@{handle}").where('title', '==', title).limit(1).get()
+            if existing_matches:
+                print(f"[Dedupe Skip] Event '{title}' from @{handle} already exists in Firestore.")
+                if temp_img_path and os.path.exists(temp_img_path):
+                    os.remove(temp_img_path)
+                continue
+        except Exception as dedup_err:
+            print(f"[Warn] Secondary deduplication check failed: {dedup_err}")
+
         # Sanitize WhatsApp contacts
         clean_contacts = []
         for c in parsed_data.get("contacts", []):
             c_name = (c.get("name") or "").strip()
-            raw_phone = re.sub(r'[^\d]', '', c.get("phone") or "")
-            role = (c.get("role") or "Coordinator").strip()
-            if raw_phone and len(raw_phone) >= 10:
-                clean_phone = raw_phone[-10:]  # Standard 10-digit
+            c_phone = (c.get("phone") or "").strip()
+            c_role = (c.get("role") or "").strip()
+            if c_name and c_phone:
                 clean_contacts.append({
-                    "name": c_name or "Organizer",
-                    "phone": clean_phone,
-                    "role": role
+                    "name": c_name,
+                    "phone": c_phone,
+                    "role": c_role
                 })
 
-        # Calculate Aspect Ratio
-        w = item.get("dimensionsWidth")
-        h = item.get("dimensionsHeight")
-        aspect_ratio = round(w / h, 2) if (w and h) else 1.0
+        # 3. Cloudinary Upload (Optimized Cover Image)
+        print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
+        public_url = upload_image_to_cloudinary(temp_img_path)
+        aspect_ratio = get_image_aspect_ratio(temp_img_path)
 
-        # 3. Upload the validated poster to Cloudinary
-        print("[Storage] Uploading validated primary cover image to Cloudinary...")
-        try:
-            public_url = upload_image_to_cloudinary(temp_img_path)
-        except Exception as cloud_err:
-            print(f"[Error] Failed to upload image to Cloudinary: {cloud_err}")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        # The helper reports failure by returning None rather than raising, so
-        # the except above never fires. Without this the event is queued with
-        # no poster and renders as a blank card.
         if not public_url:
             print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed.")
             if temp_img_path and os.path.exists(temp_img_path):
@@ -245,7 +247,7 @@ def run_apify_pipeline():
                 "image": public_url,
                 "category": category,
                 "confidence": confidence / 100,
-                "status": "approved",  # Auto-approved for immediate feed visibility
+                "status": "pending",  # F-59: Queued as pending for coordinator review
                 "host": f"@{handle}",
                 "hostAvatar": get_avatar_for_handle(handle),
                 "aspect": "tall" if aspect_ratio < 0.9 else "wide" if aspect_ratio > 1.2 else "square",
@@ -253,23 +255,24 @@ def run_apify_pipeline():
                 "contacts": clean_contacts,
                 "createdAt": firestore.SERVER_TIMESTAMP,
             }
-            # Parse date + time into a sortable timestamp (Phase 2: startsAt)
+            # Parse date + time into a sortable timestamp (startsAt)
             try:
                 # Try common formats: "21 Apr", "16 August", "2026-04-21"
-                year = datetime.now().year
+                now = datetime.now()
+                year = now.year
                 date_with_year = f"{date} {year}" if str(year) not in date else date
                 for fmt in ["%d %b %Y", "%d %B %Y", "%Y-%m-%d"]:
                     try:
                         dt = datetime.strptime(date_with_year, fmt)
-                        # If parsed month is behind current month, assume next year
-                        if dt.month < datetime.now().month:
+                        # F-51: Only roll over year if we are in Nov/Dec looking at Jan/Feb
+                        if now.month in [11, 12] and dt.month in [1, 2]:
                             dt = dt.replace(year=year + 1)
                         event_doc["startsAt"] = dt
                         break
                     except ValueError:
                         continue
             except Exception:
-                pass  # startsAt stays absent — backfill script will fix
+                pass  # startsAt stays absent
             doc_ref.set(event_doc)
             print(f"[Success] Queued event '{title}' with {len(clean_contacts)} WhatsApp contact(s)!")
             events_queued += 1

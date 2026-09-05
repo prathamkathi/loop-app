@@ -218,6 +218,7 @@ function AppContent() {
   const renderScreen = () => {
     switch (activeTab) {
       case 'home':
+      case 'studio_home':
         return (
           <HomeScreen
             interests={interests}
@@ -228,10 +229,11 @@ function AppContent() {
             onToggleSave={toggleSave}
             onOpenEvent={setActiveEvent}
             onResetFilters={resetFilters}
-            onEditInterests={() => setActiveTab('curate')}
+            onEditInterests={() => setActiveTab(mode === 'studio' ? 'studio_home' : 'curate')}
           />
         );
       case 'pulse':
+      case 'studio_pulse':
         return <PulseScreen />;
       case 'directory':
         return <DirectoryScreen />;

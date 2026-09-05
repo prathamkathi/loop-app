@@ -1,18 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EventItem } from '../data/events';
+import { getEventTimeMillis } from './timestampUtils';
 
 export type NotificationItem = {
   id: string;
   title: string;
   body: string;
   time: string;
-  type: 'urgent' | 'event' | 'system';
+  type: 'urgent' | 'event' | 'bazaar' | 'system';
   read: boolean;
   eventId?: string;
   category?: string;
 };
 
-const READ_NOTIFICATIONS_KEY = '@loop_read_notification_ids';
+const READ_NOTIFICATIONS_KEY = '@loop_read_notifications';
 
 /**
  * Loads stored read notification IDs from AsyncStorage.
@@ -51,8 +52,16 @@ export async function generateCampusNotifications(
   const readIds = await getReadNotificationIds();
   const notifications: NotificationItem[] = [];
 
+  // F-55: Pre-filter out past/expired events (>12 hours ago)
+  const nowMs = Date.now();
+  const upcomingEvents = liveEvents.filter((e) => {
+    const timeMs = getEventTimeMillis(e.startsAt);
+    if (timeMs === null) return true; // Keep undated notices/announcements
+    return timeMs + 12 * 60 * 60 * 1000 >= nowMs;
+  });
+
   // 1. URGENT & OFFICIAL CAMPUS NOTICES
-  const noticeEvents = liveEvents.filter(
+  const noticeEvents = upcomingEvents.filter(
     (e) =>
       e.category === 'Campus Notices' ||
       /notice|circular|survey|deadline|protocol|admissions|guidelines/i.test(e.title)
@@ -77,7 +86,7 @@ export async function generateCampusNotifications(
   }
 
   // 2. SAVED EVENT REMINDERS (Bookmarked by student)
-  const savedEvents = liveEvents.filter((e) => savedIds.has(e.id));
+  const savedEvents = upcomingEvents.filter((e) => savedIds.has(e.id));
   for (const event of savedEvents) {
     const id = `notif_saved_${event.id}`;
     notifications.push({
@@ -93,7 +102,7 @@ export async function generateCampusNotifications(
   }
 
   // 3. CURATED PICKS MATCHING STUDENT INTERESTS
-  const interestEvents = liveEvents.filter(
+  const interestEvents = upcomingEvents.filter(
     (e) =>
       interestCategories.has(e.category) &&
       !savedIds.has(e.id) &&

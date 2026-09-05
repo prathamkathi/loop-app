@@ -196,27 +196,6 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
               </Text>
             </View>
 
-            {/* Top Right Buttons: Poster Lightbox + Save */}
-            <View style={styles.topRightActions}>
-              {event.image && (
-                <Pressable
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setShowLightbox(true);
-                  }}
-                  style={({ pressed }) => [
-                    styles.lightboxBtn,
-                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                    pressed && { transform: [{ scale: 0.9 }] },
-                  ]}
-                  accessibilityLabel="Inspect full poster"
-                >
-                  <MagnifyingGlassPlus size={15} color="#FFFFFF" weight="bold" />
-                </Pressable>
-              )}
-              <SaveButton saved={saved} onPress={onToggleSave} light />
-            </View>
-
             {event.fillingFast && (
               <View style={[styles.fillingBadge, { backgroundColor: colors.surface }]}>
                 <PulseDot color={colors.primary} />
@@ -276,6 +255,25 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index }
             </View>
           </View>
         </Pressable>
+
+        {/* F-29: Top Right Actions placed outside of card press target */}
+        <View style={[styles.topRightActions, { zIndex: 10 }]}>
+          {event.image && (
+            <Pressable
+              onPress={() => setShowLightbox(true)}
+              style={({ pressed }) => [
+                styles.lightboxBtn,
+                Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                pressed && { transform: [{ scale: 0.9 }] },
+              ]}
+              accessibilityLabel="Inspect full poster"
+              accessibilityRole="button"
+            >
+              <MagnifyingGlassPlus size={15} color="#FFFFFF" weight="bold" />
+            </Pressable>
+          )}
+          <SaveButton saved={saved} onPress={onToggleSave} light />
+        </View>
 
         {/* Action Link Button (if notice has actionUrl or registration link) */}
         {event.actionUrl && (

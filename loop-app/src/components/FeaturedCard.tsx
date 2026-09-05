@@ -36,24 +36,25 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
 
   return (
     <>
-      <Pressable
-        onPress={onPress}
-        style={({ pressed, hovered }: any) => [
+      <View
+        style={[
           styles.card,
           {
             aspectRatio: isDesktop ? 16 / 9 : 16 / 10,
           },
           Platform.OS === 'web' && ({
-            cursor: 'pointer',
             transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease',
           } as any),
-          Platform.OS === 'web' && hovered && ({
-            transform: [{ translateY: -4 }, { scale: 1.01 }],
-            boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.5)' : '0 20px 40px rgba(138,21,56,0.18)',
-          } as any),
-          pressed && { transform: [{ scale: 0.99 }] },
         ]}
       >
+        {/* F-29: Dedicated background card press target */}
+        <Pressable
+          onPress={onPress}
+          style={StyleSheet.absoluteFill}
+          accessibilityLabel={`View details for ${event.title}`}
+          accessibilityRole="button"
+        />
+
         {/* Ambient background + contained foreground */}
         {!event.image || imgError ? (
           <LinearGradient
@@ -201,7 +202,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
             )}
           </View>
         </View>
-      </Pressable>
+      </View>
 
       {/* High-Resolution Poster Lightbox Modal */}
       {event.image && (

@@ -4,7 +4,7 @@ import { House, Pulse, Compass, SlidersHorizontal, PlusCircle, Stack } from 'pho
 import { useTheme, typography, radii, shadows } from '../theme';
 import { BlurView } from 'expo-blur';
 
-export type TabId = 'home' | 'pulse' | 'directory' | 'curate' | 'submit' | 'queue';
+export type TabId = 'home' | 'pulse' | 'directory' | 'curate' | 'submit' | 'queue' | 'studio_home' | 'studio_pulse';
 
 type Tab = {
   id: TabId;
@@ -20,10 +20,10 @@ export const STUDENT_TABS: Tab[] = [
 ];
 
 export const STUDIO_TABS: Tab[] = [
-  { id: 'home', label: 'Home', Icon: House },
-  { id: 'submit', label: 'Submit', Icon: PlusCircle },
   { id: 'queue', label: 'Queue', Icon: Stack },
-  { id: 'pulse', label: 'Pulse', Icon: Pulse },
+  { id: 'submit', label: 'Submit', Icon: PlusCircle },
+  { id: 'studio_home', label: 'Live Feed', Icon: House },
+  { id: 'studio_pulse', label: 'Pulse', Icon: Pulse },
 ];
 
 type Props = {

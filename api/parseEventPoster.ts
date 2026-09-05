@@ -40,38 +40,49 @@ export default async function handler(req: any, res: any) {
     if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-pro',
-      systemInstruction: SYSTEM_PROMPT,
-      generationConfig: {
-        temperature: 0.1,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-        responseMimeType: 'application/json',
-      },
-    });
-
     const userPrompt = caption
       ? 'Extract this event poster. The Instagram caption reads: "' + caption + '"'
       : 'Extract this.';
-
     const base64Data = imageB64.includes(',') ? imageB64.split(',')[1] : imageB64;
 
-    const result = await model.generateContent([
-      userPrompt,
-      { inlineData: { data: base64Data, mimeType } },
-    ]);
+    const POSTER_MODELS = ['gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-2.5-flash'];
+    let lastError: any = null;
 
-    const text = result.response.text();
-    const cleanText = text.replace(/```(?:json)?|```/gi, '').trim();
-    const parsed = JSON.parse(cleanText);
+    for (const modelName of POSTER_MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: SYSTEM_PROMPT,
+          generationConfig: {
+            temperature: 0.1,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+            responseMimeType: 'application/json',
+          },
+        });
 
-    if (parsed.category && !ALLOWED_CATEGORIES.includes(parsed.category)) {
-      parsed.category = null;
+        const result = await model.generateContent([
+          userPrompt,
+          { inlineData: { data: base64Data, mimeType } },
+        ]);
+
+        const text = result.response.text();
+        const cleanText = text.replace(/```(?:json)?|```/gi, '').trim();
+        const parsed = JSON.parse(cleanText);
+
+        if (parsed.category && !ALLOWED_CATEGORIES.includes(parsed.category)) {
+          parsed.category = null;
+        }
+
+        // Wrap in { data: ... } to match Firebase callable response format in frontend
+        return res.status(200).json({ data: parsed });
+      } catch (err: any) {
+        lastError = err;
+        // Try next model
+      }
     }
 
-    // Wrap in { data: ... } to match Firebase callable response format in frontend
-    res.status(200).json({ data: parsed });
+    throw lastError || new Error('All vision extraction models failed.');
   } catch (error: any) {
     console.error('Gemini error:', error);
     res.status(500).json({ error: 'Gemini extraction failed.', details: error.message });

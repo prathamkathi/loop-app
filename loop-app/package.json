@@ -6,10 +6,8 @@
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo-google-fonts/outfit": "^0.4.3",
     "@expo/metro-runtime": "~57.0.15",
-    "@google/generative-ai": "^0.24.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "^9.2.0",
-    "cloudinary": "^2.0.0",
     "expo": "~57.0.19",
     "expo-blur": "~57.0.2",
     "expo-font": "~57.0.3",
@@ -19,7 +17,6 @@
     "expo-splash-screen": "~57.0.2",
     "expo-status-bar": "~57.0.1",
     "firebase": "^12.18.0",
-    "firebase-admin": "^12.7.0",
     "phosphor-react-native": "^3.0.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -37,11 +34,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "typecheck": "tsc --noEmit",
     "build:web": "expo export -p web && node -e 'const fs = require(\"fs\"); const file = \"dist/index.html\"; let html = fs.readFileSync(file, \"utf8\"); if (!html.includes(\"fonts.googleapis.com\")) { const fonts = \"<link rel=\\\"preconnect\\\" href=\\\"https://fonts.googleapis.com\\\" />\\n    <link rel=\\\"preconnect\\\" href=\\\"https://fonts.gstatic.com\\\" crossorigin />\\n    <link href=\\\"https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap\\\" rel=\\\"stylesheet\\\" />\\n  \"; html = html.replace(\"<link rel=\\\"icon\\\"\", fonts + \"<link rel=\\\"icon\\\"\"); fs.writeFileSync(file, html); console.log(\"Injected Google Fonts\"); }'",
-    "scraper": "cd scraper && source venv/bin/activate && python scraper.py",
-    "scraper:bg": "nohup ./scraper/run_background_scraper.sh > /dev/null 2>&1 &",
-    "scraper:stop": "./scraper/stop_background_scraper.sh",
-    "scraper:logs": "tail -f ./scraper/scraper_bg.log"
+    "scraper": "cd scraper && source venv/bin/activate && python scraper.py"
   },
   "private": true
 }

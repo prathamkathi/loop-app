@@ -12,9 +12,8 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p api/tsconfig.json",
     "scraper": "cd loop-app/scraper && source venv/bin/activate && python scraper.py",
-    "scraper:bg": "nohup ./loop-app/scraper/run_background_scraper.sh > /dev/null 2>&1 &",
-    "scraper:stop": "./loop-app/scraper/stop_background_scraper.sh",
-    "scraper:logs": "tail -f ./loop-app/scraper/scraper_bg.log"
+    "scraper:dry": "cd loop-app/scraper && source venv/bin/activate && python scraper.py --dry-run"
   }
 }

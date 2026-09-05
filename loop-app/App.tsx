@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { collection, query, where, getDocs, onSnapshot, limit } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, limit, orderBy } from "firebase/firestore";
 import { db } from './src/config/firebase';
 import { ensureSignedIn } from './src/utils/session';
 import { useCustomFonts } from "./src/utils/useFonts";
@@ -115,31 +115,57 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    // F-21, F-22: Live data via onSnapshot
-    const q = query(
+    // B-03 & D-1: Live events query with orderBy('startsAt', 'asc') and graceful fallback
+    const qOrdered = query(
       collection(db, 'events'), 
-      where("status", "==", "approved"), limit(50)
-      // Note: we can't use orderBy('startsAt') here easily because of the compound index requirement
-      // and we just added the index. The client sorts it anyway in HomeScreen.
+      where("status", "==", "approved"),
+      orderBy("startsAt", "asc"),
+      limit(50)
     );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetched = snapshot.docs.map((doc) => ({
+    const qFallback = query(
+      collection(db, 'events'), 
+      where("status", "==", "approved"),
+      limit(50)
+    );
+
+    let activeUnsubscribe: (() => void) | null = null;
+
+    const handleSnapshot = (snapshot: any) => {
+      const fetched = snapshot.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
       })) as EventItem[];
       setLiveEvents(fetched);
       setEventsLoading(false);
+      setFeedError(null);
       
       import('@react-native-async-storage/async-storage').then(({ default: AsyncStorage }) => {
         AsyncStorage.setItem('@loop_feed_cache', JSON.stringify(fetched)).catch(console.warn);
       });
-    }, (error) => {
-      console.error('Failed to load live events:', error);
-      setFeedError("Couldn't load events. Pull to refresh or try again shortly.");
-      setEventsLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    activeUnsubscribe = onSnapshot(
+      qOrdered,
+      handleSnapshot,
+      (err) => {
+        console.warn('Ordered query failed (index may still be deploying), falling back to unordered feed:', err);
+        // Fall back to unordered query so a missing/deploying index never blanks the feed
+        if (activeUnsubscribe) activeUnsubscribe();
+        activeUnsubscribe = onSnapshot(
+          qFallback,
+          handleSnapshot,
+          (fallbackErr) => {
+            console.error('Failed to load live events even on fallback:', fallbackErr);
+            setFeedError("Couldn't load events. Pull to refresh or try again shortly.");
+            setEventsLoading(false);
+          }
+        );
+      }
+    );
+
+    return () => {
+      if (activeUnsubscribe) activeUnsubscribe();
+    };
   }, []);
 
   // F-42: Dynamic campus notifications sync

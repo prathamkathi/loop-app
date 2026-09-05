@@ -167,6 +167,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        } as any)
+      : {}),
   },
   sheet: {
     width: '100%',
@@ -174,6 +180,12 @@ const styles = StyleSheet.create({
     borderRadius: radii.xl,
     borderWidth: 1.5,
     overflow: 'hidden',
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(30px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+        } as any)
+      : {}),
   },
   header: {
     flexDirection: 'row',

@@ -64,6 +64,13 @@ function AppContent() {
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.title = 'Loop | IIT Delhi Events';
+      if (!document.getElementById('loop-fonts-stylesheet')) {
+        const link = document.createElement('link');
+        link.id = 'loop-fonts-stylesheet';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap';
+        document.head.appendChild(link);
+      }
     }
     (async () => {
       const [storedInterests, interestsSet, storedSaved, storedReminder] = await Promise.all([

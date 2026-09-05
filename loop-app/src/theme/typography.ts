@@ -11,13 +11,17 @@
 import { Platform, TextStyle } from 'react-native';
 
 const outfitFamily = Platform.select({
-  web: '"Outfit", "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif',
-  default: 'Outfit',
+  web: '"Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  ios: 'Outfit_600SemiBold',
+  android: 'Outfit_600SemiBold',
+  default: 'Outfit_600SemiBold',
 });
 
 const geistFamily = Platform.select({
-  web: '"Geist", "Satoshi", ui-sans-serif, system-ui, sans-serif',
-  default: 'Geist',
+  web: '"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  ios: 'Geist_400Regular',
+  android: 'Geist_400Regular',
+  default: 'Geist_400Regular',
 });
 
 export const typography = {

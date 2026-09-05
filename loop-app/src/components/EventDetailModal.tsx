@@ -53,8 +53,9 @@ type Props = {
 
 export default function EventDetailModal({ event, saved, onToggleSave, onClose }: Props) {
   const { colors, isDark } = useTheme();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isDesktop = width >= 768;
+  const drawerHeight = Math.max(height || 850, 800);
 
   // Animations
   const animValue = useRef(new Animated.Value(0)).current;
@@ -85,15 +86,20 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   useEffect(() => {
     Animated.timing(animValue, {
       toValue: 1,
-      duration: 350,
-      easing: Easing.bezier(0.22, 1, 0.36, 1),
+      duration: 380,
+      easing: Easing.bezier(0.16, 1, 0.3, 1),
       useNativeDriver: true,
     }).start();
   }, [animValue]);
 
   const translateY = animValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [500, 0],
+    outputRange: [drawerHeight, 0],
+  });
+
+  const sheetScale = animValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [isDesktop ? 0.96 : 1, 1],
   });
 
   const backdropOpacity = animValue.interpolate({
@@ -104,8 +110,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   const handleClose = () => {
     Animated.timing(animValue, {
       toValue: 0,
-      duration: 250,
-      easing: Easing.out(Easing.ease),
+      duration: 260,
+      easing: Easing.bezier(0.32, 0, 0.67, 0),
       useNativeDriver: true,
     }).start(() => onClose());
   };
@@ -163,17 +169,28 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
           style={[
             styles.modal,
             {
-              backgroundColor: colors.background,
+              backgroundColor: isDark ? 'rgba(18, 18, 24, 0.90)' : 'rgba(255, 255, 255, 0.92)',
               maxWidth: isDesktop ? 540 : '100%',
               borderTopLeftRadius: radii.xxxl,
               borderTopRightRadius: radii.xxxl,
               borderBottomLeftRadius: isDesktop ? radii.xxxl : 0,
               borderBottomRightRadius: isDesktop ? radii.xxxl : 0,
-              transform: [{ translateY }],
+              borderTopWidth: 1,
+              borderLeftWidth: isDesktop ? 1 : 0,
+              borderRightWidth: isDesktop ? 1 : 0,
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
+              transform: [{ translateY }, { scale: sheetScale }],
             },
             isDesktop && shadows.cardHover,
           ]}
         >
+          {/* Mobile Drawer Pull Indicator */}
+          {!isDesktop && (
+            <View style={styles.sheetHandleWrap} pointerEvents="none">
+              <View style={[styles.sheetHandle, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.25)' }]} />
+            </View>
+          )}
+
           {/* Hero Image Container (Tap to open full uncropped flyer) */}
           <Pressable
             onPress={() => setShowLightbox(true)}
@@ -385,7 +402,15 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
           </ScrollView>
 
           {/* Action Bar */}
-          <View style={[styles.actionBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <View
+            style={[
+              styles.actionBar,
+              {
+                backgroundColor: isDark ? 'rgba(18, 18, 24, 0.85)' : 'rgba(255, 255, 255, 0.88)',
+                borderTopColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+              },
+            ]}
+          >
             <Pressable
               onPress={onToggleSave}
               style={({ pressed }) => [
@@ -494,15 +519,44 @@ const detailStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(10, 10, 12, 0.65)',
+    backgroundColor: 'rgba(8, 8, 12, 0.60)',
     justifyContent: 'flex-end',
     alignItems: 'center',
     zIndex: 50,
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        } as any)
+      : {}),
   },
   modal: {
     width: '100%',
     maxHeight: '92%',
     overflow: 'hidden',
+    position: 'relative',
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          boxShadow: '0 -16px 48px rgba(0, 0, 0, 0.5)',
+        } as any)
+      : {}),
+  },
+  sheetHandleWrap: {
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 8,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 25,
+  },
+  sheetHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
   },
   hero: {
     width: '100%',
@@ -722,6 +776,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderTopWidth: 1,
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+        } as any)
+      : {}),
   },
   iconBtn: {
     width: 46,

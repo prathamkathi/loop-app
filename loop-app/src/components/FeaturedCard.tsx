@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   title: {
-    fontFamily: 'Fraunces_600SemiBold',
+    ...typography.titleXl,
     fontSize: 22,
     lineHeight: 28,
     color: '#FFFFFF',

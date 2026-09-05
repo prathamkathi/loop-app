@@ -110,8 +110,8 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
           style={[
             styles.container,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: isDark ? 'rgba(20, 20, 26, 0.92)' : 'rgba(255, 255, 255, 0.94)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
               maxWidth: isDesktop ? 620 : '100%',
             },
           ]}
@@ -264,10 +264,16 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: 'rgba(0, 0, 0, 0.60)',
     justifyContent: 'flex-end',
     alignItems: 'center',
     zIndex: 100,
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        } as any)
+      : {}),
   },
   container: {
     width: '100%',
@@ -277,6 +283,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
     display: 'flex',
+    ...(Platform.OS === 'web'
+      ? ({
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          boxShadow: '0 -16px 48px rgba(0, 0, 0, 0.5)',
+        } as any)
+      : {}),
   },
   header: {
     flexDirection: 'row',

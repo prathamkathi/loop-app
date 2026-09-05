@@ -214,12 +214,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   wordmark: {
-    fontFamily: 'Fraunces_700Bold',
+    fontFamily: typography.displayMd.fontFamily,
+    fontWeight: '700',
     fontSize: 22,
     letterSpacing: -0.5,
   },
   desktopTitle: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: typography.displayMd.fontFamily,
+    fontWeight: '600',
     fontSize: 22,
     letterSpacing: -0.3,
   },

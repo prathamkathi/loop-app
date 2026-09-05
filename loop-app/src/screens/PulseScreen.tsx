@@ -5,7 +5,7 @@ import { useTheme, typography } from '../theme';
 import SectionLabel from '../components/SectionLabel';
 import { type PulseItem } from '../data/pulse';
 import { openExternalLink } from '../utils/linking';
-import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, limit, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 function AnimatedWrapper({ index, children }: { index: number; children: React.ReactNode }) {
@@ -72,9 +72,21 @@ export default function PulseScreen() {
   };
 
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    try {
+      const q = query(collection(db, 'pulse'), orderBy("createdAt", "desc"), limit(50));
+      const snapshot = await getDocs(q);
+      const items: PulseItem[] = [];
+      snapshot.forEach((doc) => {
+        items.push({ id: doc.id, ...doc.data() } as PulseItem);
+      });
+      setPulseItems(items);
+    } catch (err) {
+      console.warn('Failed to refresh pulse notices:', err);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
   return (

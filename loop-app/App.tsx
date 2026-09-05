@@ -168,6 +168,42 @@ function AppContent() {
     };
   }, []);
 
+  const refetchEvents = useCallback(async () => {
+    try {
+      const qOrdered = query(
+        collection(db, 'events'),
+        where("status", "==", "approved"),
+        orderBy("startsAt", "asc"),
+        limit(50)
+      );
+      const snap = await getDocs(qOrdered);
+      const fetched = snap.docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as EventItem[];
+      setLiveEvents(fetched);
+      setFeedError(null);
+    } catch (err) {
+      try {
+        const qFallback = query(
+          collection(db, 'events'),
+          where("status", "==", "approved"),
+          limit(50)
+        );
+        const snap = await getDocs(qFallback);
+        const fetched = snap.docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as EventItem[];
+        setLiveEvents(fetched);
+        setFeedError(null);
+      } catch (fallbackErr) {
+        console.error('Refetch failed:', fallbackErr);
+        setFeedError("Couldn't reload events. Please check your connection.");
+      }
+    }
+  }, []);
+
   // F-42: Dynamic campus notifications sync
   useEffect(() => {
     generateCampusNotifications(liveEvents, saved, interests).then((notifs) => {
@@ -259,6 +295,7 @@ function AppContent() {
             liveEvents={liveEvents}
             loading={eventsLoading}
             error={feedError}
+            onRefresh={refetchEvents}
             onToggleSave={toggleSave}
             onOpenEvent={setActiveEvent}
             onResetFilters={resetFilters}
@@ -291,6 +328,7 @@ function AppContent() {
             liveEvents={liveEvents}
             loading={eventsLoading}
             error={feedError}
+            onRefresh={refetchEvents}
             onToggleSave={toggleSave}
             onOpenEvent={setActiveEvent}
             onResetFilters={resetFilters}

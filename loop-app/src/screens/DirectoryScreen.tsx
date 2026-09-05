@@ -3,7 +3,7 @@ import {
   View,
   Text,
   Image,
-  ScrollView, RefreshControl,
+  ScrollView,
   Pressable,
   StyleSheet,
   Animated,
@@ -66,12 +66,6 @@ export default function DirectoryScreen() {
     return CLUBS.filter((c) => c.parentTag === activeFilter);
   }, [activeFilter]);
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
-
   return (
     <ScrollView
       style={[
@@ -80,7 +74,6 @@ export default function DirectoryScreen() {
       ]}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
     >
       <SectionLabel>Campus Directory</SectionLabel>
       <Text style={[styles.heading, { color: colors.foreground }]}>

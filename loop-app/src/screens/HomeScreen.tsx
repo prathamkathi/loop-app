@@ -30,6 +30,7 @@ type Props = {
   liveEvents: EventItem[];
   loading: boolean;
   error?: string | null;
+  onRefresh?: () => Promise<void>;
   onToggleSave: (id: string) => void;
   onOpenEvent: (event: EventItem) => void;
   onResetFilters: () => void;
@@ -42,6 +43,7 @@ export default function HomeScreen({
   liveEvents,
   loading,
   error,
+  onRefresh,
   onToggleSave,
   onOpenEvent,
   onResetFilters,
@@ -49,10 +51,15 @@ export default function HomeScreen({
 }: Props) {
   const { colors, isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
+    if (!onRefresh) return;
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    try {
+      await onRefresh();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [onRefresh]);
 
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
@@ -246,7 +253,7 @@ export default function HomeScreen({
       ]}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+      refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} /> : undefined}
     >
       {/* Luma-Style View Mode Switcher (Upcoming vs Concluded Campus Archive) */}
       <View style={styles.lumaSwitcherWrapper}>

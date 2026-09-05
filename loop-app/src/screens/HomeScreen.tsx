@@ -131,11 +131,17 @@ export default function HomeScreen({
           return d >= startOfToday && d <= endOfToday;
         });
       } else if (timeHorizon === 'weekend') {
+        const now = new Date();
+        const currentDay = now.getDay(); // 0 is Sunday, 6 is Saturday
+        const daysToSat = (6 - currentDay + 7) % 7;
+        const satStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToSat, 0, 0, 0);
+        const sunEnd = new Date(satStart.getFullYear(), satStart.getMonth(), satStart.getDate() + 1, 23, 59, 59, 999);
+        const windowStart = currentDay === 0 ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0) : satStart;
+
         result = result.filter((e) => {
           const d = toValidDate(e.startsAt);
           if (!d) return false;
-          const day = d.getDay();
-          return day === 0 || day === 6; // Sunday or Saturday
+          return d >= windowStart && d <= sunEnd;
         });
       } else if (timeHorizon === 'week') {
         const now = new Date();
@@ -201,6 +207,16 @@ export default function HomeScreen({
       return timeMs !== null && timeMs >= nowMs - (6 * 60 * 60 * 1000) && timeMs <= nowMs + fortyEightHoursMs;
     }) || null;
   }, [filtered, tabMode, nowMs]);
+
+  // U11: Accurate label — only label "TONIGHT" if the event genuinely falls today/tonight
+  const isFeaturedTonight = useMemo(() => {
+    if (!featured) return false;
+    const timeMs = getEventTimeMillis(featured.startsAt);
+    if (timeMs === null) return false;
+    const d = new Date(timeMs);
+    const today = new Date(nowMs);
+    return d.toDateString() === today.toDateString() || (timeMs >= nowMs && timeMs <= nowMs + 12 * 60 * 60 * 1000);
+  }, [featured, nowMs]);
 
   const rest = useMemo(() => {
     return featured ? filtered.filter((e) => e.id !== featured.id) : filtered;
@@ -495,7 +511,7 @@ export default function HomeScreen({
           {/* Featured Header Card */}
           {featured && (
             <>
-              <SectionLabel>FEATURED TONIGHT</SectionLabel>
+              <SectionLabel>{isFeaturedTonight ? 'FEATURED TONIGHT' : 'FEATURED SPOTLIGHT'}</SectionLabel>
               <FeaturedCard
                 event={featured}
                 saved={saved.has(featured.id)}
@@ -621,7 +637,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     height: '100%',
-    outlineStyle: 'none' as any,
   },
   clearBtn: {
     padding: 4,

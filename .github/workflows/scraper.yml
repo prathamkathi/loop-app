@@ -2,8 +2,19 @@ name: Loop Autonomous Scraper
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 2 * * *' # Daily at 02:00 UTC (07:30 IST)
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (parse only, write nothing to Firestore)'
+        required: false
+        type: boolean
+        default: false
+      max_events:
+        description: 'Maximum events to process'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   run-scraper:
@@ -40,4 +51,12 @@ jobs:
           CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
         run: |
           cd loop-app/scraper
-          python scraper.py
+          CMD="python scraper.py"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+          if [ -n "${{ inputs.max_events }}" ]; then
+            CMD="$CMD --max-events ${{ inputs.max_events }}"
+          fi
+          echo "Running: $CMD"
+          $CMD

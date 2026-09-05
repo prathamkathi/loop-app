@@ -46,9 +46,8 @@ def main():
                 tmp.write(res.content)
                 tmp_path = tmp.name
                 
-            cloud_url = cloudinary.uploader.unsigned_upload(
+            cloud_url = cloudinary.uploader.upload(
                 tmp_path,
-                upload_preset="loop_unsigned_preset",
                 folder="loop_avatars",
                 public_id=f"avatar_{username}"
             ).get("secure_url")

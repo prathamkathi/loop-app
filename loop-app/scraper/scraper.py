@@ -212,11 +212,11 @@ def run_apify_pipeline():
 
             # 3. Cloudinary Upload (Optimized Cover Image)
             print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
-            public_url = upload_image_to_cloudinary(temp_img_path)
-            aspect_ratio = get_image_aspect_ratio(temp_img_path)
-
-            if not public_url:
-                print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed.")
+            try:
+                public_url = upload_image_to_cloudinary(temp_img_path)
+                aspect_ratio = get_image_aspect_ratio(temp_img_path)
+            except Exception as upload_err:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed: {upload_err}")
                 continue
 
             # 4. Write to Firestore with status 'pending' (Studio Staging Queue)

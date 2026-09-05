@@ -56,10 +56,13 @@ export default function StudentAuthModal({
     }
     const cleanName = name.trim();
     const firstName = cleanName.split(' ')[0];
-    const cleanKerberos = kerberos.trim().toLowerCase();
+    let cleanKerberos = kerberos.trim().toLowerCase();
+    if (cleanKerberos && !cleanKerberos.includes('@')) {
+      cleanKerberos = `${cleanKerberos}@iitd.ac.in`;
+    }
 
-    if (!/^[a-z]{2,3}\d{7}@iitd\.ac\.in$/.test(cleanKerberos)) {
-      Alert.alert('Invalid Kerberos ID', 'Please enter a valid IITD email (e.g. cs1210123@iitd.ac.in).');
+    if (!/^[a-z]{2,4}\d{5,8}@iitd\.ac\.in$/.test(cleanKerberos)) {
+      Alert.alert('Invalid Kerberos ID', 'Please enter a valid IITD email or ID (e.g. cs1210123 or cs1210123@iitd.ac.in).');
       return;
     }
 

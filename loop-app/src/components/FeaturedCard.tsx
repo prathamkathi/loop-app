@@ -97,7 +97,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
           {event.image && (
             <Pressable
               onPress={(e) => {
-                e.stopPropagation();
+                e?.stopPropagation?.();
                 setShowLightbox(true);
               }}
               style={({ pressed }) => [
@@ -140,7 +140,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
             {event.actionUrl ? (
               <Pressable
                 onPress={(e) => {
-                  e.stopPropagation();
+                  e?.stopPropagation?.();
                   if (Platform.OS === 'web' && typeof window !== 'undefined') {
                     window.open(event.actionUrl, '_blank', 'noopener,noreferrer');
                   } else {
@@ -162,7 +162,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
             {/* Google Calendar RSVP */}
             <Pressable
               onPress={(e) => {
-                e.stopPropagation();
+                e?.stopPropagation?.();
                 openGoogleCalendar({
                   title: event.title,
                   date: event.date,
@@ -187,7 +187,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
             {firstContact && (
               <Pressable
                 onPress={(e) => {
-                  e.stopPropagation();
+                  e?.stopPropagation?.();
                   openWhatsApp(firstContact.phone, firstContact.name, event.title);
                 }}
                 style={({ pressed }) => [

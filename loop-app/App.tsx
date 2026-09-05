@@ -312,8 +312,6 @@ function AppContent() {
           <CurateScreen
             interests={interests}
             onToggle={toggleInterest}
-            reminder={reminder}
-            onReminderChange={handleReminderChange}
           />
         );
       case 'submit':

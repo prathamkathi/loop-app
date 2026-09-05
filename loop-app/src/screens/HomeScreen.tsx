@@ -22,6 +22,7 @@ import EmptyState from '../components/EmptyState';
 import { type EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
 import { getEventTimeMillis, toValidDate } from '../utils/timestampUtils';
+import { normalizeCategory } from '../utils/categoryMeta';
 
 type Props = {
   interests: Set<string>;
@@ -156,10 +157,10 @@ export default function HomeScreen({
     if (activeCategoryId === 'saved') {
       result = result.filter((e) => saved.has(e.id));
     } else if (activeCategoryId !== 'all') {
-      result = result.filter((e) => e.category === activeCategoryId);
+      result = result.filter((e) => normalizeCategory(e.category) === activeCategoryId);
     } else if (interests.size > 0 && tabMode === 'upcoming') {
       // F-11: Wire interests into the filter body when viewing 'All' in upcoming mode
-      result = result.filter((e) => interests.has(e.category));
+      result = result.filter((e) => interests.has(normalizeCategory(e.category)));
     }
 
     // Filter by search query

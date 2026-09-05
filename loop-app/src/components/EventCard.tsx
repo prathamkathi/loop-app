@@ -8,6 +8,7 @@ import PosterLightboxModal from './PosterLightboxModal';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getEventTimeMillis } from '../utils/timestampUtils';
+import { getClubAvatar } from '../data/avatars';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -76,6 +77,7 @@ export function openWhatsApp(rawPhone: string, name: string, eventTitle: string)
 export default function EventCard({ event, saved, onToggleSave, onPress, index, isPast }: Props) {
   const { colors, isDark } = useTheme();
   const [imgError, setImgError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
@@ -83,6 +85,7 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
   const eventTimeMs = getEventTimeMillis(event.startsAt);
   const isConcluded = isPast ?? (eventTimeMs !== null && eventTimeMs + 12 * 60 * 60 * 1000 < Date.now());
 
+  const hostAvatarUri = !avatarError && event.hostAvatar ? event.hostAvatar : getClubAvatar(event.host);
   const catMeta = getCategoryMeta(event.category);
   const CategoryIcon = catMeta.icon;
   const { primary: datePrimary, secondary: dateSecondary, isNotice } = formatCardDateLine(event);
@@ -261,13 +264,9 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
 
             <View style={styles.venueLine}>
               <Image 
-                source={{ uri: event.hostAvatar }} 
+                source={{ uri: hostAvatarUri }} 
                 style={styles.hostAvatar} 
-                onError={(e) => {
-                  e.currentTarget.setNativeProps({
-                    src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
-                  });
-                }} 
+                onError={() => setAvatarError(true)} 
               />
               <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
                 {event.host}

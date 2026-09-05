@@ -10,6 +10,7 @@ import { openGoogleCalendar } from '../utils/calendar';
 import { openWhatsApp } from './EventCard';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
+import { getClubAvatar } from '../data/avatars';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -25,7 +26,10 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
   const isDesktop = width >= 768;
 
   const [imgError, setImgError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+
+  const hostAvatarUri = !avatarError && event.hostAvatar ? event.hostAvatar : getClubAvatar(event.host);
 
   const catMeta = getCategoryMeta(event.category);
   const CategoryIcon = catMeta.icon;
@@ -123,7 +127,11 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
             </View>
 
             <View style={styles.hostBadge}>
-              <Image source={{ uri: event.hostAvatar }} style={styles.featuredAvatar} />
+              <Image 
+                source={{ uri: hostAvatarUri }} 
+                style={styles.featuredAvatar} 
+                onError={() => setAvatarError(true)} 
+              />
               <Text style={styles.hostName} numberOfLines={1}>{event.host}</Text>
             </View>
 

@@ -40,6 +40,7 @@ import { CLUBS } from '../data/clubs';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getEventTimeMillis } from '../utils/timestampUtils';
+import { getClubAvatar } from '../data/avatars';
 import PosterLightboxModal from './PosterLightboxModal';
 import type { EventItem } from '../data/events';
 
@@ -60,12 +61,14 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
 
   const [aiPitch, setAiPitch] = useState<string>('');
   const [showLightbox, setShowLightbox] = useState<boolean>(false);
+  const [avatarError, setAvatarError] = useState<boolean>(false);
 
   const catMeta = getCategoryMeta(event.category);
   const CategoryIcon = catMeta.icon;
   const { primary: datePrimary, secondary: dateSecondary, isNotice } = formatCardDateLine(event);
   const venueDisplay = formatCardVenue(event.venue, event.category);
 
+  const hostAvatarUri = !avatarError && event.hostAvatar ? event.hostAvatar : getClubAvatar(event.host);
   const eventTimeMs = getEventTimeMillis(event.startsAt);
   const isConcluded = eventTimeMs !== null && eventTimeMs + 12 * 60 * 60 * 1000 < Date.now();
 
@@ -253,13 +256,9 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
               ]}
             >
               <Image 
-                source={{ uri: event.hostAvatar }} 
+                source={{ uri: hostAvatarUri }} 
                 style={styles.avatar} 
-                onError={(e) => {
-                  e.currentTarget.setNativeProps({
-                    src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(event.host || 'Club') + '&background=8A1538&color=fff'
-                  });
-                }} 
+                onError={() => setAvatarError(true)} 
               />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.hostName, { color: colors.foreground }]} numberOfLines={1} ellipsizeMode="tail">

@@ -126,9 +126,23 @@ const DEFAULT_META: CategoryMeta = {
   actionText: 'View Details',
 };
 
+export function normalizeCategory(category?: string | null): string {
+  if (!category) return 'Campus Notices';
+  const c = category.trim();
+  if (c === 'Workshops & Talks' || c === 'Academic & Career' || c === 'Workshops') return 'Talks & Workshops';
+  if (c === 'Competitions & Fests' || c === 'Competitions') return 'Competitions & Quizzes';
+  if (c === 'Health & Social' || c === 'Social & Volunteering' || c === 'Wellness') return 'Social & Wellness';
+  if (c === 'Cultural' || c === 'Arts') return 'Cultural & Arts';
+  if (c === 'Tech' || c === 'Technical') return 'Tech & Innovation';
+  if (c === 'Sports') return 'Sports & Fitness';
+  if (c === 'Fests') return 'Fests & Major Events';
+  return c;
+}
+
 export function getCategoryMeta(category?: string | null): CategoryMeta {
   if (!category) return DEFAULT_META;
-  return CATEGORY_META_MAP[category] || DEFAULT_META;
+  const normalized = normalizeCategory(category);
+  return CATEGORY_META_MAP[normalized] || DEFAULT_META;
 }
 
 /**

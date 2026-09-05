@@ -3,7 +3,7 @@ import { View, Text, ScrollView, RefreshControl, Pressable, StyleSheet, Animated
 import { ArrowUpRight } from 'phosphor-react-native';
 import { useTheme, typography } from '../theme';
 import SectionLabel from '../components/SectionLabel';
-import { type PulseItem, PULSE } from '../data/pulse';
+import { type PulseItem } from '../data/pulse';
 import { openExternalLink } from '../utils/linking';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -35,8 +35,8 @@ function AnimatedWrapper({ index, children }: { index: number; children: React.R
 
 export default function PulseScreen() {
   const { colors, isDark } = useTheme();
-  // Initialize with curated campus notices to eliminate cold-start blank states
-  const [pulseItems, setPulseItems] = useState<PulseItem[]>(PULSE);
+  // Initialized to empty array; only verified live notices from Firestore are rendered
+  const [pulseItems, setPulseItems] = useState<PulseItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -46,12 +46,10 @@ export default function PulseScreen() {
       snapshot.forEach((doc) => {
         items.push({ id: doc.id, ...doc.data() } as PulseItem);
       });
-      if (items.length > 0) {
-        setPulseItems(items);
-      }
+      setPulseItems(items);
       setLoading(false);
     }, (error) => {
-      console.warn('Live pulse sync fallback to cached/static data:', error);
+      console.warn('Live pulse sync fallback to empty state:', error);
       setLoading(false);
     });
 
@@ -98,6 +96,13 @@ export default function PulseScreen() {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : pulseItems.length === 0 ? (
+        <View style={[styles.emptyContainer, { borderColor: colors.borderSubtle, backgroundColor: colors.card }]}>
+          <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No active notices</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.muted }]}>
+            Official notices, academic deadlines, and recruitment announcements will appear here as they are published.
+          </Text>
         </View>
       ) : (
       <View style={[styles.listContainer, { borderColor: colors.border }]}>
@@ -231,5 +236,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 4,
+  },
+  emptyContainer: {
+    padding: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 40,
+  },
+  emptyTitle: {
+    ...typography.titleMd,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    ...typography.bodyMd,
+    textAlign: 'center',
+    maxWidth: 400,
+    lineHeight: 22,
   },
 });

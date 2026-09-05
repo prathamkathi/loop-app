@@ -19,7 +19,6 @@ export type CategoryMeta = {
   bgDark: string;
   icon: any;
   isNotice: boolean;
-  defaultVenue: string;
   actionText?: string;
 };
 
@@ -32,7 +31,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(224, 122, 95, 0.22)',
     icon: Megaphone,
     isNotice: true,
-    defaultVenue: 'Campus-Wide / Online Portal',
     actionText: 'Open Official Notice / Form',
   },
   'Competitions & Quizzes': {
@@ -43,7 +41,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(139, 92, 246, 0.22)',
     icon: Trophy,
     isNotice: false,
-    defaultVenue: 'LHC / Seminar Hall',
     actionText: 'Register / Rulebook',
   },
   'Sports & Fitness': {
@@ -54,7 +51,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(37, 99, 235, 0.22)',
     icon: Barbell,
     isNotice: false,
-    defaultVenue: 'IITD Sports Complex / Main Ground',
     actionText: 'View Fixtures / Register',
   },
   'Talks & Workshops': {
@@ -65,7 +61,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(13, 148, 136, 0.22)',
     icon: MicrophoneStage,
     isNotice: false,
-    defaultVenue: 'Seminar Hall / Dogra Hall',
     actionText: 'Register for Talk',
   },
   'Cultural & Arts': {
@@ -76,7 +71,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(196, 77, 106, 0.22)',
     icon: PaintBrushBroad,
     isNotice: false,
-    defaultVenue: 'SAC Amphitheatre / OAT',
     actionText: 'Event Details',
   },
   'Tech & Innovation': {
@@ -87,7 +81,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(2, 132, 199, 0.22)',
     icon: Cpu,
     isNotice: false,
-    defaultVenue: 'CSC / Robotics Lab / LHC',
     actionText: 'Join Tech Session',
   },
   'Social & Wellness': {
@@ -98,7 +91,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(5, 150, 105, 0.22)',
     icon: Heart,
     isNotice: false,
-    defaultVenue: 'SAC / Hospital Block / LHC',
     actionText: 'Participate',
   },
   'Fests & Major Events': {
@@ -109,7 +101,6 @@ export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
     bgDark: 'rgba(234, 88, 12, 0.22)',
     icon: Sparkle,
     isNotice: false,
-    defaultVenue: 'Campus-Wide',
     actionText: 'Fest Schedule',
   },
 };
@@ -122,7 +113,6 @@ const DEFAULT_META: CategoryMeta = {
   bgDark: 'rgba(196, 77, 106, 0.22)',
   icon: CalendarBlank,
   isNotice: false,
-  defaultVenue: 'IIT Delhi Campus',
   actionText: 'View Details',
 };
 
@@ -161,7 +151,7 @@ export function formatCardDateLine(event: {
   const isDateEmptyOrTba = !cleanDate || /^tba$|^date\s*tba$/i.test(cleanDate);
 
   if (meta.isNotice) {
-    const primary = isDateEmptyOrTba ? 'Active Notice' : cleanDate;
+    const primary = isDateEmptyOrTba ? 'Date not announced' : cleanDate;
     let secondary = 'Campus Circular';
     if (event.deadline) {
       secondary = `Deadline: ${event.deadline}`;
@@ -173,19 +163,18 @@ export function formatCardDateLine(event: {
     return { primary, secondary, isNotice: true };
   }
 
-  const primary = isDateEmptyOrTba ? 'Date TBA' : cleanDate;
-  const secondary = isTimeEmptyOrTba ? 'Time TBA' : cleanTime;
+  const primary = isDateEmptyOrTba ? 'Date not announced' : cleanDate;
+  const secondary = isTimeEmptyOrTba ? 'Time not announced' : cleanTime;
   return { primary, secondary, isNotice: false };
 }
 
 /**
- * Format venue so notices get a realistic campus location instead of "Venue TBA".
+ * Format venue honestly — never invent a fake default venue.
  */
-export function formatCardVenue(rawVenue?: string | null, category?: string): string {
+export function formatCardVenue(rawVenue?: string | null, _category?: string): string {
   const trimmed = (rawVenue || '').trim();
-  const meta = getCategoryMeta(category);
   if (!trimmed || /^tba$|^venue\s*tba$/i.test(trimmed)) {
-    return meta.defaultVenue;
+    return 'Venue not announced';
   }
   return trimmed;
 }

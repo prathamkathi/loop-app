@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import argparse
 from datetime import datetime
 import random
 import json
@@ -70,7 +71,7 @@ if db is None:
 
 
 # --- 4. APIFY SCRAPING & STAGING QUEUE INGESTION ---
-def run_apify_pipeline():
+def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
     """Runs Apify Instagram Scraper and ingests validated events with status: 'pending' into Staging Queue."""
     if not APIFY_TOKEN:
         print("[Error] APIFY_TOKEN is missing. Set APIFY_TOKEN in loop-scraper/.env.")
@@ -112,8 +113,8 @@ def run_apify_pipeline():
     events_queued = 0
 
     for item in posts_to_process:
-        if events_queued >= MAX_EVENTS:
-            print(f"[Pipeline] Reached quota ({MAX_EVENTS}). Stopping.")
+        if events_queued >= max_events:
+            print(f"[Pipeline] Reached quota ({max_events}). Stopping.")
             break
 
         ig_post_id = str(item.get("id") or item.get("shortCode") or uuid.uuid4().hex[:10])
@@ -211,13 +212,17 @@ def run_apify_pipeline():
                     })
 
             # 3. Cloudinary Upload (Optimized Cover Image)
-            print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
-            try:
-                public_url = upload_image_to_cloudinary(temp_img_path)
-                aspect_ratio = get_image_aspect_ratio(temp_img_path)
-            except Exception as upload_err:
-                print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed: {upload_err}")
-                continue
+            aspect_ratio = get_image_aspect_ratio(temp_img_path)
+            if dry_run:
+                public_url = "https://res.cloudinary.com/dummy/image/upload/sample.jpg"
+                print(f"[Dry Run] Skipped Cloudinary upload. Aspect ratio: {aspect_ratio}")
+            else:
+                print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
+                try:
+                    public_url = upload_image_to_cloudinary(temp_img_path)
+                except Exception as upload_err:
+                    print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed: {upload_err}")
+                    continue
 
             # 4. Write to Firestore with status 'pending' (Studio Staging Queue)
             print(f"[Firestore] Queuing event '{title}' into Staging Queue with status 'pending'...")
@@ -258,8 +263,13 @@ def run_apify_pipeline():
                             continue
                 except Exception:
                     pass  # startsAt stays absent
-                doc_ref.set(event_doc)
-                print(f"[Success] Queued event '{title}' with {len(clean_contacts)} WhatsApp contact(s)!")
+
+                if dry_run:
+                    print(f"[Dry Run] Would write event '{title}' ({doc_id}) to Firestore:")
+                    print(f"         status={event_doc.get('status')}, category={event_doc.get('category')}, startsAt={event_doc.get('startsAt')}")
+                else:
+                    doc_ref.set(event_doc)
+                    print(f"[Success] Queued event '{title}' with {len(clean_contacts)} WhatsApp contact(s)!")
                 events_queued += 1
             except Exception as fs_err:
                 print(f"[Error] Failed to write to Firestore: {fs_err}")
@@ -275,19 +285,27 @@ def run_apify_pipeline():
     print("=" * 60)
 
     # T-27: Scraper Health Check (Write heartbeat so app knows it's alive)
-    try:
-        health_ref = db.collection("system").document("scraper_health")
-        health_ref.set({
-            "lastRunAt": firestore.SERVER_TIMESTAMP,
-            "eventsFound": len(posts_to_process),
-            "eventsQueued": events_queued,
-            "status": "healthy"
-        })
-        print("[System] Wrote health heartbeat to Firestore.")
-    except Exception as e:
-        print(f"[System] Failed to write health heartbeat: {e}")
+    if dry_run:
+        print(f"[Dry Run] Skipped health heartbeat write ({events_queued} events queued).")
+    else:
+        try:
+            health_ref = db.collection("system").document("scraper_health")
+            health_ref.set({
+                "lastRunAt": firestore.SERVER_TIMESTAMP,
+                "eventsFound": len(posts_to_process),
+                "eventsQueued": events_queued,
+                "status": "healthy"
+            })
+            print("[System] Wrote health heartbeat to Firestore.")
+        except Exception as e:
+            print(f"[System] Failed to write health heartbeat: {e}")
 
 
 if __name__ == "__main__":
-    print("=== LOOP APIFY SCRAPING & STAGING PIPELINE STARTING ===")
-    run_apify_pipeline()
+    parser = argparse.ArgumentParser(description="LOOP Instagram Event Scraper & Staging Pipeline")
+    parser.add_argument("--dry-run", action="store_true", help="Parse and print without writing to Firestore or Cloudinary")
+    parser.add_argument("--max-events", type=int, default=MAX_EVENTS, help="Maximum events to queue/process")
+    args = parser.parse_args()
+
+    print(f"=== LOOP APIFY SCRAPING & STAGING PIPELINE STARTING (dry_run={args.dry_run}) ===")
+    run_apify_pipeline(dry_run=args.dry_run, max_events=args.max_events)

@@ -1,12 +1,13 @@
-"""Grant or revoke Club Studio coordinator access.
+"""Grant or revoke Club Studio coordinator and admin access.
 
-The Firestore rules and the serverless API both gate on a `coordinator` custom
-claim, so a new coordinator cannot approve or submit events until this runs.
+The Firestore rules and the serverless API gate on `coordinator` and `admin` custom
+claims, so an admin or coordinator cannot approve or manage events until this runs.
 
 Usage:
-    python set_admin.py <uid> <clubId>      # grant
-    python set_admin.py <uid> --revoke      # revoke
-    python set_admin.py --list              # show everyone who currently has it
+    python set_admin.py <uid> --admin       # grant full admin privileges
+    python set_admin.py <uid> <clubId>      # grant coordinator access for a specific club
+    python set_admin.py <uid> --revoke      # revoke all claims
+    python set_admin.py --list              # show everyone who currently has roles
 
 The user must already exist in Firebase Auth (create them in the console, or
 have them sign in once through the Studio portal).
@@ -27,18 +28,21 @@ def init():
         firebase_admin.initialize_app(credentials.Certificate(CRED_PATH))
 
 
-def list_coordinators():
+def list_users():
     found = 0
     page = auth.list_users()
     while page:
         for user in page.users:
             claims = user.custom_claims or {}
-            if claims.get("coordinator"):
+            is_admin = claims.get("admin") is True
+            is_coord = claims.get("coordinator") is True
+            if is_admin or is_coord:
                 found += 1
-                print(f"  {user.email or '(no email)':<40} {user.uid}  club={claims.get('clubId')}")
+                role_str = "Admin + Coordinator" if (is_admin and is_coord) else "Admin" if is_admin else f"Coordinator (club={claims.get('clubId')})"
+                print(f"  {user.email or '(no email)':<40} {user.uid}  {role_str}")
         page = page.get_next_page()
     if not found:
-        print("  no coordinators set")
+        print("  no users with admin or coordinator claims found")
 
 
 def main():
@@ -49,12 +53,12 @@ def main():
     init()
 
     if args[0] == "--list":
-        print("Coordinators:")
-        list_coordinators()
+        print("Configured Roles:")
+        list_users()
         return
 
     if len(args) < 2:
-        sys.exit("Usage: python set_admin.py <uid> <clubId> | <uid> --revoke | --list")
+        sys.exit("Usage: python set_admin.py <uid> --admin | <uid> <clubId> | <uid> --revoke | --list")
 
     uid = args[0]
 
@@ -63,16 +67,23 @@ def main():
     except auth.UserNotFoundError:
         sys.exit(f"No Firebase Auth user with uid {uid}. Create the account first.")
 
-    if args[1] == "--revoke":
+    action = args[1].lower()
+
+    if action == "--revoke":
         auth.set_custom_user_claims(uid, None)
         auth.revoke_refresh_tokens(uid)
-        print(f"Revoked coordinator access for {user.email or uid}.")
+        print(f"Revoked all access claims for {user.email or uid}.")
         return
 
-    club_id = args[1]
+    if action == "--admin":
+        auth.set_custom_user_claims(uid, {"admin": True, "coordinator": True})
+        auth.revoke_refresh_tokens(uid)
+        print(f"Granted ADMIN access to {user.email or uid}.")
+        print("They must sign out and back in for the claim to apply.")
+        return
+
+    club_id = args[1].lstrip("@").strip()
     auth.set_custom_user_claims(uid, {"coordinator": True, "clubId": club_id})
-    # Force a token refresh so the claim takes effect on the next request
-    # rather than after the current hour-long token expires.
     auth.revoke_refresh_tokens(uid)
     print(f"Granted coordinator access to {user.email or uid} for club '{club_id}'.")
     print("They must sign out and back in for the claim to apply.")

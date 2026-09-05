@@ -11,15 +11,21 @@
 
 import admin from 'firebase-admin';
 
-// Origins allowed to call the API. Anything else is rejected before the
-// handler body runs. Add preview/staging origins here as they appear.
-const ALLOWED_ORIGINS = [
+// Origins allowed to call the API. Localhost origins are gated to non-production.
+const PRODUCTION_ORIGINS = [
   'https://loop-iitd.web.app',
   'https://loop-iitd.firebaseapp.com',
   'https://loop-app-iitd.vercel.app',
+];
+
+const DEV_ORIGINS = [
   'http://localhost:8081',
   'http://localhost:19006',
 ];
+
+const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
+  ? PRODUCTION_ORIGINS
+  : [...PRODUCTION_ORIGINS, ...DEV_ORIGINS];
 
 function initAdmin() {
   if (admin.apps.length) return admin.app();
@@ -33,6 +39,7 @@ function initAdmin() {
 export type Caller = {
   uid: string;
   isCoordinator: boolean;
+  isAdmin: boolean;
   clubId: string | null;
 };
 
@@ -80,9 +87,12 @@ export async function guard(
   try {
     initAdmin();
     const decoded = await admin.auth().verifyIdToken(token);
+    const isAdmin = decoded.admin === true;
+    const isCoordinator = decoded.coordinator === true || isAdmin;
     const caller: Caller = {
       uid: decoded.uid,
-      isCoordinator: decoded.coordinator === true,
+      isCoordinator,
+      isAdmin,
       clubId: (decoded.clubId as string) ?? null,
     };
 

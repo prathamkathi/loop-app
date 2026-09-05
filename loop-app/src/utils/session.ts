@@ -53,9 +53,9 @@ export function ensureSignedIn(): Promise<void> {
   return pending;
 }
 
-export type CoordinatorInfo = { isCoordinator: boolean; clubId: string | null };
+export type CoordinatorInfo = { isCoordinator: boolean; isAdmin: boolean; clubId: string | null };
 
-const NOT_COORDINATOR: CoordinatorInfo = { isCoordinator: false, clubId: null };
+const NOT_COORDINATOR: CoordinatorInfo = { isCoordinator: false, isAdmin: false, clubId: null };
 
 async function readClaims(user: User | null, forceRefresh: boolean): Promise<CoordinatorInfo> {
   if (!user || user.isAnonymous) return NOT_COORDINATOR;
@@ -64,8 +64,11 @@ async function readClaims(user: User | null, forceRefresh: boolean): Promise<Coo
     // user signed in is invisible until the token refreshes, so force it —
     // otherwise a newly promoted coordinator is denied for up to an hour.
     const token = await user.getIdTokenResult(forceRefresh);
+    const isAdmin = token.claims?.admin === true;
+    const isCoord = token.claims?.coordinator === true || isAdmin;
     return {
-      isCoordinator: token.claims?.coordinator === true,
+      isCoordinator: isCoord,
+      isAdmin,
       clubId: (token.claims?.clubId as string) ?? null,
     };
   } catch (err) {

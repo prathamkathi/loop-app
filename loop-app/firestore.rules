@@ -1,33 +1,67 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.get('admin', false) == true;
+    }
+
+    function isCoordinator() {
+      return isAuthenticated() && request.auth.token.get('coordinator', false) == true;
+    }
+
+    function isClubCoordinator(host) {
+      return isCoordinator() && request.auth.token.get('clubId', '') == host;
+    }
+
     match /events/{eventId} {
-      // Allow anyone to read only approved events (for the live home feed)
+      // Students and anonymous users can only read approved events.
+      // Admins and coordinators can inspect all events (including pending and rejected).
       allow read: if resource.data.status == 'approved' 
-                  || (request.auth != null && request.auth.token.coordinator == true);
+                  || isAdmin() 
+                  || isCoordinator();
       
-      // Creation is a Club Studio capability: a verified coordinator only,
-      // always landing in the staging queue as 'pending'.
-      allow create: if request.auth != null
-                    && request.auth.token.coordinator == true
-                    && request.resource.data.status == 'pending'
-                    && request.resource.data.title is string
-                    && request.resource.data.image is string
-                    && request.resource.data.date is string
-                    && request.resource.data.time is string
-                    && request.resource.data.venue is string;
+      // Creation:
+      // Admins can create events directly.
+      // Verified coordinators can submit pending events for their own club only.
+      allow create: if isAdmin() || (
+        isCoordinator()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.host == request.auth.token.get('clubId', '')
+        && request.resource.data.title is string
+        && request.resource.data.image is string
+        && request.resource.data.date is string
+        && request.resource.data.time is string
+        && request.resource.data.venue is string
+      );
                     
-      // Allow client-side status mutation for the Admin Cockpit (approving, soft-rejecting, undoing/restoring)
-      allow update: if request.auth != null 
-                    && request.auth.token.coordinator == true
-                    && (resource.data.status in ['pending', 'rejected', 'approved']) 
-                    && (request.resource.data.status in ['pending', 'approved', 'rejected']);
+      // Update:
+      // Admins can update any event.
+      // Club coordinators can only update their own club's events and cannot change the host (D-2).
+      allow update: if isAdmin() || (
+        isClubCoordinator(resource.data.host)
+        && request.resource.data.host == resource.data.host
+        && (resource.data.status in ['pending', 'rejected', 'approved']) 
+        && (request.resource.data.status in ['pending', 'approved', 'rejected'])
+      );
                     
-      allow delete: if false;
+      // Delete:
+      // Admin only. Coordinators and students cannot delete events.
+      allow delete: if isAdmin();
     }
 
     match /pulse/{document=**} {
       allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /system/{document=**} {
+      allow read: if isAdmin() || isCoordinator();
+      allow write: if isAdmin();
     }
   }
 }

@@ -129,8 +129,8 @@ def parse_with_gemini(image_paths, caption):
             }
         }
 
-        # Prioritize flash-lite models to avoid 429 quota exhaustion on free/dev tiers
-        models = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-2.5-flash-lite"]
+        # Verified production models listed via API on user key, prioritizing flash-lite for quota resilience
+        models = ["gemini-2.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-2.5-flash"]
         headers = {'Content-Type': 'application/json'}
 
         result_json = None

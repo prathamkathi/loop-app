@@ -21,7 +21,13 @@
         font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: #0F0F12;
+        background-color: #0A0A0C;
+      }
+      @media (prefers-color-scheme: light) {
+        html,
+        body {
+          background-color: #FDFCF8;
+        }
       }
       body {
         overflow: hidden;
@@ -32,7 +38,8 @@
         flex: 1;
       }
     </style>
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
 
   <body>

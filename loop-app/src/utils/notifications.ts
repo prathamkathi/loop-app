@@ -123,29 +123,6 @@ export async function generateCampusNotifications(
     });
   }
 
-  // 4. OFFICIAL SYSTEM ANNOUNCEMENTS (IIT Delhi Campus Life)
-  const systemNotices: NotificationItem[] = [
-    {
-      id: 'notif_system_library',
-      title: 'Central Library 24×7 Reading Hall',
-      body: 'Air-conditioned study areas extended around the clock for upcoming examination preparations.',
-      time: 'Campus Notice',
-      type: 'system',
-      read: readIds.has('notif_system_library'),
-    },
-    {
-      id: 'notif_system_hospital',
-      title: 'IITD Health Center Emergency Support',
-      body: 'IIT Hospital emergency ambulance is reachable at 011-2659-6100 and internal ext 6100.',
-      time: 'Campus Info',
-      type: 'system',
-      read: readIds.has('notif_system_hospital'),
-    },
-  ];
-
-  for (const sys of systemNotices) {
-    notifications.push(sys);
-  }
 
   // Sort: unread first, then urgent first
   return notifications.sort((a, b) => {

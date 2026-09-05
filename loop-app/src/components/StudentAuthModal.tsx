@@ -82,7 +82,12 @@ export default function StudentAuthModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close student profile modal"
+        />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -108,6 +113,8 @@ export default function StudentAuthModal({
             </View>
             <Pressable
               onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
               style={({ pressed }) => [
                 styles.closeBtn,
                 { backgroundColor: colors.highlight },
@@ -158,6 +165,8 @@ export default function StudentAuthModal({
                     onToggleMode();
                     onClose();
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Switch to ${mode === 'student' ? 'Club Studio' : 'Student Mode'}`}
                   style={({ pressed }) => [
                     styles.signOutBtn,
                     { borderColor: colors.primary, marginTop: -4 },
@@ -177,6 +186,8 @@ export default function StudentAuthModal({
                   onSignOut();
                   onClose();
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="Sign out from device"
                 style={({ pressed }) => [
                   styles.signOutBtn,
                   { borderColor: colors.border },
@@ -229,6 +240,8 @@ export default function StudentAuthModal({
                       <Pressable
                         key={h}
                         onPress={() => setHostel(h)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Hostel ${h}`}
                         style={[
                           styles.hostelChip,
                           {
@@ -254,6 +267,8 @@ export default function StudentAuthModal({
 
               <Pressable
                 onPress={handleManualSignIn}
+                accessibilityRole="button"
+                accessibilityLabel="Sign in"
                 style={({ pressed }) => [
                   styles.submitBtn,
                   { backgroundColor: colors.primary },

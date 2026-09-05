@@ -104,7 +104,12 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close AI concierge"
+        />
 
         <View
           style={[
@@ -131,6 +136,8 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
             </View>
             <Pressable
               onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
               style={({ pressed }) => [
                 styles.closeBtn,
                 { backgroundColor: colors.highlight },
@@ -212,6 +219,8 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
                 <Pressable
                   key={i}
                   onPress={() => handleSend(chip)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ask question: ${chip}`}
                   style={({ pressed }) => [
                     styles.chip,
                     { backgroundColor: colors.highlight, borderColor: colors.border },
@@ -238,6 +247,8 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
             <Pressable
               onPress={() => handleSend()}
               disabled={!input.trim() || loading}
+              accessibilityRole="button"
+              accessibilityLabel="Send question to AI concierge"
               style={({ pressed }) => [
                 styles.sendBtn,
                 {

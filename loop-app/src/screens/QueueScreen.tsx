@@ -543,6 +543,8 @@ export default function QueueScreen() {
 
           <Pressable
             onPress={handleStudioLogin}
+            accessibilityRole="button"
+            accessibilityLabel="Sign In to Studio"
             style={({ pressed }) => [
               styles.authBtn,
               { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.98 : 1 }] },
@@ -591,13 +593,14 @@ export default function QueueScreen() {
 
           <Pressable
             onPress={handleStudioSignOut}
+            accessibilityRole="button"
+            accessibilityLabel="Sign out of Studio"
             style={({ pressed }) => [
               styles.studioSignOutBtn,
               { borderColor: colors.border, backgroundColor: colors.surface },
               Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
               pressed && { transform: [{ scale: 0.94 }] },
             ]}
-            accessibilityLabel="Sign out of Studio"
           >
             <SignOut size={16} color={colors.error} weight="bold" />
           </Pressable>
@@ -607,6 +610,9 @@ export default function QueueScreen() {
         <View style={[styles.tabBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Pressable
             onPress={() => setActiveTab('pending')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'pending' }}
+            accessibilityLabel={`Pending reviews, ${queue.length} items`}
             style={[
               styles.tabBtn,
               activeTab === 'pending' && { backgroundColor: colors.primary },
@@ -626,6 +632,9 @@ export default function QueueScreen() {
 
           <Pressable
             onPress={() => setActiveTab('rejected')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'rejected' }}
+            accessibilityLabel={`Rejected archive, ${rejectedList.length} items`}
             style={[
               styles.tabBtn,
               activeTab === 'rejected' && { backgroundColor: colors.primary },
@@ -658,6 +667,8 @@ export default function QueueScreen() {
                 </Text>
                 <Pressable
                   onPress={fetchQueue}
+                  accessibilityRole="button"
+                  accessibilityLabel="Check for New Items"
                   style={({ pressed }) => [
                     { marginTop: 24, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 24, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 },
                     Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
@@ -705,6 +716,8 @@ export default function QueueScreen() {
                   {/* Image Panel — Adaptive Dual-Layer with High-Res Inspector Trigger */}
                   <Pressable
                     onPress={() => openLightbox(editableItem.image, editableItem.title)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Inspect flyer image in full resolution"
                     style={[styles.imagePanel, { backgroundColor: colors.highlight }]}
                   >
                     {editableItem.image && !imageError ? (
@@ -750,6 +763,8 @@ export default function QueueScreen() {
                         e.stopPropagation();
                         openLightbox(editableItem.image, editableItem.title);
                       }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Inspect flyer in full resolution"
                       style={({ pressed }) => [
                         styles.inspectBadge,
                         Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
@@ -772,6 +787,8 @@ export default function QueueScreen() {
                         <Pressable
                           onPress={handleReAnalyze}
                           disabled={isAnalyzing}
+                          accessibilityRole="button"
+                          accessibilityLabel={isAnalyzing ? "Analyzing flyer with Gemini" : "Re-analyze flyer with Gemini"}
                           style={({ pressed }) => [
                             styles.reAnalyzeBtn,
                             {
@@ -814,6 +831,8 @@ export default function QueueScreen() {
                         <Text style={[fieldStyles.label, { color: colors.muted }]}>CANONICAL CATEGORY</Text>
                         <Pressable
                           onPress={() => setCategoryPickerVisible(true)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Category, currently ${catMeta.label}. Tap to change`}
                           style={({ pressed }) => [
                             styles.categorySelectBtn,
                             {
@@ -896,6 +915,8 @@ export default function QueueScreen() {
                           <Text style={[fieldStyles.label, { color: colors.muted }]}>COORDINATOR CONTACTS (WHATSAPP)</Text>
                           <Pressable
                             onPress={addContact}
+                            accessibilityRole="button"
+                            accessibilityLabel="Add coordinator contact"
                             style={({ pressed }) => [
                               styles.addContactBtn,
                               { backgroundColor: colors.highlight },
@@ -928,6 +949,8 @@ export default function QueueScreen() {
                               />
                               <Pressable
                                 onPress={() => removeContact(idx)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Remove contact ${contact.name || idx + 1}`}
                                 style={({ pressed }) => [
                                   styles.contactRemoveBtn,
                                   Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
@@ -966,6 +989,8 @@ export default function QueueScreen() {
                       <Pressable
                         onPress={triggerReject}
                         disabled={isProcessing}
+                        accessibilityRole="button"
+                        accessibilityLabel="Reject event submission"
                         style={({ pressed }) => [
                           styles.actionBtn,
                           {
@@ -983,6 +1008,8 @@ export default function QueueScreen() {
                       <Pressable
                         onPress={triggerApprove}
                         disabled={isProcessing}
+                        accessibilityRole="button"
+                        accessibilityLabel={isProcessing ? "Approving event" : "Approve and publish event"}
                         style={({ pressed }) => [
                           styles.actionBtn,
                           styles.approveBtn,
@@ -1049,6 +1076,8 @@ export default function QueueScreen() {
                             setQueue((prev) => [prev[1], prev[0], ...prev.slice(2)]);
                             setEditableItem({ ...nextItem });
                           }}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Review next event, ${nextItem.title || 'Untitled'}`}
                           style={({ pressed }) => [
                             styles.deckSwitchBtn,
                             { backgroundColor: colors.highlight, borderColor: colors.border },
@@ -1104,6 +1133,8 @@ export default function QueueScreen() {
                       {/* Left: Thumbnail (tappable to view high-res lightbox) */}
                       <Pressable
                         onPress={() => openLightbox(item.image, item.title)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Inspect flyer for ${item.title || 'Untitled event'}`}
                         style={[styles.rejectedThumbWrap, { backgroundColor: colors.highlight }]}
                       >
                         {item.image ? (
@@ -1145,6 +1176,8 @@ export default function QueueScreen() {
                           <Pressable
                             onPress={() => handleRestoreRejected(item)}
                             disabled={isProcessing}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Restore ${item.title || 'event'} to pending review`}
                             style={({ pressed }) => [
                               styles.restoreBtn,
                               { backgroundColor: colors.highlight, borderColor: colors.border },
@@ -1159,6 +1192,8 @@ export default function QueueScreen() {
                           <Pressable
                             onPress={() => handleApproveRejected(item)}
                             disabled={isProcessing}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Approve and publish ${item.title || 'event'}`}
                             style={({ pressed }) => [
                               styles.restoreApproveBtn,
                               { backgroundColor: colors.accent },
@@ -1187,7 +1222,12 @@ export default function QueueScreen() {
         animationType="fade"
         onRequestClose={() => setCategoryPickerVisible(false)}
       >
-        <Pressable style={styles.modalBackdrop} onPress={() => setCategoryPickerVisible(false)}>
+        <Pressable
+          style={styles.modalBackdrop}
+          onPress={() => setCategoryPickerVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Close category picker"
+        >
           <Pressable
             style={[
               styles.pickerSheet,
@@ -1199,7 +1239,11 @@ export default function QueueScreen() {
           >
             <View style={styles.pickerHeader}>
               <Text style={[styles.pickerTitle, { color: colors.foreground }]}>Select Category</Text>
-              <Pressable onPress={() => setCategoryPickerVisible(false)}>
+              <Pressable
+                onPress={() => setCategoryPickerVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel="Close category picker"
+              >
                 <X size={18} color={colors.foreground} weight="bold" />
               </Pressable>
             </View>
@@ -1217,6 +1261,8 @@ export default function QueueScreen() {
                       updateField('eventType', cat);
                       setCategoryPickerVisible(false);
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select category ${meta.label}`}
                     style={({ pressed }) => [
                       styles.categoryOption,
                       {

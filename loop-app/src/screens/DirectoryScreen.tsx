@@ -107,6 +107,8 @@ export default function DirectoryScreen() {
                 <AnimatedWrapper index={index}>
                   <Pressable
                     onPress={() => openExternalLink(d.url)}
+                    accessibilityRole="link"
+                    accessibilityLabel={`${d.name}, ${d.detail}`}
                     style={({ pressed }) => [
                       styles.mapCard,
                       shadows.card,
@@ -138,6 +140,8 @@ export default function DirectoryScreen() {
               <AnimatedWrapper index={index}>
                 <Pressable
                   onPress={() => openExternalLink(d.url)}
+                  accessibilityRole="link"
+                  accessibilityLabel={`${d.name}, ${d.detail}`}
                   style={({ pressed }) => [
                     styles.card,
                     {
@@ -187,6 +191,9 @@ export default function DirectoryScreen() {
               <Pressable
                 key={tab}
                 onPress={() => setActiveFilter(tab)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={`Filter by ${tab}`}
                 style={[
                   styles.filterChip,
                   {
@@ -209,6 +216,8 @@ export default function DirectoryScreen() {
             <AnimatedWrapper key={club.id} index={index}>
               <Pressable
                 onPress={() => openInstagram(club.handle)}
+                accessibilityRole="link"
+                accessibilityLabel={`${club.name}, Instagram handle ${club.handle}`}
                 style={({ pressed }) => [
                   styles.clubRow,
                   {

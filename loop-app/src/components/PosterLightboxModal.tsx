@@ -78,7 +78,12 @@ export default function PosterLightboxModal({
     >
       <View style={styles.container}>
         {/* Dark blurred backdrop */}
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose}>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close image lightbox"
+        >
           <View style={styles.backdrop} />
         </Pressable>
 
@@ -101,12 +106,13 @@ export default function PosterLightboxModal({
             {/* Open Original Full-Res Link */}
             <Pressable
               onPress={handleOpenRawImage}
+              accessibilityRole="link"
+              accessibilityLabel="Open original image"
               style={({ pressed }) => [
                 styles.iconBtn,
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { transform: [{ scale: 0.92 }] },
               ]}
-              accessibilityLabel="Open original image"
             >
               <ArrowSquareOut size={20} color="#FFFFFF" weight="bold" />
             </Pressable>
@@ -114,12 +120,13 @@ export default function PosterLightboxModal({
             {/* Close Button */}
             <Pressable
               onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close lightbox"
               style={({ pressed }) => [
                 styles.closeBtn,
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { transform: [{ scale: 0.92 }] },
               ]}
-              accessibilityLabel="Close lightbox"
             >
               <X size={20} color="#FFFFFF" weight="bold" />
             </Pressable>
@@ -141,6 +148,8 @@ export default function PosterLightboxModal({
         >
           <Pressable
             onPress={() => setZoomScale((prev) => (prev > 1 ? 1 : 2))}
+            accessibilityRole="button"
+            accessibilityLabel={zoomScale > 1 ? "Zoom out image" : "Zoom in image"}
             style={[
               styles.imageWrap,
               Platform.OS === 'web' && ({

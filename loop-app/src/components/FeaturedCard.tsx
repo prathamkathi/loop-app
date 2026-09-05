@@ -156,6 +156,8 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
                     Linking.openURL(event.actionUrl!);
                   }
                 }}
+                accessibilityRole="link"
+                accessibilityLabel={catMeta.actionText || 'Open Official Link'}
                 style={({ pressed }) => [
                   styles.actionBtn,
                   { backgroundColor: catMeta.color },
@@ -180,6 +182,8 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
                   description: event.blurb,
                 });
               }}
+              accessibilityRole="button"
+              accessibilityLabel={isNotice ? 'Add Reminder to Google Calendar' : 'RSVP to Google Calendar'}
               style={({ pressed }) => [
                 styles.rsvp,
                 { backgroundColor: event.actionUrl ? 'rgba(255, 255, 255, 0.15)' : colors.accent },
@@ -199,6 +203,8 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
                   e?.stopPropagation?.();
                   openWhatsApp(firstContact.phone, firstContact.name, event.title);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="WhatsApp queries"
                 style={({ pressed }) => [
                   styles.whatsappBtn,
                   Platform.OS === 'web' && ({ cursor: 'pointer' } as any),

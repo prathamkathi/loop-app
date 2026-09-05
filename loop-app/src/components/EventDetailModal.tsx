@@ -183,7 +183,12 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   return (
     <>
       <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={handleClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close event details modal"
+        />
         <Animated.View
           onStartShouldSetResponder={() => true}
           style={[
@@ -214,6 +219,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
           {/* Hero Image Container (Tap to open full uncropped flyer) */}
           <Pressable
             onPress={() => setShowLightbox(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Inspect full event flyer"
             style={[styles.hero, { backgroundColor: colors.highlight }]}
           >
             <Image source={{ uri: getOptimizedImageUrl(event.image) }} style={styles.heroImage} />
@@ -225,6 +232,7 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
                 e?.stopPropagation?.();
                 handleClose();
               }}
+              accessibilityRole="button"
               accessibilityLabel="Close"
               style={({ pressed }) => [
                 styles.closeBtnWrap,
@@ -282,6 +290,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
             {/* Host Card */}
             <Pressable
               onPress={handleHostPress}
+              accessibilityRole="link"
+              accessibilityLabel={`View organizer ${formatHost(event.host)} on Instagram`}
               style={({ pressed }) => [
                 styles.hostCard,
                 {
@@ -401,6 +411,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
                     </View>
                     <Pressable
                       onPress={() => openWhatsApp(contact.phone, contact.name, event.title)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Chat with ${contact.name} on WhatsApp`}
                       style={({ pressed }) => [
                         styles.waChatBtn,
                         Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
@@ -433,6 +445,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
           >
             <Pressable
               onPress={onToggleSave}
+              accessibilityRole="button"
+              accessibilityLabel={saved ? "Remove from bookmarks" : "Save event"}
               style={({ pressed }) => [
                 styles.iconBtn,
                 {
@@ -442,7 +456,6 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { transform: [{ scale: 0.92 }] },
               ]}
-              accessibilityLabel={saved ? "Remove from bookmarks" : "Save event"}
             >
               <BookmarkSimple
                 weight={saved ? 'fill' : 'regular'}
@@ -454,6 +467,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
             <Pressable
               onPress={isConcluded ? undefined : handleCalendar}
               disabled={isConcluded}
+              accessibilityRole="button"
+              accessibilityLabel={isConcluded ? 'Event Concluded' : isNotice ? 'Add Notice Reminder to Google Calendar' : 'Add to Google Calendar'}
               style={({ pressed }) => [
                 styles.calBtn,
                 {
@@ -477,6 +492,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
 
             <Pressable
               onPress={handleShare}
+              accessibilityRole="button"
+              accessibilityLabel="Share event invitation link"
               style={({ pressed }) => [
                 styles.iconBtn,
                 {
@@ -485,7 +502,6 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { transform: [{ scale: 0.92 }] },
               ]}
-              accessibilityLabel="Share event"
             >
               <ShareNetwork size={20} color={colors.primary} weight="regular" />
             </Pressable>
@@ -493,10 +509,10 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
         </Animated.View>
       </Animated.View>
 
-      {/* High-Resolution Poster Lightbox Modal */}
-      {event.image && (
+      {/* High-Resolution Poster Lightbox Modal (U4: mounted only when open) */}
+      {event.image && showLightbox && (
         <PosterLightboxModal
-          visible={showLightbox}
+          visible={true}
           imageUri={event.image}
           title={event.title}
           subtitle={`${formatHost(event.host)} · ${catMeta.label}`}

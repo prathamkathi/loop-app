@@ -51,7 +51,12 @@ export default function NotificationModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={[styles.backdrop, { backgroundColor: bgOverlay }]} onPress={onClose}>
+      <Pressable
+        style={[styles.backdrop, { backgroundColor: bgOverlay }]}
+        onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel="Close alerts modal"
+      >
         <Pressable
           style={[
             styles.sheet,
@@ -84,6 +89,8 @@ export default function NotificationModal({
             <View style={styles.headerActions}>
               <Pressable
                 onPress={onMarkAllRead}
+                accessibilityRole="button"
+                accessibilityLabel="Mark all alerts as read"
                 style={({ pressed }) => [
                   styles.markReadBtn,
                   pressed && { opacity: 0.7 },
@@ -95,13 +102,14 @@ export default function NotificationModal({
               </Pressable>
               <Pressable
                 onPress={onClose}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
                 style={({ pressed }) => [
                   styles.closeBtn,
                   { backgroundColor: colors.highlight },
                   pressed && { transform: [{ scale: 0.92 }] },
                   Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 ]}
-                accessibilityLabel="Close"
               >
                 <X size={18} color={colors.foreground} weight="bold" />
               </Pressable>
@@ -123,6 +131,8 @@ export default function NotificationModal({
                 <Pressable
                   key={item.id}
                   onPress={() => handleItemPress(item)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${item.read ? '' : 'Unread alert: '}${item.title}. ${item.body}`}
                   style={({ pressed }) => [
                     styles.itemCard,
                     {

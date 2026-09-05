@@ -149,6 +149,8 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
           //@ts-ignore - React Native Web hover props
           onHoverIn={() => setIsHovered(true)}
           onHoverOut={() => setIsHovered(false)}
+          accessibilityRole="button"
+          accessibilityLabel={`View details for ${event.title}`}
           style={[
             Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
           ]}
@@ -313,6 +315,8 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
                   Linking.openURL(event.actionUrl!);
                 }
               }}
+              accessibilityRole="link"
+              accessibilityLabel={isConcluded ? 'View Concluded Link' : (catMeta.actionText || 'Open Official Link')}
               style={({ pressed }) => [
                 styles.actionUrlBtn,
                 {

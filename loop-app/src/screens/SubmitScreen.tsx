@@ -313,6 +313,8 @@ export default function SubmitScreen(props: Props) {
           <Pressable
             onPress={handlePickImage}
             disabled={isAnalyzing}
+            accessibilityRole="button"
+            accessibilityLabel="Upload cover poster"
             style={({ pressed }) => [
               styles.upload,
               {
@@ -335,6 +337,8 @@ export default function SubmitScreen(props: Props) {
                     setImageUri(null);
                     setImageBase64(null);
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Remove uploaded poster"
                   style={({ pressed }) => [
                     {
                       position: 'absolute',
@@ -435,6 +439,8 @@ export default function SubmitScreen(props: Props) {
               <Pressable
                 onPress={handleAIPolish}
                 disabled={isPolishing || (!title && !desc)}
+                accessibilityRole="button"
+                accessibilityLabel={isPolishing ? 'Polishing copywriting with AI' : 'AI Polish Copy'}
                 style={({ pressed }) => [
                   styles.aiPolishBtn,
                   { backgroundColor: colors.highlight, borderColor: colors.border },
@@ -456,6 +462,8 @@ export default function SubmitScreen(props: Props) {
             <Pressable
               onPress={handleSubmit}
               disabled={isAnalyzing || isSubmitting}
+              accessibilityRole="button"
+              accessibilityLabel={isSubmitting ? 'Creating event' : 'Create Event'}
               style={({ pressed }) => [
                 styles.submitBtn,
                 {

@@ -60,6 +60,7 @@ export default function CurateScreen({ interests, onToggle }: Props) {
               key={cat}
               onPress={() => onToggle(cat)}
               accessibilityRole="button"
+              accessibilityLabel={`${cat}: ${selected ? 'Selected' : 'Not selected'}`}
               accessibilityState={{ selected }}
               style={({ pressed }) => [
                 styles.pill,

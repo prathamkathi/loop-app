@@ -30,6 +30,8 @@ export default function EmptyState({ onReset, onEditInterests }: Props) {
       <View style={styles.actions}>
         <Pressable
           onPress={onReset}
+          accessibilityRole="button"
+          accessibilityLabel="Reset filters"
           style={({ pressed }) => [
             styles.primaryBtn,
             {
@@ -43,6 +45,8 @@ export default function EmptyState({ onReset, onEditInterests }: Props) {
         </Pressable>
         <Pressable
           onPress={onEditInterests}
+          accessibilityRole="button"
+          accessibilityLabel="Edit interests"
           style={({ pressed }) => [
             styles.secondaryBtn,
             {

@@ -375,7 +375,12 @@ export default function HomeScreen({
             style={[styles.searchInput, { color: colors.foreground }]}
           />
           {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery('')} style={styles.clearBtn}>
+            <Pressable
+              onPress={() => setSearchQuery('')}
+              accessibilityRole="button"
+              accessibilityLabel="Clear search input"
+              style={styles.clearBtn}
+            >
               <X size={16} color={colors.muted} weight="bold" />
             </Pressable>
           )}
@@ -493,6 +498,8 @@ export default function HomeScreen({
             </Text>
             <Pressable
               onPress={() => setActiveCategoryId('all')}
+              accessibilityRole="button"
+              accessibilityLabel="Browse all events"
               style={({ pressed }) => [
                 styles.browseBtn,
                 { backgroundColor: colors.primary },

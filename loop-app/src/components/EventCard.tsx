@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, typography, radii, shadows } from '../theme';
 import SaveButton from './SaveButton';
 import PosterLightboxModal from './PosterLightboxModal';
-import { getOptimizedImageUrl } from "../utils/cloudinary";
+import { getOptimizedImageUrl, getBackdropImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getEventTimeMillis } from '../utils/timestampUtils';
 import { getClubAvatar } from '../data/avatars';
@@ -176,7 +176,7 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
             ) : (
               <>
                 <Image
-                  source={{ uri: getOptimizedImageUrl(event.image) }}
+                  source={{ uri: getBackdropImageUrl(event.image) }}
                   style={StyleSheet.absoluteFill}
                   blurRadius={Platform.OS === 'web' ? 14 : 20}
                   resizeMode="cover"
@@ -359,10 +359,10 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
         )}
       </Animated.View>
 
-      {/* High-Resolution Poster Lightbox Modal */}
-      {event.image && (
+      {/* High-Resolution Poster Lightbox Modal (U4: mounted only when open) */}
+      {event.image && showLightbox && (
         <PosterLightboxModal
-          visible={showLightbox}
+          visible={true}
           imageUri={event.image}
           title={event.title}
           subtitle={`${formatHost(event.host)} · ${catMeta.label}`}

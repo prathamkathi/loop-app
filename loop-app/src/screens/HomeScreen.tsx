@@ -167,7 +167,10 @@ export default function HomeScreen({
       result = result.filter((e) => normalizeCategory(e.category) === activeCategoryId);
     } else if (interests.size > 0 && tabMode === 'upcoming') {
       // F-11: Wire interests into the filter body when viewing 'All' in upcoming mode
-      result = result.filter((e) => interests.has(normalizeCategory(e.category)));
+      result = result.filter((e) => {
+        const cat = normalizeCategory(e.category);
+        return cat ? interests.has(cat) : false;
+      });
     }
 
     // Filter by search query

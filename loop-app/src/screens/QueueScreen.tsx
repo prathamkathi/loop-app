@@ -46,7 +46,7 @@ import PosterLightboxModal from '../components/PosterLightboxModal';
 import { type ScrapedItem } from '../data/queue';
 import { type EventContact } from '../data/events';
 import { CATEGORIES } from '../data/categories';
-import { getCategoryMeta } from '../utils/categoryMeta';
+import { getCategoryMeta, normalizeCategory } from '../utils/categoryMeta';
 import { formatHost } from '../utils/format';
 import {
   collection,
@@ -59,7 +59,7 @@ import {
   Timestamp,
   limit,
 } from 'firebase/firestore';
-import { parseDateTimeStrings } from '../utils/timestampUtils';
+import { parseDateTimeStrings, parseEventTimestamp } from '../utils/timestampUtils';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { onCoordinatorChange } from '../utils/session';
 import { db, auth } from '../config/firebase';
@@ -125,20 +125,25 @@ export default function QueueScreen() {
       const snapshotPending = await getDocs(qPending);
       const fetchedPending = snapshotPending.docs.map(docSnap => {
         const data = docSnap.data();
+        const cat = normalizeCategory(data.category) || 'Cultural & Arts';
         return {
           id: docSnap.id,
           image: data.image,
           title: data.title || '',
           venue: data.venue || '',
           date: data.date || '',
+          time: data.time || '',
           startTime: data.time || '',
           endTime: data.endTime || '',
-          eventType: data.category || 'Campus Notices',
+          category: cat,
+          eventType: cat,
           confidence: data.confidence || 0,
           tags: data.tags || [],
+          blurb: data.blurb || '',
           rawCaption: data.blurb || '',
+          host: data.host || '',
           sourceHandle: data.host ? formatHost(data.host) : 'Submitted via App',
-          sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
+          sourceTimestamp: parseEventTimestamp(data.createdAt)?.toLocaleDateString() || 'Just now',
           contacts: data.contacts || [],
           actionUrl: data.actionUrl || '',
           status: 'pending' as const,
@@ -156,20 +161,25 @@ export default function QueueScreen() {
       const snapshotRejected = await getDocs(qRejected);
       const fetchedRejected = snapshotRejected.docs.map(docSnap => {
         const data = docSnap.data();
+        const cat = normalizeCategory(data.category) || 'Cultural & Arts';
         return {
           id: docSnap.id,
           image: data.image,
           title: data.title || '',
           venue: data.venue || '',
           date: data.date || '',
+          time: data.time || '',
           startTime: data.time || '',
           endTime: data.endTime || '',
-          eventType: data.category || 'Campus Notices',
+          category: cat,
+          eventType: cat,
           confidence: data.confidence || 0,
           tags: data.tags || [],
+          blurb: data.blurb || '',
           rawCaption: data.blurb || '',
+          host: data.host || '',
           sourceHandle: data.host ? formatHost(data.host) : 'Submitted via App',
-          sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
+          sourceTimestamp: parseEventTimestamp(data.createdAt)?.toLocaleDateString() || 'Just now',
           contacts: data.contacts || [],
           actionUrl: data.actionUrl || '',
           status: 'rejected' as const,
@@ -218,22 +228,30 @@ export default function QueueScreen() {
     if (isProcessing || !editableItem) return;
     setIsProcessing(true);
     try {
+      const approvedCategory = normalizeCategory(editableItem.category || editableItem.eventType);
+      if (!approvedCategory) {
+        showAlert('Category Required', 'Please select a valid event category before approving.');
+        resetPan();
+        setIsProcessing(false);
+        return;
+      }
+
       const updateData: any = {
         status: 'approved',
         title: editableItem.title,
         venue: editableItem.venue,
         date: editableItem.date,
-        time: editableItem.startTime,
+        time: editableItem.time || editableItem.startTime || '',
         endTime: editableItem.endTime || '',
-        category: editableItem.eventType,
-        blurb: editableItem.rawCaption,
+        category: approvedCategory,
+        blurb: editableItem.blurb || editableItem.rawCaption || '',
         contacts: editableItem.contacts || [],
         actionUrl: editableItem.actionUrl || '',
         approvedAt: serverTimestamp(),
       };
 
       // F-56: Calculate startsAt on approval to preserve chronological feed order
-      const startsAtDate = parseDateTimeStrings(editableItem.date, editableItem.startTime);
+      const startsAtDate = parseDateTimeStrings(editableItem.date, editableItem.time || editableItem.startTime);
       if (startsAtDate) {
         updateData.startsAt = Timestamp.fromDate(startsAtDate);
       }
@@ -242,6 +260,7 @@ export default function QueueScreen() {
       handleNext();
     } catch (err) {
       console.error('Approve error:', err);
+      resetPan();
       showAlert('Action Failed', 'Could not approve this event. Please check your permissions.');
     } finally {
       setIsProcessing(false);
@@ -294,11 +313,15 @@ export default function QueueScreen() {
   const handleApproveRejected = async (itemToApprove: ScrapedItem) => {
     setIsProcessing(true);
     try {
+      const cat = normalizeCategory(itemToApprove.category || itemToApprove.eventType);
       const updateData: any = {
         status: 'approved',
         approvedAt: serverTimestamp(),
       };
-      const startsAtDate = parseDateTimeStrings(itemToApprove.date, itemToApprove.startTime);
+      if (cat) {
+        updateData.category = cat;
+      }
+      const startsAtDate = parseDateTimeStrings(itemToApprove.date, itemToApprove.time || itemToApprove.startTime);
       if (startsAtDate) {
         updateData.startsAt = Timestamp.fromDate(startsAtDate);
       }
@@ -768,7 +791,7 @@ export default function QueueScreen() {
 
                         <View style={[styles.confidenceBadge, { backgroundColor: colors.highlight, borderColor: colors.border }]}>
                           <Text style={[styles.confidenceText, { color: colors.foreground }]}>
-                            {Math.round(editableItem.confidence * 100)}%
+                            {Math.round((editableItem.confidence ?? 0) * 100)}%
                           </Text>
                         </View>
                       </View>

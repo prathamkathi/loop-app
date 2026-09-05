@@ -10,6 +10,7 @@ import {
   Sparkle,
   CalendarBlank,
 } from 'phosphor-react-native';
+import { CANONICAL_CATEGORIES, type CanonicalCategory } from '../data/categories';
 
 export type CategoryMeta = {
   label: string;
@@ -22,7 +23,7 @@ export type CategoryMeta = {
   actionText?: string;
 };
 
-export const CATEGORY_META_MAP: Record<string, CategoryMeta> = {
+export const CATEGORY_META_MAP: Record<CanonicalCategory, CategoryMeta> = {
   'Campus Notices': {
     label: 'Campus Notice',
     tag: 'NOTICE',
@@ -116,8 +117,8 @@ const DEFAULT_META: CategoryMeta = {
   actionText: 'View Details',
 };
 
-export function normalizeCategory(category?: string | null): string {
-  if (!category) return 'Campus Notices';
+export function normalizeCategory(category?: string | null): CanonicalCategory | null {
+  if (!category) return null;
   const c = category.trim();
   if (c === 'Workshops & Talks' || c === 'Academic & Career' || c === 'Workshops') return 'Talks & Workshops';
   if (c === 'Competitions & Fests' || c === 'Competitions') return 'Competitions & Quizzes';
@@ -126,12 +127,13 @@ export function normalizeCategory(category?: string | null): string {
   if (c === 'Tech' || c === 'Technical') return 'Tech & Innovation';
   if (c === 'Sports') return 'Sports & Fitness';
   if (c === 'Fests') return 'Fests & Major Events';
-  return c;
+  if ((CANONICAL_CATEGORIES as readonly string[]).includes(c)) return c as CanonicalCategory;
+  return null;
 }
 
 export function getCategoryMeta(category?: string | null): CategoryMeta {
-  if (!category) return DEFAULT_META;
   const normalized = normalizeCategory(category);
+  if (!normalized) return DEFAULT_META;
   return CATEGORY_META_MAP[normalized] || DEFAULT_META;
 }
 

@@ -76,7 +76,7 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
 
   useEffect(() => {
     let isMounted = true;
-    generateEventPitch(event.title, event.category, event.blurb).then((res) => {
+    generateEventPitch(event.title, event.category, event.blurb || '').then((res) => {
       if (isMounted) setAiPitch(res);
     });
     return () => {

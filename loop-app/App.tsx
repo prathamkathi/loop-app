@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { collection, query, where, getDocs, onSnapshot, limit, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, limit, orderBy, doc, getDoc } from "firebase/firestore";
 import { db } from './src/config/firebase';
 import { ensureSignedIn } from './src/utils/session';
 import { useCustomFonts } from "./src/utils/useFonts";
@@ -92,12 +93,13 @@ function AppContent() {
 
   const [eventsLoading, setEventsLoading] = useState(true);
   const [feedError, setFeedError] = useState<string | null>(null);
+  const isLiveLoadedRef = useRef(false);
 
-  // T-09: Offline persistence for feed
+  // T-09: Offline persistence for feed (U15: prevent race condition with live snapshot)
   useEffect(() => {
     import('@react-native-async-storage/async-storage').then(({ default: AsyncStorage }) => {
       AsyncStorage.getItem('@loop_feed_cache').then((cached) => {
-        if (cached && eventsLoading) {
+        if (cached && !isLiveLoadedRef.current) {
           try {
             setLiveEvents(JSON.parse(cached));
             setEventsLoading(false); // Paint immediately
@@ -131,6 +133,7 @@ function AppContent() {
     let activeUnsubscribe: (() => void) | null = null;
 
     const handleSnapshot = (snapshot: any) => {
+      isLiveLoadedRef.current = true;
       const fetched = snapshot.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
@@ -177,6 +180,7 @@ function AppContent() {
         limit(50)
       );
       const snap = await getDocs(qOrdered);
+      isLiveLoadedRef.current = true;
       const fetched = snap.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
@@ -191,6 +195,7 @@ function AppContent() {
           limit(50)
         );
         const snap = await getDocs(qFallback);
+        isLiveLoadedRef.current = true;
         const fetched = snap.docs.map((doc: any) => ({
           id: doc.id,
           ...doc.data(),
@@ -198,16 +203,16 @@ function AppContent() {
         setLiveEvents(fetched);
         setFeedError(null);
       } catch (fallbackErr) {
-        console.error('Refetch failed:', fallbackErr);
-        setFeedError("Couldn't reload events. Please check your connection.");
+        console.error('Refetch failed on both paths:', fallbackErr);
+        setFeedError("Couldn't refresh events. Check connection.");
       }
     }
   }, []);
 
-  // F-42: Dynamic campus notifications sync
+  // Notifications generation
   useEffect(() => {
-    generateCampusNotifications(liveEvents, saved, interests).then((notifs) => {
-      setNotifications(notifs);
+    generateCampusNotifications(liveEvents, saved, interests).then((items) => {
+      setNotifications(items);
     });
   }, [liveEvents, saved, interests]);
 
@@ -227,17 +232,69 @@ function AppContent() {
     });
   }, []);
 
+  // Event modal open & close with hash sync (X6)
+  const openEvent = useCallback((event: EventItem) => {
+    setActiveEvent(event);
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.location.hash = `event/${event.id}`;
+    }
+  }, []);
+
+  const closeEvent = useCallback(() => {
+    setActiveEvent(null);
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash) {
+      window.history.pushState(null, '', window.location.pathname + window.location.search);
+    }
+  }, []);
+
+  // X6: Web hash routing (/#event/<id>) — handles direct links, refresh, browser back/forward
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+
+    const handleHash = async () => {
+      const hash = window.location.hash || '';
+      const match = hash.match(/^#\/?event\/([a-zA-Z0-9_-]+)$/);
+      if (match) {
+        const eventId = match[1];
+        const existing = liveEvents.find((e) => e.id === eventId);
+        if (existing) {
+          setActiveEvent(existing);
+        } else {
+          try {
+            const docSnap = await getDoc(doc(db, 'events', eventId));
+            if (docSnap.exists()) {
+              setActiveEvent({ id: docSnap.id, ...docSnap.data() } as EventItem);
+            }
+          } catch (err) {
+            console.warn('Could not load deep-linked event:', err);
+          }
+        }
+      } else if (!hash || hash === '#') {
+        setActiveEvent(null);
+      }
+    };
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('popstate', handleHash);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHash);
+      window.removeEventListener('popstate', handleHash);
+    };
+  }, [liveEvents]);
+
   const handleSelectNotification = useCallback(
     (item: NotificationItem) => {
       if (item.eventId) {
         const matched = liveEvents.find((e) => e.id === item.eventId);
         if (matched) {
           setShowNotifications(false);
-          setActiveEvent(matched);
+          openEvent(matched);
         }
       }
     },
-    [liveEvents]
+    [liveEvents, openEvent]
   );
 
   // Toggle mode
@@ -297,7 +354,7 @@ function AppContent() {
             error={feedError}
             onRefresh={refetchEvents}
             onToggleSave={toggleSave}
-            onOpenEvent={setActiveEvent}
+            onOpenEvent={openEvent}
             onResetFilters={resetFilters}
             onEditInterests={() => setActiveTab(mode === 'studio' ? 'studio_home' : 'curate')}
           />
@@ -328,7 +385,7 @@ function AppContent() {
             error={feedError}
             onRefresh={refetchEvents}
             onToggleSave={toggleSave}
-            onOpenEvent={setActiveEvent}
+            onOpenEvent={openEvent}
             onResetFilters={resetFilters}
             onEditInterests={() => setActiveTab('curate')}
           />
@@ -365,7 +422,7 @@ function AppContent() {
           event={activeEvent}
           saved={saved.has(activeEvent.id)}
           onToggleSave={() => toggleSave(activeEvent.id)}
-          onClose={() => setActiveEvent(null)}
+          onClose={closeEvent}
         />
       )}
 

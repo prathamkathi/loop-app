@@ -128,18 +128,32 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   };
 
   const handleShare = async () => {
-    const shareMessage = `Check out "${event.title}" happening at ${venueDisplay} on ${event.date || 'Campus'}! Curated on Loop.`;
+    const shareUrl =
+      Platform.OS === 'web' && typeof window !== 'undefined'
+        ? `${window.location.origin}${window.location.pathname}#event/${event.id}`
+        : `https://loop-iitd.web.app/#event/${event.id}`;
+    const shareMessage = `Check out "${event.title}" happening at ${venueDisplay} on ${event.date || 'Campus'}!\n${shareUrl}`;
     try {
-      if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(shareMessage);
-        showAlert('Link Copied', 'Event invitation copied to clipboard!');
-        return;
+      if (Platform.OS === 'web') {
+        if (typeof navigator !== 'undefined' && (navigator as any).share && !window.matchMedia('(min-width: 768px)').matches) {
+          await (navigator as any).share({
+            title: event.title,
+            text: shareMessage,
+            url: shareUrl,
+          });
+          return;
+        }
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          await navigator.clipboard.writeText(shareUrl);
+          showAlert('Link Copied', 'Event link copied to clipboard!');
+          return;
+        }
       }
       await Share.share({ message: shareMessage });
     } catch (error) {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(shareMessage);
-        showAlert('Link Copied', 'Event invitation copied to clipboard!');
+        await navigator.clipboard.writeText(shareUrl);
+        showAlert('Link Copied', 'Event link copied to clipboard!');
       }
     }
   };

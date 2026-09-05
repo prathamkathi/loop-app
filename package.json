@@ -13,6 +13,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p api/tsconfig.json",
+    "test": "node loop-app/scripts/run_tests.js && /usr/bin/python3 -m unittest loop-app/scraper/tests/test_completeness_gate.py",
     "scraper": "cd loop-app/scraper && source venv/bin/activate && python scraper.py",
     "scraper:dry": "cd loop-app/scraper && source venv/bin/activate && python scraper.py --dry-run"
   }

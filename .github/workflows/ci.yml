@@ -27,6 +27,10 @@ jobs:
           npx tsc --noEmit
           npx tsc --noEmit -p ../api/tsconfig.json
 
+      - name: Run client unit tests
+        working-directory: ./loop-app
+        run: npm run test
+
   python-lint:
     runs-on: ubuntu-latest
     steps:
@@ -44,6 +48,9 @@ jobs:
 
       - name: Python syntax compileall
         run: python -m compileall loop-app/scraper
+
+      - name: Run completeness gate unit tests
+        run: python -m unittest loop-app/scraper/tests/test_completeness_gate.py
 
       - name: AST Unresolved Name Check
         run: |

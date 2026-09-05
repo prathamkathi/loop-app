@@ -44,24 +44,7 @@ MAX_EVENTS = 50
 MAX_POSTS_PER_HANDLE = 2
 POSTS_TIMEFRAME_DAYS = 14 # Look back 14 days maximum
 
-FILLER = {
-    "", "not specified", "not available", "none", "null", "tbd", "tba",
-    "unknown", "n/a", "not provided", "tbc", "ongoing"
-}
-
-ALLOWED_CATEGORIES = {
-    "Cultural & Arts",
-    "Tech & Innovation",
-    "Fests & Major Events",
-    "Competitions & Quizzes",
-    "Talks & Workshops",
-    "Sports & Fitness",
-    "Social & Wellness",
-    "Campus Notices"
-}
-
-def _usable(v) -> bool:
-    return bool(v) and str(v).strip().lower() not in FILLER
+from completeness_gate import FILLER, ALLOWED_CATEGORIES, usable as _usable, evaluate_completeness
 
 # Load harvested Cloudinary avatars
 AVATARS_MAP = {}
@@ -229,15 +212,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                 starts_at = parse_date_and_time(date, time_str)
 
                 # Deterministic Completeness Gate (T2.2)
-                is_complete = (
-                    is_event is True
-                    and _usable(title) and len(title.strip()) > 3
-                    and _usable(time_str)
-                    and _usable(venue)
-                    and category in ALLOWED_CATEGORIES
-                    and starts_at is not None
-                )
-                status = "approved" if is_complete else "pending"
+                is_complete, status = evaluate_completeness(parsed_data, starts_at)
                 print(f"[Gate] Post {ig_post_id} ('{title}') -> status: '{status}' (is_complete={is_complete}, isEvent={is_event}, category='{category}', starts_at={starts_at})")
 
                 # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event

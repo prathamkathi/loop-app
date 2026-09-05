@@ -15,6 +15,7 @@ export type DirectoryItem = {
   status?: 'open' | 'closed';
 };
 
+// UNVERIFIED — confirm against the official IITD directory
 export const DIRECTORY: DirectoryItem[] = [
   // 1. EMERGENCY & MEDICAL
   {
@@ -184,6 +185,7 @@ export const DIRECTORY: DirectoryItem[] = [
     detail: 'Floodlit football pitch, cricket ground, 400m synthetic running track & basketball courts.',
     location: 'Opposite Kailash Hostel & Nalanda Apartments',
     hours: 'Daily: 5:30 AM - 10:00 PM',
+    // UNVERIFIED: duplicate phone with d11 (011-2659-1525); confirm against official IITD directory
     phone: '011-2659-1525',
     action: 'Facility Schedule',
     tone: 'plain',

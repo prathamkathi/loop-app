@@ -154,13 +154,15 @@ def parse_with_gemini(image_paths, caption):
             }
         }
 
-        # Verified production models listed via API on user key, prioritizing flash-lite for quota resilience
         models = ["gemini-2.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-2.5-flash"]
-        headers = {'Content-Type': 'application/json'}
+        headers = {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': GEMINI_API_KEY,
+        }
 
         result_json = None
         for model in models:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
             max_retries = 2
             backoff = 2
             for attempt in range(max_retries):

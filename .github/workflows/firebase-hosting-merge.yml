@@ -73,6 +73,15 @@ jobs:
           fi
           echo "Bundle clean."
 
+      - name: Deploy Firestore rules and indexes
+        working-directory: ./loop-app
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json npx firebase-tools deploy --only firestore:rules,firestore:indexes --project loop-iitd --non-interactive
+          rm -f sa.json
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

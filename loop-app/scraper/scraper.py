@@ -10,7 +10,7 @@ import uuid
 import tempfile
 from dotenv import load_dotenv
 from apify_client import ApifyClient
-from shared import db, parse_with_gemini, upload_image_to_cloudinary
+from shared import db, parse_with_gemini, upload_image_to_cloudinary, get_image_aspect_ratio
 from firebase_admin import credentials, firestore
 import cloudinary
 import cloudinary.uploader
@@ -140,148 +140,136 @@ def run_apify_pipeline():
         # Download primary poster to a temporary file
         temp_img_path = None
         try:
-            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_img:
-                img_res = requests.get(display_url, timeout=30)
-                img_res.raise_for_status()
-                temp_img.write(img_res.content)
-                temp_img_path = temp_img.name
-        except Exception as dl_err:
-            print(f"[Error] Failed to download image from {display_url}: {dl_err}")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        # 1. Parse with Gemini Vision
-        print(f"[Gemini] Analyzing poster from @{handle}...")
-        parsed_data = parse_with_gemini([temp_img_path], caption)
-
-        if not parsed_data:
-            print("[Error] Gemini parsing failed, skipping.")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        # 2. Strict Validation Engine
-        title = (parsed_data.get("title") or "").strip()
-        date = (parsed_data.get("date") or "").strip()
-        time_str = (parsed_data.get("startTime") or "TBA").strip()
-        venue = (parsed_data.get("venue") or "").strip()
-        category = (parsed_data.get("category") or "Cultural & Arts").strip()
-        confidence = parsed_data.get("confidenceScore", 0)
-
-        # F-53: Expanded invalid markers to filter out circulars and non-events
-        invalid_markers = [
-            "not specified", "none", "null", "tbd", "tba", "unknown", "n/a", "",
-            "not available", "ongoing", "not provided", "tbc"
-        ]
-        if not title or title.lower() in invalid_markers:
-            print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid title ('{title}').")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        date_lower = date.lower()
-        if not date or date_lower in invalid_markers or any(m in date_lower for m in ["not available", "ongoing", "not specified"]) or len(date) < 3:
-            print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid date ('{date}').")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        if not venue or venue.lower() in invalid_markers:
-            print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid venue ('{venue}').")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        if confidence < 40:
-            print(f"[Validation Skip] Post {ig_post_id} rejected: Low confidence ({confidence}%).")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
-        try:
-            existing_matches = db.collection('events').where('host', '==', f"@{handle}").where('title', '==', title).limit(1).get()
-            if existing_matches:
-                print(f"[Dedupe Skip] Event '{title}' from @{handle} already exists in Firestore.")
-                if temp_img_path and os.path.exists(temp_img_path):
-                    os.remove(temp_img_path)
-                continue
-        except Exception as dedup_err:
-            print(f"[Warn] Secondary deduplication check failed: {dedup_err}")
-
-        # Sanitize WhatsApp contacts
-        clean_contacts = []
-        for c in parsed_data.get("contacts", []):
-            c_name = (c.get("name") or "").strip()
-            c_phone = (c.get("phone") or "").strip()
-            c_role = (c.get("role") or "").strip()
-            if c_name and c_phone:
-                clean_contacts.append({
-                    "name": c_name,
-                    "phone": c_phone,
-                    "role": c_role
-                })
-
-        # 3. Cloudinary Upload (Optimized Cover Image)
-        print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
-        public_url = upload_image_to_cloudinary(temp_img_path)
-        aspect_ratio = get_image_aspect_ratio(temp_img_path)
-
-        if not public_url:
-            print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed.")
-            if temp_img_path and os.path.exists(temp_img_path):
-                os.remove(temp_img_path)
-            continue
-
-        # 4. Write to Firestore with status 'pending' (Studio Staging Queue)
-        print(f"[Firestore] Queuing event '{title}' into Staging Queue with status 'pending'...")
-        try:
-            event_doc = {
-                "igPostId": ig_post_id,
-                "title": title,
-                "date": date,
-                "time": time_str,
-                "venue": venue,
-                "blurb": caption or f"{title} organized by @{handle}.",
-                "image": public_url,
-                "category": category,
-                "confidence": confidence / 100,
-                "status": "pending",  # F-59: Queued as pending for coordinator review
-                "host": f"@{handle}",
-                "hostAvatar": get_avatar_for_handle(handle),
-                "aspect": "tall" if aspect_ratio < 0.9 else "wide" if aspect_ratio > 1.2 else "square",
-                "aspectRatio": aspect_ratio,
-                "contacts": clean_contacts,
-                "createdAt": firestore.SERVER_TIMESTAMP,
-            }
-            # Parse date + time into a sortable timestamp (startsAt)
             try:
-                # Try common formats: "21 Apr", "16 August", "2026-04-21"
-                now = datetime.now()
-                year = now.year
-                date_with_year = f"{date} {year}" if str(year) not in date else date
-                for fmt in ["%d %b %Y", "%d %B %Y", "%Y-%m-%d"]:
-                    try:
-                        dt = datetime.strptime(date_with_year, fmt)
-                        # F-51: Only roll over year if we are in Nov/Dec looking at Jan/Feb
-                        if now.month in [11, 12] and dt.month in [1, 2]:
-                            dt = dt.replace(year=year + 1)
-                        event_doc["startsAt"] = dt
-                        break
-                    except ValueError:
-                        continue
-            except Exception:
-                pass  # startsAt stays absent
-            doc_ref.set(event_doc)
-            print(f"[Success] Queued event '{title}' with {len(clean_contacts)} WhatsApp contact(s)!")
-            events_queued += 1
-        except Exception as fs_err:
-            print(f"[Error] Failed to write to Firestore: {fs_err}")
+                with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_img:
+                    img_res = requests.get(display_url, timeout=30)
+                    img_res.raise_for_status()
+                    temp_img.write(img_res.content)
+                    temp_img_path = temp_img.name
+            except Exception as dl_err:
+                print(f"[Error] Failed to download image from {display_url}: {dl_err}")
+                continue
 
-        # Clean up local temporary file
-        if temp_img_path and os.path.exists(temp_img_path):
-            os.remove(temp_img_path)
+            # 1. Parse with Gemini Vision
+            print(f"[Gemini] Analyzing poster from @{handle}...")
+            parsed_data = parse_with_gemini([temp_img_path], caption)
+
+            if not parsed_data:
+                print("[Error] Gemini parsing failed, skipping.")
+                continue
+
+            # 2. Strict Validation Engine
+            title = (parsed_data.get("title") or "").strip()
+            date = (parsed_data.get("date") or "").strip()
+            time_str = (parsed_data.get("startTime") or "TBA").strip()
+            venue = (parsed_data.get("venue") or "").strip()
+            category = (parsed_data.get("category") or "Cultural & Arts").strip()
+            confidence = parsed_data.get("confidenceScore", 0)
+
+            # F-53: Expanded invalid markers to filter out circulars and non-events
+            invalid_markers = [
+                "not specified", "none", "null", "tbd", "tba", "unknown", "n/a", "",
+                "not available", "ongoing", "not provided", "tbc"
+            ]
+            if not title or title.lower() in invalid_markers:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid title ('{title}').")
+                continue
+
+            date_lower = date.lower()
+            if not date or date_lower in invalid_markers or any(m in date_lower for m in ["not available", "ongoing", "not specified"]) or len(date) < 3:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid date ('{date}').")
+                continue
+
+            if not venue or venue.lower() in invalid_markers:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: Invalid venue ('{venue}').")
+                continue
+
+            if confidence < 40:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: Low confidence ({confidence}%).")
+                continue
+
+            # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
+            try:
+                existing_matches = db.collection('events').where('host', '==', f"@{handle}").where('title', '==', title).limit(1).get()
+                if existing_matches:
+                    print(f"[Dedupe Skip] Event '{title}' from @{handle} already exists in Firestore.")
+                    continue
+            except Exception as dedup_err:
+                print(f"[Warn] Secondary deduplication check failed: {dedup_err}")
+
+            # Sanitize WhatsApp contacts
+            clean_contacts = []
+            for c in parsed_data.get("contacts", []):
+                c_name = (c.get("name") or "").strip()
+                c_phone = (c.get("phone") or "").strip()
+                c_role = (c.get("role") or "").strip()
+                if c_name and c_phone:
+                    clean_contacts.append({
+                        "name": c_name,
+                        "phone": c_phone,
+                        "role": c_role
+                    })
+
+            # 3. Cloudinary Upload (Optimized Cover Image)
+            print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
+            public_url = upload_image_to_cloudinary(temp_img_path)
+            aspect_ratio = get_image_aspect_ratio(temp_img_path)
+
+            if not public_url:
+                print(f"[Validation Skip] Post {ig_post_id} rejected: poster upload failed.")
+                continue
+
+            # 4. Write to Firestore with status 'pending' (Studio Staging Queue)
+            print(f"[Firestore] Queuing event '{title}' into Staging Queue with status 'pending'...")
+            try:
+                event_doc = {
+                    "igPostId": ig_post_id,
+                    "title": title,
+                    "date": date,
+                    "time": time_str,
+                    "venue": venue,
+                    "blurb": caption or f"{title} organized by @{handle}.",
+                    "image": public_url,
+                    "category": category,
+                    "confidence": confidence / 100,
+                    "status": "pending",  # F-59: Queued as pending for coordinator review
+                    "host": f"@{handle}",
+                    "hostAvatar": get_avatar_for_handle(handle),
+                    "aspect": "tall" if aspect_ratio < 0.9 else "wide" if aspect_ratio > 1.2 else "square",
+                    "aspectRatio": aspect_ratio,
+                    "contacts": clean_contacts,
+                    "createdAt": firestore.SERVER_TIMESTAMP,
+                }
+                # Parse date + time into a sortable timestamp (startsAt)
+                try:
+                    # Try common formats: "21 Apr", "16 August", "2026-04-21"
+                    now = datetime.now()
+                    year = now.year
+                    date_with_year = f"{date} {year}" if str(year) not in date else date
+                    for fmt in ["%d %b %Y", "%d %B %Y", "%Y-%m-%d"]:
+                        try:
+                            dt = datetime.strptime(date_with_year, fmt)
+                            # F-51: Only roll over year if we are in Nov/Dec looking at Jan/Feb
+                            if now.month in [11, 12] and dt.month in [1, 2]:
+                                dt = dt.replace(year=year + 1)
+                            event_doc["startsAt"] = dt
+                            break
+                        except ValueError:
+                            continue
+                except Exception:
+                    pass  # startsAt stays absent
+                doc_ref.set(event_doc)
+                print(f"[Success] Queued event '{title}' with {len(clean_contacts)} WhatsApp contact(s)!")
+                events_queued += 1
+            except Exception as fs_err:
+                print(f"[Error] Failed to write to Firestore: {fs_err}")
+        finally:
+            # Clean up local temporary file
+            if temp_img_path and os.path.exists(temp_img_path):
+                try:
+                    os.remove(temp_img_path)
+                except Exception:
+                    pass
 
     print(f"\n[Done] Scraped {len(posts_to_process)} events, queued {events_queued} successfully.")
     print("=" * 60)

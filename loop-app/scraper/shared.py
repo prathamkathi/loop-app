@@ -8,6 +8,19 @@ from firebase_admin import credentials, firestore
 import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
+from PIL import Image
+
+def get_image_aspect_ratio(image_path: str) -> float:
+    """Calculate the aspect ratio (width / height) of an image file using Pillow."""
+    try:
+        with Image.open(image_path) as img:
+            w, h = img.size
+            if h <= 0:
+                return 1.0
+            return round(w / h, 2)
+    except Exception as e:
+        print(f"[Warning] Failed to calculate aspect ratio for {image_path}: {e}")
+        return 1.0
 
 load_dotenv()
 

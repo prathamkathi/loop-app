@@ -94,7 +94,7 @@ async function runCleanup(commit = false) {
       return;
     }
 
-    // 4. Check for 2027 year-rollover bug in startsAt
+    // 4. Check for year abnormalities in startsAt (e.g. > 2026 or < 2020)
     if (startsAt) {
       let dt = null;
       if (typeof startsAt.toDate === 'function') {
@@ -105,10 +105,10 @@ async function runCleanup(commit = false) {
         dt = new Date(startsAt);
       }
 
-      if (dt && !isNaN(dt.getTime()) && dt.getFullYear() > currentYear) {
+      if (dt && !isNaN(dt.getTime()) && (dt.getFullYear() > currentYear || dt.getFullYear() < 2020)) {
         const corrected = new Date(dt);
         corrected.setFullYear(currentYear);
-        console.log(`[Year Rollover Bug] Doc '${docId}' ('${title}') has year ${dt.getFullYear()} -> Correcting to ${corrected.getFullYear()}.`);
+        console.log(`[Year Anomaly Bug] Doc '${docId}' ('${title}') has year ${dt.getFullYear()} -> Correcting to ${corrected.getFullYear()}.`);
         toUpdate.push({
           id: docId,
           data: {
@@ -118,8 +118,13 @@ async function runCleanup(commit = false) {
       }
     } else if (d.date) {
       // 5. Backfill missing startsAt from human date string
-      const rawDate = String(d.date).trim();
-      let normalizedDate = rawDate;
+      let rawDate = String(d.date).trim();
+      // Handle multi-date ranges like "04 Sep & 05 Sep 2026"
+      if (rawDate.includes('&')) {
+        rawDate = rawDate.split('&')[0].trim();
+      }
+      // Strip ordinal suffixes: 13th -> 13, 3rd -> 3
+      let normalizedDate = rawDate.replace(/(\d+)(st|nd|rd|th)/gi, '$1');
       if (!/\b20\d\d\b/.test(normalizedDate)) {
         normalizedDate = `${normalizedDate} ${currentYear}`;
       }

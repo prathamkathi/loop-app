@@ -22,8 +22,13 @@ firebase-debug.*.log
 venv/
 __pycache__/
 *.pyc
+*.pid
 session.json
 avatars_map.json
+
+# Graphify Cache
+.graphify/cache/
+.graphify/branch.json
 
 # Vercel
 .vercel
@@ -32,6 +37,8 @@ avatars_map.json
 .DS_Store
 Icon
 Icon?
+Icon*
+Icon\r
 
 .vercel
 .env*

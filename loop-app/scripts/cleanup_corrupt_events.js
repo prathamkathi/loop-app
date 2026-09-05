@@ -116,6 +116,25 @@ async function runCleanup(commit = false) {
           },
         });
       }
+    } else if (d.date) {
+      // 5. Backfill missing startsAt from human date string
+      const rawDate = String(d.date).trim();
+      let normalizedDate = rawDate;
+      if (!/\b20\d\d\b/.test(normalizedDate)) {
+        normalizedDate = `${normalizedDate} ${currentYear}`;
+      }
+      const rawTime = d.time && d.time !== 'TBA' ? ` ${d.time}` : '';
+      const parsedEpoch = Date.parse(`${normalizedDate}${rawTime}`) || Date.parse(normalizedDate);
+      if (!isNaN(parsedEpoch)) {
+        const dt = new Date(parsedEpoch);
+        console.log(`[Backfill startsAt] Doc '${docId}' ('${title}') -> backfilling startsAt: ${dt.toISOString()}`);
+        toUpdate.push({
+          id: docId,
+          data: {
+            startsAt: admin.firestore.Timestamp.fromDate(dt),
+          },
+        });
+      }
     }
   });
 

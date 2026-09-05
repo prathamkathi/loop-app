@@ -11,6 +11,7 @@ import { openWhatsApp } from './EventCard';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getClubAvatar } from '../data/avatars';
+import { formatHost } from '../utils/format';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -132,7 +133,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
                 style={styles.featuredAvatar} 
                 onError={() => setAvatarError(true)} 
               />
-              <Text style={styles.hostName} numberOfLines={1}>{event.host}</Text>
+              <Text style={styles.hostName} numberOfLines={1}>{formatHost(event.host)}</Text>
             </View>
 
             <CalendarBlank size={15} weight="light" color="rgba(255,255,255,0.85)" />
@@ -218,7 +219,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
           visible={showLightbox}
           imageUri={event.image}
           title={event.title}
-          subtitle={`${event.host} · ${catMeta.label}`}
+          subtitle={`${formatHost(event.host)} · ${catMeta.label}`}
           onClose={() => setShowLightbox(false)}
         />
       )}

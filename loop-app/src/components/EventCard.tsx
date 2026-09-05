@@ -9,6 +9,7 @@ import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getEventTimeMillis } from '../utils/timestampUtils';
 import { getClubAvatar } from '../data/avatars';
+import { formatHost } from '../utils/format';
 import type { EventItem } from '../data/events';
 
 type Props = {
@@ -269,7 +270,7 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
                 onError={() => setAvatarError(true)} 
               />
               <Text style={[styles.venue, { color: colors.muted }]} numberOfLines={1}>
-                {event.host}
+                {formatHost(event.host)}
               </Text>
             </View>
 
@@ -364,7 +365,7 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
           visible={showLightbox}
           imageUri={event.image}
           title={event.title}
-          subtitle={`${event.host} · ${catMeta.label}`}
+          subtitle={`${formatHost(event.host)} · ${catMeta.label}`}
           onClose={() => setShowLightbox(false)}
         />
       )}

@@ -256,9 +256,10 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                 print(f"[Gate] Post {ig_post_id} ('{title}') -> status: '{status}' (is_complete={is_complete}, isEvent={is_event}, category='{category}', starts_at={starts_at})")
 
                 # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
-                existing_matches = db.collection('events').where('host', '==', f"@{handle}").where('title', '==', title).limit(1).get()
+                clean_handle = handle.lstrip("@").strip()
+                existing_matches = db.collection('events').where('host', '==', clean_handle).where('title', '==', title).limit(1).get()
                 if existing_matches:
-                    print(f"[Dedupe Skip] Event '{title}' from @{handle} already exists in Firestore.")
+                    print(f"[Dedupe Skip] Event '{title}' from @{clean_handle} already exists in Firestore.")
                     continue
 
                 # Sanitize WhatsApp contacts
@@ -308,8 +309,8 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                         "status": status,
                         "postKind": post_kind,
                         "isEvent": is_event,
-                        "host": f"@{handle}",
-                        "hostAvatar": get_avatar_for_handle(handle),
+                        "host": clean_handle,
+                        "hostAvatar": get_avatar_for_handle(clean_handle),
                         "aspect": "tall" if aspect_ratio < 0.9 else "wide" if aspect_ratio > 1.2 else "square",
                         "aspectRatio": aspect_ratio,
                         "contacts": clean_contacts,

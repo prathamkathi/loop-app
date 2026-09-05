@@ -47,6 +47,7 @@ import { type ScrapedItem } from '../data/queue';
 import { type EventContact } from '../data/events';
 import { CATEGORIES } from '../data/categories';
 import { getCategoryMeta } from '../utils/categoryMeta';
+import { formatHost } from '../utils/format';
 import {
   collection,
   query,
@@ -136,7 +137,7 @@ export default function QueueScreen() {
           confidence: data.confidence || 0,
           tags: data.tags || [],
           rawCaption: data.blurb || '',
-          sourceHandle: data.host || 'Submitted via App',
+          sourceHandle: data.host ? formatHost(data.host) : 'Submitted via App',
           sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
           contacts: data.contacts || [],
           actionUrl: data.actionUrl || '',
@@ -167,7 +168,7 @@ export default function QueueScreen() {
           confidence: data.confidence || 0,
           tags: data.tags || [],
           rawCaption: data.blurb || '',
-          sourceHandle: data.host || 'Submitted via App',
+          sourceHandle: data.host ? formatHost(data.host) : 'Submitted via App',
           sourceTimestamp: data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Just now',
           contacts: data.contacts || [],
           actionUrl: data.actionUrl || '',

@@ -218,7 +218,7 @@ export default function SubmitScreen(props: Props) {
       try {
         const tokenResult = await auth.currentUser?.getIdTokenResult();
         if (tokenResult?.claims?.clubId) {
-          realHost = tokenResult.claims.clubId as string;
+          realHost = (tokenResult.claims.clubId as string).replace(/^@+/, '').trim();
           realAvatar = getClubAvatar(realHost);
         }
       } catch (e) {
@@ -235,7 +235,7 @@ export default function SubmitScreen(props: Props) {
         category: geminiCategory,
         confidence: geminiConfidence <= 1 ? geminiConfidence : geminiConfidence / 100,
         status: 'pending',
-        host: realHost,
+        host: realHost.replace(/^@+/, '').trim(),
         hostAvatar: realAvatar,
         aspectRatio: aspectRatio,
         createdAt: serverTimestamp(),

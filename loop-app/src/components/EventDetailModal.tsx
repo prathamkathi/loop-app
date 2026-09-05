@@ -41,6 +41,7 @@ import { getOptimizedImageUrl } from "../utils/cloudinary";
 import { getCategoryMeta, formatCardDateLine, formatCardVenue } from '../utils/categoryMeta';
 import { getEventTimeMillis } from '../utils/timestampUtils';
 import { getClubAvatar } from '../data/avatars';
+import { formatHost } from '../utils/format';
 import PosterLightboxModal from './PosterLightboxModal';
 import type { EventItem } from '../data/events';
 
@@ -146,10 +147,15 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   // Find club profile for host
   const matchedClub = React.useMemo(() => {
     if (!event.host) return null;
-    return CLUBS.find((c) =>
-      c.name.toLowerCase().includes(event.host.toLowerCase()) ||
-      event.host.toLowerCase().includes(c.name.toLowerCase())
-    );
+    const clean = event.host.replace(/^@+/, '').toLowerCase().trim();
+    return CLUBS.find((c) => {
+      const clubClean = c.handle.replace(/^@+/, '').toLowerCase().trim();
+      return (
+        clubClean === clean ||
+        c.name.toLowerCase().includes(clean) ||
+        clean.includes(c.name.toLowerCase())
+      );
+    });
   }, [event.host]);
 
   const handleHostPress = () => {
@@ -279,10 +285,10 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
               />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.hostName, { color: colors.foreground }]} numberOfLines={1} ellipsizeMode="tail">
-                  {event.host}
+                  {matchedClub ? matchedClub.name : formatHost(event.host)}
                 </Text>
                 <Text style={[styles.hostedBy, { color: colors.muted }]}>
-                  {matchedClub ? `@${matchedClub.handle}` : 'Campus Organization'}
+                  {matchedClub ? formatHost(matchedClub.handle) : 'Campus Organization'}
                 </Text>
               </View>
               <ArrowSquareOut size={16} color={colors.muted} />
@@ -479,7 +485,7 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
           visible={showLightbox}
           imageUri={event.image}
           title={event.title}
-          subtitle={`${event.host} · ${catMeta.label}`}
+          subtitle={`${formatHost(event.host)} · ${catMeta.label}`}
           onClose={() => setShowLightbox(false)}
         />
       )}

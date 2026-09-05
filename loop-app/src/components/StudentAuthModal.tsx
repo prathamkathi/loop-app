@@ -61,8 +61,9 @@ export default function StudentAuthModal({
       cleanKerberos = `${cleanKerberos}@iitd.ac.in`;
     }
 
-    if (!/^[a-z]{2,4}\d{5,8}@iitd\.ac\.in$/.test(cleanKerberos)) {
-      showAlert('Invalid Kerberos ID', 'Please enter a valid IITD email or ID (e.g. cs1210123 or cs1210123@iitd.ac.in).');
+    // U9: Support both traditional kerberos (cs1210123) and entry numbers (2021CS10123)
+    if (!/^(?:[a-z]{2,4}\d{5,8}|\d{4}[a-z]{2,4}\d{3,6})@iitd\.ac\.in$/i.test(cleanKerberos)) {
+      showAlert('Invalid Kerberos ID', 'Please enter a valid IITD email or ID (e.g. cs1210123 or 2021cs10123).');
       return;
     }
 

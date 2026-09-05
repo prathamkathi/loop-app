@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EventItem } from '../data/events';
 import { getEventTimeMillis } from './timestampUtils';
+import { normalizeCategory } from './categoryMeta';
 
 export type NotificationItem = {
   id: string;
@@ -63,7 +64,7 @@ export async function generateCampusNotifications(
   // 1. URGENT & OFFICIAL CAMPUS NOTICES
   const noticeEvents = upcomingEvents.filter(
     (e) =>
-      e.category === 'Campus Notices' ||
+      normalizeCategory(e.category) === 'Campus Notices' ||
       /notice|circular|survey|deadline|protocol|admissions|guidelines/i.test(e.title)
   );
 
@@ -81,7 +82,7 @@ export async function generateCampusNotifications(
       type: 'urgent',
       read: readIds.has(id),
       eventId: event.id,
-      category: event.category || 'Campus Notices',
+      category: normalizeCategory(event.category) || 'Campus Notices',
     });
   }
 
@@ -97,29 +98,33 @@ export async function generateCampusNotifications(
       type: 'event',
       read: readIds.has(id),
       eventId: event.id,
-      category: event.category,
+      category: normalizeCategory(event.category) ?? undefined,
     });
   }
 
-  // 3. CURATED PICKS MATCHING STUDENT INTERESTS
-  const interestEvents = upcomingEvents.filter(
-    (e) =>
-      interestCategories.has(e.category) &&
+  // 3. CURATED PICKS MATCHING STUDENT INTERESTS (U17: uses normalizeCategory)
+  const interestEvents = upcomingEvents.filter((e) => {
+    const norm = normalizeCategory(e.category);
+    return (
+      norm !== null &&
+      interestCategories.has(norm) &&
       !savedIds.has(e.id) &&
-      e.category !== 'Campus Notices'
-  );
+      norm !== 'Campus Notices'
+    );
+  });
 
   for (const event of interestEvents.slice(0, 4)) {
     const id = `notif_interest_${event.id}`;
+    const norm = normalizeCategory(event.category);
     notifications.push({
       id,
-      title: `New in ${event.category}: ${event.title}`,
+      title: `New in ${norm || 'Campus'}: ${event.title}`,
       body: `Organized by ${event.host} at ${event.venue || 'Campus'}. Matches your curated feed preferences.`,
       time: event.date || 'Curated',
       type: 'event',
       read: readIds.has(id),
       eventId: event.id,
-      category: event.category,
+      category: norm ?? undefined,
     });
   }
 

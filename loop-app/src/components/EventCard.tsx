@@ -63,7 +63,7 @@ function PulseDot({ color }: { color: string }) {
 
 export function openWhatsApp(rawPhone: string, name: string, eventTitle: string) {
   const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+  const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
   const message = encodeURIComponent(`Hi ${name || 'Organizer'}, I saw "${eventTitle}" on Loop IITD and had a query.`);
   const waUrl = `https://wa.me/${formattedPhone}?text=${message}`;
 

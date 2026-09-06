@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingBottom: 64,
+    paddingBottom: 120,
   },
   mainLayout: {
     flexDirection: 'column',

@@ -181,15 +181,26 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
                       { color: isUser ? colors.onPrimary : colors.foreground },
                     ]}
                   >
-                    {m.text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
-                      if (part.startsWith('**') && part.endsWith('**')) {
-                        return (
-                          <Text key={i} style={{ fontWeight: '700', color: isUser ? colors.onPrimary : colors.primary }}>
-                            {part.slice(2, -2)}
-                          </Text>
-                        );
-                      }
-                      return part;
+                    {m.text.split('\n').map((line, lineIdx, arr) => {
+                      const isBullet = /^[*-]\s+/.test(line.trim());
+                      const cleanLine = isBullet ? line.trim().replace(/^[*-]\s+/, '• ') : line;
+                      const hasNext = lineIdx < arr.length - 1;
+
+                      return (
+                        <Text key={lineIdx}>
+                          {cleanLine.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                              return (
+                                <Text key={i} style={{ fontWeight: '700', color: isUser ? colors.onPrimary : colors.primary }}>
+                                  {part.slice(2, -2)}
+                                </Text>
+                              );
+                            }
+                            return part;
+                          })}
+                          {hasNext ? '\n' : ''}
+                        </Text>
+                      );
                     })}
                   </Text>
                   <Text

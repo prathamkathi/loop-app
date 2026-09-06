@@ -38,11 +38,12 @@ def main():
         from harvest_avatars import main as harvest_main
         harvest_main()
     elif args.command == "purge":
-        from purge_and_reset import purge_and_reset
-        purge_and_reset()
+        print("[Notice] Python purge script was consolidated into the safe db maintenance tool.")
+        print("Run: node scripts/db_maintenance.js --action=cleanup --confirm")
     elif args.command == "wipe":
-        from wipe_db import wipe_database
-        wipe_database()
+        print("[Notice] Python wipe script was consolidated into the safe db maintenance tool.")
+        print("Run: node scripts/db_maintenance.js --action=status")
+        print("Or for maintenance: node scripts/db_maintenance.js --action=cleanup --confirm")
     elif args.command == "seed":
         from seed_data import seed_database
         seed_database()

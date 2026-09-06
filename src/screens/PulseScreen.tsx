@@ -37,7 +37,7 @@ export default function PulseScreen() {
   const { colors, isDark } = useTheme();
   // Initialized to empty array; only verified live notices from Firestore are rendered
   const [pulseItems, setPulseItems] = useState<PulseItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const q = query(collection(db, 'pulse'), orderBy("createdAt", "desc"), limit(50));

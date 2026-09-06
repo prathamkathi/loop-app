@@ -164,10 +164,10 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                 continue
 
             doc_id = f"ig_{ig_post_id}"
-            doc_ref = db.collection('events').document(doc_id)
+            doc_ref = db.collection('events').document(doc_id) if db is not None else None
 
             # Deduplication check
-            if doc_ref.get().exists:
+            if doc_ref and doc_ref.get().exists:
                 print(f"[Skip] Post {ig_post_id} already exists in Firestore.")
                 continue
 
@@ -217,10 +217,11 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
 
                 # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
                 clean_handle = handle.lstrip("@").strip()
-                existing_matches = db.collection('events').where('host', '==', clean_handle).where('title', '==', title).limit(1).get()
-                if existing_matches:
-                    print(f"[Dedupe Skip] Event '{title}' from @{clean_handle} already exists in Firestore.")
-                    continue
+                if db is not None:
+                    existing_matches = db.collection('events').where('host', '==', clean_handle).where('title', '==', title).limit(1).get()
+                    if existing_matches:
+                        print(f"[Dedupe Skip] Event '{title}' from @{clean_handle} already exists in Firestore.")
+                        continue
 
                 # Sanitize WhatsApp contacts
                 clean_contacts = []
@@ -282,7 +283,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                     if dry_run:
                         print(f"[Dry Run] Would write event '{title}' ({doc_id}) to Firestore:")
                         print(f"         status={event_doc.get('status')}, category={event_doc.get('category')}, startsAt={event_doc.get('startsAt')}")
-                    else:
+                    elif doc_ref:
                         doc_ref.set(event_doc)
                         print(f"[Success] Saved event '{title}' with status '{status}' and {len(clean_contacts)} WhatsApp contact(s)!")
                     events_queued += 1

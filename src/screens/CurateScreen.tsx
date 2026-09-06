@@ -13,7 +13,7 @@ import {
 } from 'phosphor-react-native';
 import { useTheme, typography, radii } from '../theme';
 import SectionLabel from '../components/SectionLabel';
-import { CATEGORIES } from '../data/categories';
+import { CANONICAL_CATEGORIES } from '../data/categories';
 
 type Props = {
   interests: Set<string>;
@@ -51,7 +51,7 @@ export default function CurateScreen({ interests, onToggle }: Props) {
 
       {/* Category Filter Pills */}
       <View style={styles.pills}>
-        {CATEGORIES.map((cat) => {
+        {CANONICAL_CATEGORIES.map((cat) => {
           const selected = interests.has(cat);
           const iconColor = selected ? colors.onPrimary : colors.primary;
 

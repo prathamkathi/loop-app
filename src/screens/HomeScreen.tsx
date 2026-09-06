@@ -70,7 +70,16 @@ export default function HomeScreen({
   const [timeHorizon, setTimeHorizon] = useState<'all' | 'today' | 'weekend' | 'week'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const nowMs = Date.now();
+  const [nowMinute, setNowMinute] = useState(() => Math.floor(Date.now() / 60000) * 60000);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNowMinute(Math.floor(Date.now() / 60000) * 60000);
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nowMs = nowMinute;
 
   // Separate upcoming vs past counts for Luma-style switcher
   const { upcomingCount, pastCount } = useMemo(() => {

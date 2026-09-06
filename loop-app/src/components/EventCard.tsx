@@ -350,6 +350,7 @@ export default function EventCard({ event, saved, onToggleSave, onPress, index, 
                     Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
                     pressed && { transform: [{ scale: 0.94 }] },
                   ]}
+                  accessibilityRole="link"
                   accessibilityLabel={`WhatsApp ${contact.name}`}
                 >
                   <WhatsappLogo size={14} color="#FFFFFF" weight="fill" />

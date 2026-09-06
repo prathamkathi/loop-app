@@ -393,6 +393,8 @@ function AppContent() {
     }
   };
 
+  if (!fontsLoaded) return null;
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
       <StatusBar style={isDark ? 'light' : 'dark'} />

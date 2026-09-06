@@ -47,7 +47,7 @@ export default async function handler(req: any, res: any) {
       : 'Extract this.';
     const base64Data = imageB64.includes(',') ? imageB64.split(',')[1] : imageB64;
 
-    const POSTER_MODELS = ['gemini-2.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
+    const POSTER_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
     let lastError: any = null;
 
     for (const modelName of POSTER_MODELS) {

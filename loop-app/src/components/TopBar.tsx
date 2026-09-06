@@ -80,6 +80,7 @@ export default function TopBar({
                 Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
                 pressed && { transform: [{ scale: 0.95 }] },
               ]}
+              accessibilityRole="button"
               accessibilityLabel={studentProfile ? 'View Profile' : 'Sign In'}
             >
               {studentProfile ? (
@@ -116,6 +117,7 @@ export default function TopBar({
               Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
               pressed && { transform: [{ scale: 0.95 }] },
             ]}
+            accessibilityRole="button"
             accessibilityLabel="Ask Campus AI"
           >
             <Sparkle size={15} color={colors.primary} weight="fill" />

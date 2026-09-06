@@ -110,6 +110,7 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { transform: [{ scale: 0.92 }] },
               ]}
+              accessibilityRole="button"
               accessibilityLabel="Inspect high-res poster"
             >
               <MagnifyingGlassPlus size={16} color="#FFFFFF" weight="bold" />

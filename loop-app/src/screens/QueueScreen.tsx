@@ -1229,6 +1229,8 @@ export default function QueueScreen() {
           accessibilityLabel="Close category picker"
         >
           <Pressable
+            accessibilityRole="none"
+            accessibilityLabel="Category selector modal sheet"
             style={[
               styles.pickerSheet,
               { backgroundColor: colors.surface, borderColor: colors.border },

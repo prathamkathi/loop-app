@@ -184,6 +184,7 @@ export default function PosterLightboxModal({
                 Platform.OS === 'web' && ({ cursor: zoomScale <= 1 ? 'default' : 'pointer' } as any),
                 pressed && { opacity: 0.7 },
               ]}
+              accessibilityRole="button"
               accessibilityLabel="Zoom out"
             >
               <MagnifyingGlassMinus size={18} color="#FFFFFF" weight="bold" />
@@ -196,6 +197,7 @@ export default function PosterLightboxModal({
                 Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 pressed && { opacity: 0.8 },
               ]}
+              accessibilityRole="button"
               accessibilityLabel="Reset zoom"
             >
               <Text style={styles.zoomText}>{Math.round(zoomScale * 100)}%</Text>
@@ -210,6 +212,7 @@ export default function PosterLightboxModal({
                 Platform.OS === 'web' && ({ cursor: zoomScale >= 3 ? 'default' : 'pointer' } as any),
                 pressed && { opacity: 0.7 },
               ]}
+              accessibilityRole="button"
               accessibilityLabel="Zoom in"
             >
               <MagnifyingGlassPlus size={18} color="#FFFFFF" weight="bold" />

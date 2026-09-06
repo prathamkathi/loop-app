@@ -58,6 +58,8 @@ export default function NotificationModal({
         accessibilityLabel="Close alerts modal"
       >
         <Pressable
+          accessibilityRole="none"
+          accessibilityLabel="Notifications sheet"
           style={[
             styles.sheet,
             {

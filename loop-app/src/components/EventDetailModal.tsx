@@ -321,6 +321,8 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
             {/* Action Link Banner (If notice or event has registration / survey link) */}
             {event.actionUrl && (
               <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={catMeta.actionText || 'Open Official Notice / Form'}
                 onPress={() => {
                   if (Platform.OS === 'web' && typeof window !== 'undefined') {
                     window.open(event.actionUrl, '_blank', 'noopener,noreferrer');

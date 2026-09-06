@@ -3,5 +3,5 @@
   "compilerOptions": {
     "strict": true
   },
-  "exclude": ["functions", "scripts"]
+  "exclude": ["api", "scripts", "scraper", "node_modules", "dist", "web-build"]
 }

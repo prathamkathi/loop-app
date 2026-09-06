@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd loop-app/scraper
+          cd scraper
           pip install --upgrade pip
           pip install -r requirements.txt
 
@@ -38,7 +38,7 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT_RAW: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          python3 -c "import os, json; data = os.environ['FIREBASE_SERVICE_ACCOUNT_RAW']; json.loads(data); open('loop-app/scraper/serviceAccountKey.json', 'w').write(data)"
+          python3 -c "import os, json; data = os.environ['FIREBASE_SERVICE_ACCOUNT_RAW']; json.loads(data); open('scraper/serviceAccountKey.json', 'w').write(data)"
 
       - name: Execute Scraper Pipeline
         env:
@@ -50,7 +50,7 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
         run: |
-          cd loop-app/scraper
+          cd scraper
           CMD="python scraper.py"
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             CMD="$CMD --dry-run"

@@ -1,3 +1,20 @@
-loop-app
+# Ignore client application files from Vercel Serverless Function deployments
+src/
+assets/
+web/
+scraper/
+scripts/
+docs/
 .graphify
 .github
+App.tsx
+index.ts
+app.json
+eas.json
+firebase.json
+firestore.rules
+firestore.indexes.json
+.firebaserc
+dist/
+web-build/
+tsconfig.json

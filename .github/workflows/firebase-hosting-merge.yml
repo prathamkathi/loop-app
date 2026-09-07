@@ -58,10 +58,10 @@ jobs:
 
       - name: Deploy Firestore rules and indexes
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT_RAW: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json npx firebase-tools deploy --only firestore:rules,firestore:indexes --project loop-iitd --non-interactive
+          python3 -c "import os; open('sa.json', 'w').write(os.environ['FIREBASE_SERVICE_ACCOUNT_RAW'])"
+          GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json npx --yes firebase-tools deploy --only firestore:rules,firestore:indexes --project loop-iitd --non-interactive
           rm -f sa.json
 
       - uses: FirebaseExtended/action-hosting-deploy@v0

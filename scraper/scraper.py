@@ -340,7 +340,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LOOP Instagram Event Scraper & Staging Pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Parse and print without writing to Firestore or Cloudinary")
     parser.add_argument("--max-events", type=int, default=MAX_EVENTS, help="Maximum events to queue/process")
+    parser.add_argument("--force-pending", action="store_true", help="Force all scraped events to status='pending' (staging queue)")
+    parser.add_argument("--timeframe-days", type=int, default=POSTS_TIMEFRAME_DAYS, help="Maximum post age in days")
     args = parser.parse_args()
 
-    print(f"=== LOOP APIFY SCRAPING & STAGING PIPELINE STARTING (dry_run={args.dry_run}) ===")
-    run_apify_pipeline(dry_run=args.dry_run, max_events=args.max_events)
+    print(f"=== LOOP APIFY SCRAPING & STAGING PIPELINE STARTING (dry_run={args.dry_run}, force_pending={args.force_pending}) ===")
+    run_apify_pipeline(
+        dry_run=args.dry_run,
+        max_events=args.max_events,
+        force_pending=args.force_pending,
+        timeframe_days=args.timeframe_days
+    )

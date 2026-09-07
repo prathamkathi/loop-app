@@ -44,7 +44,7 @@ def load_target_handles() -> list:
 # Constants
 MAX_EVENTS = 50
 MAX_POSTS_PER_HANDLE = 2
-POSTS_TIMEFRAME_DAYS = 14 # Look back 14 days maximum
+POSTS_TIMEFRAME_DAYS = 30 # Default look back 30 days
 
 # Load harvested Cloudinary avatars
 AVATARS_MAP = {}
@@ -74,7 +74,12 @@ if db is None:
 
 
 # --- 4. APIFY SCRAPING & STAGING QUEUE INGESTION ---
-def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
+def run_apify_pipeline(
+    dry_run: bool = False,
+    max_events: int = MAX_EVENTS,
+    force_pending: bool = False,
+    timeframe_days: int = POSTS_TIMEFRAME_DAYS
+):
     """Runs Apify Instagram Scraper and ingests validated events with deterministic completeness gate into Firestore."""
     if not APIFY_TOKEN:
         print("[Error] APIFY_TOKEN is missing. Set APIFY_TOKEN in loop-scraper/.env.")
@@ -120,7 +125,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
 
         handle_counts = {}
         now_ts = datetime.now().timestamp()
-        cutoff_ts = now_ts - (POSTS_TIMEFRAME_DAYS * 86400)
+        cutoff_ts = now_ts - (timeframe_days * 86400)
 
         for item in posts_to_process:
             if events_queued >= max_events:
@@ -154,7 +159,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
 
             if post_timestamp and post_timestamp < cutoff_ts:
                 age_days = (now_ts - post_timestamp) / 86400
-                print(f"[Timeframe Skip] Post {ig_post_id} is {age_days:.1f} days old (> {POSTS_TIMEFRAME_DAYS} days cutoff).")
+                print(f"[Timeframe Skip] Post {ig_post_id} is {age_days:.1f} days old (> {timeframe_days} days cutoff).")
                 continue
 
             if item.get("isVideo") and not display_url:
@@ -178,7 +183,10 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
             try:
                 try:
                     with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_img:
-                        img_res = requests.get(display_url, timeout=30)
+                        dl_headers = {
+                            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                        }
+                        img_res = requests.get(display_url, timeout=30, headers=dl_headers)
                         img_res.raise_for_status()
                         temp_img.write(img_res.content)
                         temp_img_path = temp_img.name
@@ -213,7 +221,9 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
 
                 # Deterministic Completeness Gate (T2.2)
                 is_complete, status = evaluate_completeness(parsed_data, starts_at)
-                print(f"[Gate] Post {ig_post_id} ('{title}') -> status: '{status}' (is_complete={is_complete}, isEvent={is_event}, category='{category}', starts_at={starts_at})")
+                if force_pending:
+                    status = "pending"
+                print(f"[Gate] Post {ig_post_id} ('{title}') -> status: '{status}' (is_complete={is_complete}, force_pending={force_pending}, isEvent={is_event}, category='{category}', starts_at={starts_at})")
 
                 # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
                 clean_handle = handle.lstrip("@").strip()

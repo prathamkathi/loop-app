@@ -128,9 +128,14 @@ async function main() {
       return;
     }
 
-    const batch = db.batch();
-    snapshot.forEach(doc => batch.delete(doc.reference));
-    await batch.commit();
+    const docs = snapshot.docs;
+    const CHUNK_SIZE = 400;
+    for (let i = 0; i < docs.length; i += CHUNK_SIZE) {
+      const chunk = docs.slice(i, i + CHUNK_SIZE);
+      const batch = db.batch();
+      chunk.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+    }
     console.log(`Purged ${snapshot.size} events from Firestore.`);
     return;
   }

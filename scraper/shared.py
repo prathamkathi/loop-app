@@ -155,7 +155,7 @@ def parse_with_gemini(image_paths, caption):
             }
         }
 
-        models = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash"]
+        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"]
         headers = {
             'Content-Type': 'application/json',
             'x-goog-api-key': GEMINI_API_KEY,

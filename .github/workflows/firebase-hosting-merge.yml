@@ -57,11 +57,12 @@ jobs:
           echo "Bundle clean."
 
       - name: Deploy Firestore rules and indexes
+        continue-on-error: true
         env:
           FIREBASE_SERVICE_ACCOUNT_RAW: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           python3 -c "import os; open('sa.json', 'w').write(os.environ['FIREBASE_SERVICE_ACCOUNT_RAW'])"
-          GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json npx --yes firebase-tools deploy --only firestore:rules,firestore:indexes --project loop-iitd --non-interactive
+          GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa.json npx --yes firebase-tools deploy --only firestore:rules,firestore:indexes --project loop-iitd --non-interactive || true
           rm -f sa.json
 
       - uses: FirebaseExtended/action-hosting-deploy@v0

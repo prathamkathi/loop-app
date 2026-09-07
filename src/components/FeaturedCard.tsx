@@ -46,6 +46,15 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
           styles.card,
           {
             aspectRatio: isDesktop ? 16 / 9 : 16 / 10,
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
+            borderWidth: 1,
+            ...(Platform.OS === 'web'
+              ? {
+                  boxShadow: isDark
+                    ? '0 20px 48px -12px rgba(0, 0, 0, 0.8), 0 0 32px -4px rgba(225, 29, 72, 0.22)'
+                    : '0 16px 36px -8px rgba(138, 21, 56, 0.16)',
+                }
+              : {}),
           },
           Platform.OS === 'web' && ({
             transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease',
@@ -122,6 +131,11 @@ export default function FeaturedCard({ event, saved, onToggleSave, onPress }: Pr
 
         <View style={styles.overlay}>
           <View style={styles.meta}>
+            <View style={styles.liveBadge}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>SPOTLIGHT</Text>
+            </View>
+
             {/* Category Adaptive Badge */}
             <View style={[styles.categoryBadge, { backgroundColor: catMeta.color }]}>
               <CategoryIcon size={12} color="#FFFFFF" weight="bold" />
@@ -307,6 +321,29 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radii.full,
     overflow: 'hidden',
+  },
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radii.full,
+    backgroundColor: 'rgba(52, 211, 153, 0.20)',
+    borderWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.40)',
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: radii.full,
+    backgroundColor: '#34D399',
+  },
+  liveText: {
+    color: '#34D399',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.6,
   },
   categoryText: {
     ...typography.labelCaps,

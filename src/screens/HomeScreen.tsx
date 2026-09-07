@@ -23,6 +23,7 @@ import { type EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
 import { getEventTimeMillis, toValidDate } from '../utils/timestampUtils';
 import { normalizeCategory } from '../utils/categoryMeta';
+import CampusPulseWidget from '../components/CampusPulseWidget';
 
 type Props = {
   interests: Set<string>;
@@ -35,6 +36,7 @@ type Props = {
   onOpenEvent: (event: EventItem) => void;
   onResetFilters: () => void;
   onEditInterests: () => void;
+  onOpenAI?: () => void;
 };
 
 export default function HomeScreen({
@@ -48,6 +50,7 @@ export default function HomeScreen({
   onOpenEvent,
   onResetFilters,
   onEditInterests,
+  onOpenAI,
 }: Props) {
   const { colors, isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
@@ -103,15 +106,40 @@ export default function HomeScreen({
     { id: 'week' as const, label: 'Next 7 Days' },
   ];
 
+  // Accurate list of valid saved events from liveEvents
+  const validSavedEvents = useMemo(() => {
+    return liveEvents.filter((e) => saved.has(e.id));
+  }, [liveEvents, saved]);
+
   // F-41: Filter chips keyed by stable ID, not mutable display strings
   const allChips = useMemo(() => [
     { id: 'all', label: 'All' },
-    { id: 'saved', label: `★ Saved (${saved.size})` },
+    { id: 'saved', label: `★ Saved (${validSavedEvents.length})` },
     ...CATEGORIES.filter((c) => c !== 'All').map((c) => ({ id: c, label: c })),
-  ], [saved.size]);
+  ], [validSavedEvents.length]);
 
   // Combined Search & Category & Saved & Horizon & TabMode Filtering
   const filtered = useMemo(() => {
+    // If active category is 'saved', show all valid saved events across upcoming and past
+    if (activeCategoryId === 'saved') {
+      let savedList = validSavedEvents;
+      if (searchQuery.trim().length > 0) {
+        const q = searchQuery.toLowerCase().trim();
+        savedList = savedList.filter(
+          (e) =>
+            (e.title && e.title.toLowerCase().includes(q)) ||
+            (e.host && e.host.toLowerCase().includes(q)) ||
+            (e.venue && e.venue.toLowerCase().includes(q)) ||
+            (e.blurb && e.blurb.toLowerCase().includes(q))
+        );
+      }
+      return [...savedList].sort((a, b) => {
+        const timeA = getEventTimeMillis(a.startsAt) ?? Number.MAX_SAFE_INTEGER;
+        const timeB = getEventTimeMillis(b.startsAt) ?? Number.MAX_SAFE_INTEGER;
+        return timeA - timeB;
+      });
+    }
+
     let result = liveEvents;
 
     if (tabMode === 'upcoming') {
@@ -175,10 +203,8 @@ export default function HomeScreen({
         });
     }
 
-    // Filter by category, saved, or interests (F-41 / F-11)
-    if (activeCategoryId === 'saved') {
-      result = result.filter((e) => saved.has(e.id));
-    } else if (activeCategoryId !== 'all') {
+    // Filter by category or interests (F-41 / F-11)
+    if (activeCategoryId !== 'all') {
       result = result.filter((e) => normalizeCategory(e.category) === activeCategoryId);
     } else if (interests.size > 0 && tabMode === 'upcoming') {
       // F-11: Wire interests into the filter body when viewing 'All' in upcoming mode
@@ -284,6 +310,20 @@ export default function HomeScreen({
       showsVerticalScrollIndicator={false}
       refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} /> : undefined}
     >
+      {/* Live Campus Pulse & Stats Widget */}
+      <CampusPulseWidget
+        upcomingCount={upcomingCount}
+        savedCount={validSavedEvents.length}
+        onSelectUpcoming={() => {
+          setTabMode('upcoming');
+          setActiveCategoryId('all');
+        }}
+        onSelectSaved={() => {
+          setActiveCategoryId('saved');
+        }}
+        onOpenAI={() => onOpenAI?.()}
+      />
+
       {/* Luma-Style View Mode Switcher (Upcoming vs Concluded Campus Archive) */}
       <View style={styles.lumaSwitcherWrapper}>
         <View
@@ -442,6 +482,7 @@ export default function HomeScreen({
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
           {allChips.map((chip) => {
             const isSelected = activeCategoryId === chip.id;
+            const isSavedChip = chip.id === 'saved';
 
             return (
               <Pressable
@@ -450,8 +491,16 @@ export default function HomeScreen({
                 style={({ pressed }) => [
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.primary : colors.surface,
-                    borderColor: isSelected ? colors.primary : colors.border,
+                    backgroundColor: isSelected
+                      ? colors.primary
+                      : isSavedChip && isDark
+                        ? 'rgba(245, 158, 11, 0.08)'
+                        : colors.surface,
+                    borderColor: isSelected
+                      ? colors.primary
+                      : isSavedChip
+                        ? (isDark ? 'rgba(245, 158, 11, 0.35)' : 'rgba(217, 119, 6, 0.25)')
+                        : colors.border,
                     transform: [{ scale: pressed ? 0.96 : 1 }],
                   },
                   Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
@@ -459,16 +508,28 @@ export default function HomeScreen({
                 accessibilityRole="button"
                 accessibilityLabel={`Filter by ${chip.label}`}
               >
+                {isSavedChip && (
+                  <BookmarkSimple
+                    size={14}
+                    color={isSelected ? colors.onPrimary : (isDark ? '#FBBF24' : '#D97706')}
+                    weight={isSelected ? 'fill' : 'bold'}
+                    style={{ marginRight: 5 }}
+                  />
+                )}
                 <Text
                   style={[
                     styles.chipText,
                     {
-                      color: isSelected ? colors.onPrimary : colors.foreground,
+                      color: isSelected
+                        ? colors.onPrimary
+                        : isSavedChip
+                          ? (isDark ? '#FCD34D' : '#B45309')
+                          : colors.foreground,
                       fontWeight: isSelected ? '700' : '500',
                     },
                   ]}
                 >
-                  {chip.label}
+                  {isSavedChip ? `Saved (${validSavedEvents.length})` : chip.label}
                 </Text>
               </Pressable>
             );

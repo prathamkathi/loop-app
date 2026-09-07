@@ -92,6 +92,26 @@ function AppContent() {
     })();
   }, []);
 
+  // Prune any stale/deleted event IDs from saved storage once live events load
+  useEffect(() => {
+    if (liveEvents.length > 0 && saved.size > 0) {
+      const validIds = new Set(liveEvents.map((e) => e.id));
+      const pruned = new Set<string>();
+      let changed = false;
+      saved.forEach((id) => {
+        if (validIds.has(id)) {
+          pruned.add(id);
+        } else {
+          changed = true;
+        }
+      });
+      if (changed) {
+        setSaved(pruned);
+        saveSavedEvents([...pruned]);
+      }
+    }
+  }, [liveEvents.length]);
+
   const [eventsLoading, setEventsLoading] = useState(true);
   const [feedError, setFeedError] = useState<string | null>(null);
   const isLiveLoadedRef = useRef(false);
@@ -358,6 +378,7 @@ function AppContent() {
             onOpenEvent={openEvent}
             onResetFilters={resetFilters}
             onEditInterests={() => setActiveTab(mode === 'studio' ? 'studio_home' : 'curate')}
+            onOpenAI={() => setShowAIConcierge(true)}
           />
         );
       case 'pulse':
@@ -389,6 +410,7 @@ function AppContent() {
             onOpenEvent={openEvent}
             onResetFilters={resetFilters}
             onEditInterests={() => setActiveTab('curate')}
+            onOpenAI={() => setShowAIConcierge(true)}
           />
         );
     }

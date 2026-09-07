@@ -109,32 +109,32 @@ export const lightColors: ThemeColors = {
 };
 
 export const darkColors: ThemeColors = {
-  background: palette.obsidian,
-  surface: palette.obsidianCard,
-  surfaceElevated: palette.obsidianElevated,
-  card: palette.obsidianCard,
-  border: 'rgba(138, 21, 56, 0.18)',
-  borderSubtle: 'rgba(138, 21, 56, 0.10)',
+  background: '#090A0F',
+  surface: '#13151F',
+  surfaceElevated: '#1A1D2C',
+  card: '#12141E',
+  border: 'rgba(255, 255, 255, 0.09)',
+  borderSubtle: 'rgba(255, 255, 255, 0.05)',
 
-  primary: '#C44D6A',       // Desaturated crimson for dark surfaces
-  primarySoft: '#D4708A',
-  primaryMuted: 'rgba(196, 77, 106, 0.5)',
+  primary: '#E11D48',       // Vibrant, refined crimson rose for dark surfaces
+  primarySoft: '#FB7185',
+  primaryMuted: 'rgba(225, 29, 72, 0.45)',
   onPrimary: palette.white,
 
   accent: palette.white,    // Onyx flips to white in dark mode
-  accentSoft: '#E4E4E7',
+  accentSoft: '#E2E8F0',
   onAccent: palette.onyx,
 
-  highlight: 'rgba(253, 236, 239, 0.08)',
-  highlightDim: 'rgba(253, 236, 239, 0.12)',
+  highlight: 'rgba(225, 29, 72, 0.12)',
+  highlightDim: 'rgba(225, 29, 72, 0.20)',
 
-  foreground: '#F5F5F4',
-  foregroundSecondary: '#D4D4D8',
-  muted: '#A1A1AA',
+  foreground: '#FFFFFF',
+  foregroundSecondary: '#E2E8F0',
+  muted: '#94A3B8',
 
-  success: '#4ADE80',
-  error: '#FF8A8A',
-  errorContainer: 'rgba(255, 217, 221, 0.12)',
-  onError: '#690005',
+  success: '#34D399',
+  error: '#F87171',
+  errorContainer: 'rgba(248, 113, 113, 0.14)',
+  onError: '#FFFFFF',
   whatsapp: '#25D366',
 };

@@ -1,21 +1,23 @@
+import argparse
+import json
 import os
 import re
-import time
-import argparse
-from datetime import datetime
-import random
-import json
-import base64
-import requests
-import uuid
 import tempfile
-from dotenv import load_dotenv
+import uuid
+from datetime import datetime
+
+import requests
 from apify_client import ApifyClient
-from shared import db, parse_with_gemini, upload_image_to_cloudinary, get_image_aspect_ratio
+from completeness_gate import ALLOWED_CATEGORIES, evaluate_completeness, usable as _usable
 from date_parser import parse_date_and_time
-from firebase_admin import credentials, firestore
-import cloudinary
-import cloudinary.uploader
+from dotenv import load_dotenv
+from firebase_admin import firestore
+from shared import (
+    db,
+    get_image_aspect_ratio,
+    parse_with_gemini,
+    upload_image_to_cloudinary,
+)
 
 # Load environment variables
 load_dotenv()
@@ -43,8 +45,6 @@ def load_target_handles() -> list:
 MAX_EVENTS = 50
 MAX_POSTS_PER_HANDLE = 2
 POSTS_TIMEFRAME_DAYS = 14 # Look back 14 days maximum
-
-from completeness_gate import FILLER, ALLOWED_CATEGORIES, usable as _usable, evaluate_completeness
 
 # Load harvested Cloudinary avatars
 AVATARS_MAP = {}
@@ -95,7 +95,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
             "resultsLimit": 2,  # 2 newest posts per relevant profile
         }
 
-        print(f"[Apify] Triggering actor 'apify/instagram-profile-scraper'...")
+        print("[Apify] Triggering actor 'apify/instagram-profile-scraper'...")
         try:
             run = apify_client.actor("apify/instagram-profile-scraper").call(run_input=run_input)
         except Exception as e:
@@ -242,7 +242,7 @@ def run_apify_pipeline(dry_run: bool = False, max_events: int = MAX_EVENTS):
                     public_url = "https://res.cloudinary.com/dummy/image/upload/sample.jpg"
                     print(f"[Dry Run] Skipped Cloudinary upload. Aspect ratio: {aspect_ratio}")
                 else:
-                    print(f"[Storage] Uploading validated primary cover image to Cloudinary...")
+                    print("[Storage] Uploading validated primary cover image to Cloudinary...")
                     try:
                         public_url = upload_image_to_cloudinary(temp_img_path)
                     except Exception as upload_err:

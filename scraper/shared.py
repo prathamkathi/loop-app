@@ -1,15 +1,16 @@
-import os
-import json
-import time
 import base64
+import json
+import os
 import socket
-import urllib3.util.connection as urllib3_cn
-import requests
-import firebase_admin
-from firebase_admin import credentials, firestore
+import time
+
 import cloudinary
 import cloudinary.uploader
+import firebase_admin
+import requests
+import urllib3.util.connection as urllib3_cn
 from dotenv import load_dotenv
+from firebase_admin import credentials, firestore
 from PIL import Image
 
 # Force IPv4 resolution to prevent macOS IPv6 route hang on googleapis.com

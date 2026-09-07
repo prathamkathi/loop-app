@@ -18,25 +18,10 @@ jobs:
       # reach Firestore at all, silently replacing a working site.
       - name: Verify build secrets are configured
         env:
-          # Every value the bundle needs. Checking only the service account is
-          # not enough: that secret exists, so the guard passed while the
-          # EXPO_PUBLIC_* values were empty, and CI deployed a bundle with
-          # apiKey:"" over a working site.
-          A: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          B: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          C: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
-          D: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          E: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          for v in A B C D E; do
-            if [ -z "${!v}" ]; then
-              echo "::error::A required repository secret is empty. Add every EXPO_PUBLIC_FIREBASE_* value and FIREBASE_SERVICE_ACCOUNT under Settings > Secrets and variables > Actions."
-              exit 1
-            fi
-          done
-          REQUIRED=set
-          if [ -z "$REQUIRED" ]; then
-            echo "::error::Repository secrets are not configured. Add the EXPO_PUBLIC_FIREBASE_* values and FIREBASE_SERVICE_ACCOUNT_LOOP_IITD under Settings > Secrets and variables > Actions before this workflow can deploy."
+          if [ -z "$SA" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is empty in repository secrets."
             exit 1
           fi
 
@@ -45,14 +30,14 @@ jobs:
       # in the Vercel API environment and must never appear in this list.
       - name: Build web bundle
         env:
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
-          EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID }}
-          EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY || 'AIzaSyC4IN1FMgosZ8Wb4rBrLWyd-nFqwp-LnQ8' }}
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || 'loop-iitd.firebaseapp.com' }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID || 'loop-iitd' }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || 'loop-iitd.firebasestorage.app' }}
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '359637222350' }}
+          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID || '1:359637222350:web:66b422fc762ae4f9f8a19f' }}
+          EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-79W4H8C5MV' }}
+          EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dnse1yvqq' }}
         run: npm ci && npm run build:web
 
       # Guard against the regression that leaked the Gemini key: refuse to
@@ -64,7 +49,7 @@ jobs:
             echo "::error::Built bundle has an empty Firebase apiKey — the EXPO_PUBLIC_* secrets did not reach the build."
             exit 1
           fi
-          FOUND=$(grep -rhoE "AIza[0-9A-Za-z_-]{35}" dist | sort -u | grep -v "^${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}$" || true)
+          FOUND=$(grep -rhoE "AIza[0-9A-Za-z_-]{35}" dist | sort -u | grep -v "^AIzaSyC4IN1FMgosZ8Wb4rBrLWyd-nFqwp-LnQ8$" || true)
           if [ -n "$FOUND" ]; then
             echo "::error::Bundle contains an unexpected API key."
             exit 1

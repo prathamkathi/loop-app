@@ -270,6 +270,7 @@ export default function HomeScreen({
     setActiveCategoryId('all');
     setTimeHorizon('all');
     setSearchQuery('');
+    setTabMode('upcoming');
     onResetFilters();
   };
 

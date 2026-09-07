@@ -1,33 +1,32 @@
 import argparse
-import sys
 
 def main():
     parser = argparse.ArgumentParser(description="Loop Scraper CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Scrape command
-    scrape_parser = subparsers.add_parser("scrape", help="Run the Apify Instagram scraper")
+    subparsers.add_parser("scrape", help="Run the Apify Instagram scraper")
 
     # Harvest avatars command
-    harvest_parser = subparsers.add_parser("harvest-avatars", help="Harvest and upload Instagram avatars")
+    subparsers.add_parser("harvest-avatars", help="Harvest and upload Instagram avatars")
 
     # Purge command
-    purge_parser = subparsers.add_parser("purge", help="Purge soft-deleted and old events")
+    subparsers.add_parser("purge", help="Purge soft-deleted and old events (redirects to Node.js maintenance script)")
 
     # Wipe command
-    wipe_parser = subparsers.add_parser("wipe", help="Wipe all data from the database (CAUTION)")
+    subparsers.add_parser("wipe", help="Wipe database safely (redirects to Node.js maintenance script)")
 
     # Seed command
-    seed_parser = subparsers.add_parser("seed", help="Seed the database with sample data")
+    subparsers.add_parser("seed", help="Seed the database with sample data")
 
     # Stock scraper command
-    stock_parser = subparsers.add_parser("stock", help="Run the stock Apify scraper")
+    subparsers.add_parser("stock", help="Run the stock Apify scraper")
 
     # Generate offline events command
-    gen_offline_parser = subparsers.add_parser("gen-offline", help="Generate offline events")
+    subparsers.add_parser("gen-offline", help="Generate offline events")
 
     # Generate real events command
-    gen_real_parser = subparsers.add_parser("gen-real", help="Generate real events")
+    subparsers.add_parser("gen-real", help="Generate real events")
 
     args = parser.parse_args()
 

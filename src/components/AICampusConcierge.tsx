@@ -230,13 +230,15 @@ export default function AICampusConcierge({ visible, onClose, events }: Props) {
                 <Pressable
                   key={i}
                   onPress={() => handleSend(chip)}
+                  disabled={loading}
                   accessibilityRole="button"
                   accessibilityLabel={`Ask question: ${chip}`}
                   style={({ pressed }) => [
                     styles.chip,
                     { backgroundColor: colors.highlight, borderColor: colors.border },
-                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                    Platform.OS === 'web' && ({ cursor: loading ? 'not-allowed' : 'pointer' } as any),
                     pressed && { transform: [{ scale: 0.95 }] },
+                    loading && { opacity: 0.5 },
                   ]}
                 >
                   <Text style={[styles.chipText, { color: colors.primary }]}>{chip}</Text>

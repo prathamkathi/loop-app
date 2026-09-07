@@ -75,6 +75,76 @@ export default function SubmitScreen(props: Props) {
     }
   };
 
+  const openDatePicker = () => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      const input = document.createElement('input');
+      input.type = 'date';
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      input.style.pointerEvents = 'none';
+      document.body.appendChild(input);
+      input.onchange = (e: any) => {
+        const val = e.target.value;
+        if (val) {
+          const parts = val.split('-');
+          if (parts.length === 3) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const day = parseInt(parts[2], 10);
+            const monthName = months[parseInt(parts[1], 10) - 1];
+            const year = parts[0];
+            setDate(`${day} ${monthName} ${year}`);
+          }
+        }
+        try { document.body.removeChild(input); } catch {}
+      };
+      if ('showPicker' in HTMLInputElement.prototype) {
+        try {
+          (input as any).showPicker();
+        } catch {
+          input.click();
+        }
+      } else {
+        input.click();
+      }
+    } else {
+      setShowDatePicker(true);
+    }
+  };
+
+  const openTimePicker = () => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      const input = document.createElement('input');
+      input.type = 'time';
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      input.style.pointerEvents = 'none';
+      document.body.appendChild(input);
+      input.onchange = (e: any) => {
+        const val = e.target.value;
+        if (val) {
+          const [hStr, mStr] = val.split(':');
+          let hours = parseInt(hStr, 10);
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          hours = hours % 12;
+          hours = hours ? hours : 12;
+          setTime(`${hours}:${mStr} ${ampm}`);
+        }
+        try { document.body.removeChild(input); } catch {}
+      };
+      if ('showPicker' in HTMLInputElement.prototype) {
+        try {
+          (input as any).showPicker();
+        } catch {
+          input.click();
+        }
+      } else {
+        input.click();
+      }
+    } else {
+      setShowTimePicker(true);
+    }
+  };
+
   const [coordinator, setCoordinator] = useState<boolean | null>(null);
 
   // F-34: Submit writes to Firestore under rules that require the coordinator
@@ -383,7 +453,7 @@ export default function SubmitScreen(props: Props) {
                     <FloatingField label="Date (e.g. 15 Oct)" value={date} onChangeText={setDate} />
                   </View>
                   <Pressable
-                    onPress={() => setShowDatePicker(true)}
+                    onPress={openDatePicker}
                     style={({ pressed }) => [
                       styles.pickerBtn,
                       { borderColor: colors.border, backgroundColor: colors.surface },
@@ -395,7 +465,7 @@ export default function SubmitScreen(props: Props) {
                     <CalendarBlank size={18} color={colors.primary} weight="bold" />
                   </Pressable>
                 </View>
-                {showDatePicker && (
+                {showDatePicker && Platform.OS !== 'web' && (
                   <DateTimePicker
                     value={new Date()}
                     mode="date"
@@ -411,7 +481,7 @@ export default function SubmitScreen(props: Props) {
                     <FloatingField label="Time (e.g. 6:30 PM)" value={time} onChangeText={setTime} />
                   </View>
                   <Pressable
-                    onPress={() => setShowTimePicker(true)}
+                    onPress={openTimePicker}
                     style={({ pressed }) => [
                       styles.pickerBtn,
                       { borderColor: colors.border, backgroundColor: colors.surface },
@@ -423,7 +493,7 @@ export default function SubmitScreen(props: Props) {
                     <Clock size={18} color={colors.primary} weight="bold" />
                   </Pressable>
                 </View>
-                {showTimePicker && (
+                {showTimePicker && Platform.OS !== 'web' && (
                   <DateTimePicker
                     value={new Date()}
                     mode="time"

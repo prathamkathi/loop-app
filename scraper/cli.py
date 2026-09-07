@@ -5,7 +5,11 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Scrape command
-    subparsers.add_parser("scrape", help="Run the Apify Instagram scraper")
+    scrape_parser = subparsers.add_parser("scrape", help="Run the Apify Instagram scraper")
+    scrape_parser.add_argument("--dry-run", action="store_true", help="Parse and print without writing to Firestore or Cloudinary")
+    scrape_parser.add_argument("--max-events", type=int, default=50, help="Maximum events to queue/process")
+    scrape_parser.add_argument("--force-pending", action="store_true", help="Force all scraped events to status='pending' (staging queue)")
+    scrape_parser.add_argument("--timeframe-days", type=int, default=30, help="Maximum post age in days")
 
     # Harvest avatars command
     subparsers.add_parser("harvest-avatars", help="Harvest and upload Instagram avatars")
@@ -32,7 +36,12 @@ def main():
 
     if args.command == "scrape":
         from scraper import run_apify_pipeline
-        run_apify_pipeline()
+        run_apify_pipeline(
+            dry_run=args.dry_run,
+            max_events=args.max_events,
+            force_pending=args.force_pending,
+            timeframe_days=args.timeframe_days
+        )
     elif args.command == "harvest-avatars":
         from harvest_avatars import main as harvest_main
         harvest_main()

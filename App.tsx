@@ -38,6 +38,7 @@ import {
   saveReminder,
 } from './src/utils/storage';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
+import PWAInstallBanner from './src/components/PWAInstallBanner';
 
 function AppContent() {
   const { colors, isDark, toggleTheme } = useTheme();
@@ -455,6 +456,9 @@ function AppContent() {
         onClose={() => setShowAIConcierge(false)}
         events={liveEvents}
       />
+
+      {/* PWA Home Screen Install Banner */}
+      <PWAInstallBanner />
     </SafeAreaView>
   );
 }

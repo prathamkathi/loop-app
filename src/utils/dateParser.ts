@@ -40,10 +40,6 @@ const UNUSABLE_DATES = new Set([
   'ongoing',
 ]);
 
-/**
- * Parses human campus date and time strings into a valid Date and hasTime boolean.
- * Returns null if the date is invalid or unparseable.
- */
 export function parseDateAndTimeString(
   dateStr?: string | null,
   timeStr?: string | null
@@ -52,10 +48,7 @@ export function parseDateAndTimeString(
   const clean = dateStr.trim();
   if (UNUSABLE_DATES.has(clean.toLowerCase())) return null;
 
-  // Strip ordinal suffixes: 1st, 2nd, 3rd, 4th, etc.
-  const rawDate = clean.replace(/(\d+)(st|nd|rd|th)/gi, '$1');
   const rawTime = (timeStr || '').trim();
-
   const now = new Date();
   let year = now.getFullYear();
   let month = now.getMonth();
@@ -65,90 +58,78 @@ export function parseDateAndTimeString(
   let hasTime = false;
 
   // 1. ISO 8601: YYYY-MM-DD or YYYY/MM/DD
-  const isoMatch = rawDate.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  const isoMatch = clean.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
   if (isoMatch) {
     year = parseInt(isoMatch[1], 10);
     month = parseInt(isoMatch[2], 10) - 1;
     day = parseInt(isoMatch[3], 10);
-  } else if (/^today$/i.test(rawDate)) {
+  } else if (/^today$/i.test(clean)) {
     // Keep today's date
-  } else if (/^tomorrow$/i.test(rawDate)) {
+  } else if (/^tomorrow$/i.test(clean)) {
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     year = tomorrow.getFullYear();
     month = tomorrow.getMonth();
     day = tomorrow.getDate();
   } else {
-    // 2. Tokenized format: "5 September 2026", "02 Sep", "16 August", "Oct 24", "12 Oct 2026"
-    const tokens = rawDate.replace(/,/g, ' ').split(/\s+/).filter(Boolean);
-    if (tokens.length >= 2) {
-      let explicitYear = false;
-      if (/^\d{1,2}$/.test(tokens[0])) {
-        // "5 September [2026]" or "02 Sep"
-        day = parseInt(tokens[0], 10);
-        const mKey = tokens[1].toLowerCase();
-        if (mKey in MONTH_NAMES) {
-          month = MONTH_NAMES[mKey];
-        } else {
-          return null;
-        }
-        if (tokens[2] && /^\d{4}$/.test(tokens[2])) {
-          year = parseInt(tokens[2], 10);
-          explicitYear = true;
-        }
-      } else {
-        // "September 5 [2026]" or "Oct 24"
-        const mKey = tokens[0].toLowerCase();
-        if (mKey in MONTH_NAMES) {
-          month = MONTH_NAMES[mKey];
-        } else {
-          return null;
-        }
-        if (/^\d{1,2}$/.test(tokens[1])) {
-          day = parseInt(tokens[1], 10);
-        } else {
-          return null;
-        }
-        if (tokens[2] && /^\d{4}$/.test(tokens[2])) {
-          year = parseInt(tokens[2], 10);
-          explicitYear = true;
-        }
-      }
-
-      // Rollover: If month has passed (e.g. current Nov, event is Jan), assume next year if no explicit year
-      if (!explicitYear && now.getMonth() >= 10 && month <= 1) {
-        year += 1;
-      }
+    // 2. Fuzzy match day and month
+    const monthRegexStr = Object.keys(MONTH_NAMES).join('|');
+    // Match "12 Sep" or "Sep 12"
+    const regex1 = new RegExp(`(\\d{1,2})(?:st|nd|rd|th)?\\s*(?:-|to)?\\s*(?:\\d{1,2}(?:st|nd|rd|th)?\\s*)?(${monthRegexStr})`, 'i');
+    const regex2 = new RegExp(`(${monthRegexStr})\\s*(\\d{1,2})`, 'i');
+    
+    let matched = false;
+    const match1 = clean.match(regex1);
+    if (match1) {
+      day = parseInt(match1[1], 10);
+      month = MONTH_NAMES[match1[2].toLowerCase()];
+      matched = true;
     } else {
-      return null;
+      const match2 = clean.match(regex2);
+      if (match2) {
+        month = MONTH_NAMES[match2[1].toLowerCase()];
+        day = parseInt(match2[2], 10);
+        matched = true;
+      }
+    }
+    
+    if (!matched) return null;
+
+    const yearMatch = clean.match(/\b(20\d{2})\b/);
+    if (yearMatch) {
+      year = parseInt(yearMatch[1], 10);
+    } else if (now.getMonth() >= 10 && month <= 1) {
+      year += 1;
     }
   }
 
-  // Parse time: "8:30 PM", "8:30pm", "8 PM", "18:30", "18:00"
+  // Parse time
   if (rawTime && !UNUSABLE_DATES.has(rawTime.toLowerCase())) {
-    const ampmMatch = rawTime.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
+    const ampmMatch = rawTime.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
     if (ampmMatch) {
       hours = parseInt(ampmMatch[1], 10);
       minutes = ampmMatch[2] ? parseInt(ampmMatch[2], 10) : 0;
-      if (hours < 1 || hours > 12 || minutes > 59) return null;
-      const isPM = ampmMatch[3].toUpperCase() === 'PM';
-      if (isPM && hours !== 12) hours += 12;
-      if (!isPM && hours === 12) hours = 0;
-      hasTime = true;
-    } else {
-      const militaryMatch = rawTime.match(/^(\d{1,2}):(\d{2})$/);
-      if (militaryMatch) {
-        hours = parseInt(militaryMatch[1], 10);
-        minutes = parseInt(militaryMatch[2], 10);
-        if (hours > 23 || minutes > 59) return null;
+      if (hours >= 1 && hours <= 12 && minutes <= 59) {
+        const isPM = ampmMatch[3].toUpperCase() === 'PM';
+        if (isPM && hours !== 12) hours += 12;
+        if (!isPM && hours === 12) hours = 0;
         hasTime = true;
-      } else {
-        return null;
+      }
+    } else {
+      const militaryMatch = rawTime.match(/(\d{1,2}):(\d{2})/);
+      if (militaryMatch) {
+        const h = parseInt(militaryMatch[1], 10);
+        const m = parseInt(militaryMatch[2], 10);
+        if (h <= 23 && m <= 59) {
+          hours = h;
+          minutes = m;
+          hasTime = true;
+        }
       }
     }
   }
 
   const result = new Date(year, month, day, hours, minutes, 0);
-  if (isNaN(result.getTime()) || result.getFullYear() !== year || result.getMonth() !== month || result.getDate() !== day) return null;
+  if (isNaN(result.getTime())) return null;
 
   return { date: result, hasTime };
 }

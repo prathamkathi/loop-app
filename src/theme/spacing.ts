@@ -1,68 +1,59 @@
 /**
- * Loop Design System — Spacing
+ * Loop Design System — Spacing & Shadows (Elite & Classy)
  *
  * 8px grid with 4px micro-adjustments.
- * Follows the DESIGN.md low-density, spacious philosophy.
+ * Shadows are subtle, deep, and Apple-like.
  */
 
 export const spacing = {
-  /** 4px — micro-adjustment */
   xs: 4,
-  /** 8px — tight gaps */
   sm: 8,
-  /** 16px — standard padding */
   md: 16,
-  /** 24px — comfortable gaps, gutter */
   lg: 24,
-  /** 48px — section separators */
-  xl: 48,
-  /** 80px — hero spacing */
+  xl: 40,
   xxl: 80,
-  /** 24px — grid gutter */
   gutter: 24,
-  /** 20px — mobile horizontal margin */
-  marginMobile: 20,
-  /** 64px — desktop horizontal margin */
+  marginMobile: 24, // Wider margins on mobile for elegance
   marginDesktop: 64,
 } as const;
 
 export const radii = {
-  sm: 4,
-  md: 8,
+  sm: 8,
+  md: 12,
   lg: 16,
   xl: 24,
-  xxl: 28,
-  xxxl: 32,
+  xxl: 32,
+  xxxl: 40,
   full: 9999,
 } as const;
 
 export const shadows = {
   card: {
-    shadowColor: '#8A1538',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.06,
-    shadowRadius: 30,
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
     elevation: 4,
   },
   cardHover: {
-    shadowColor: '#8A1538',
-    shadowOffset: { width: 0, height: 12 },
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.12,
     shadowRadius: 40,
     elevation: 8,
   },
   bottomBar: {
-    shadowColor: '#1C1917',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.35,
-    shadowRadius: 60,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
     elevation: 16,
   },
   button: {
-    shadowColor: '#8A1538',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.6,
-    shadowRadius: 30,
-    elevation: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
 } as const;

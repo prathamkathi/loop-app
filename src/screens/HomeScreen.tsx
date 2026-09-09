@@ -5,6 +5,7 @@ import { MagnifyingGlass, X, BookmarkSimple, ArrowClockwise, SlidersHorizontal, 
 import { useTheme, typography, radii, spacing } from '../theme';
 import EventCard from '../components/EventCard';
 import FilterPills from '../components/FilterPills';
+import SectionLabel from '../components/SectionLabel';
 import type { EventItem } from '../data/events';
 import { filterEvents, isPastEvent, type DiscoveryView, type TimeHorizon } from '../utils/eventDiscovery';
 
@@ -20,12 +21,15 @@ const HORIZONS: Array<{ id: TimeHorizon; label: string }> = [
 ];
 
 export default function HomeScreen({ interests, saved, liveEvents, loading, error, onRefresh, onToggleSave, onOpenEvent, onEditInterests, onOpenAI }: Props) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   
-  // Immersive layouts use less horizontal margins, we'll keep grid padding inside items
-  const columns = width >= 1080 ? 3 : width >= 650 ? 2 : 1;
+  // Calculate grid columns and padding
+  const contentWidth = width - (width >= 1024 ? 232 : 0);
+  const columns = contentWidth >= 1080 ? 3 : contentWidth >= 650 ? 2 : 1;
+  const paddingHorizontal = contentWidth < 500 ? spacing.marginMobile : spacing.marginDesktop;
+
   const [view, setView] = useState<DiscoveryView>('upcoming');
   const [category, setCategory] = useState('all');
   const [horizon, setHorizon] = useState<TimeHorizon>('all');
@@ -44,7 +48,6 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
   const filtered = useMemo(() => filterEvents(liveEvents, { view, category, horizon, search, interests, saved, personalized, now }),
     [liveEvents, view, category, horizon, search, interests, saved, personalized, now]);
   
-  // For the hype engine, we grab top 3 events for spotlight
   const isDefaultView = view === 'upcoming' && category === 'all' && horizon === 'all' && !search && !personalized;
   const spotlightEvents = isDefaultView ? filtered.slice(0, 3) : [];
   const rest = isDefaultView ? filtered.slice(3) : filtered;
@@ -53,9 +56,20 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
   const reset = () => { setSearch(''); setCategory('all'); setHorizon('all'); setPersonalized(false); };
   const changeView = (next: DiscoveryView) => { setView(next); reset(); };
 
+  const dateLabel = new Date(now).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+
   const header = (
-    <View style={{ marginBottom: spacing.xl }}>
-      {/* Immersive Spotlight Carousel */}
+    <View style={{ marginBottom: spacing.lg }}>
+      <View style={{ paddingHorizontal, paddingTop: spacing.xl, paddingBottom: spacing.lg }}>
+        <Text style={[typography.caption, { color: colors.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }]}>
+          {dateLabel}
+        </Text>
+        <Text style={[typography.displayLg, { color: colors.foreground, marginBottom: spacing.xs }]}>
+          Discover
+        </Text>
+      </View>
+
+      {/* Elegant Spotlight Carousel */}
       {spotlightEvents.length > 0 && (
         <View style={{ marginBottom: spacing.xl }}>
           <FlatList
@@ -67,7 +81,7 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
             snapToInterval={width}
             decelerationRate="fast"
             renderItem={({ item }) => (
-              <View style={{ width, paddingHorizontal: spacing.marginMobile }}>
+              <View style={{ width, paddingHorizontal }}>
                 <EventCard 
                   event={item} 
                   saved={saved.has(item.id)} 
@@ -78,42 +92,35 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
               </View>
             )}
           />
-          
-          {/* Brutalist Ticker Tape */}
-          <View style={[styles.tickerTape, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.tickerText, { color: '#000' }]} numberOfLines={1}>
-              HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY
-            </Text>
-          </View>
         </View>
       )}
 
-      <View style={{ paddingHorizontal: spacing.marginMobile }}>
-        <View style={[styles.tabs, { borderBottomColor: colors.border }]}>
+      <View style={{ paddingHorizontal }}>
+        <View style={[styles.tabs, { borderBottomColor: colors.borderSubtle }]}>
           {(['upcoming', 'saved', 'past'] as const).map((id) => (
             <Pressable key={id} onPress={() => changeView(id)} accessibilityRole="tab" accessibilityState={{ selected: view === id }}
-              style={[styles.tab, { borderBottomColor: view === id ? colors.primary : 'transparent' }]}>
-              {id === 'saved' && <BookmarkSimple size={17} color={view === id ? colors.primary : colors.muted} />}
-              <Text style={[typography.labelMd, { color: view === id ? colors.primary : colors.muted, textTransform: 'uppercase' }]}>
-                {id === 'upcoming' ? 'Discover' : id === 'saved' ? 'Saved' + (saved.size ? ' (' + saved.size + ')' : '') : 'Past events'}
+              style={[styles.tab, { borderBottomColor: view === id ? colors.foreground : 'transparent' }]}>
+              {id === 'saved' && <BookmarkSimple size={16} color={view === id ? colors.foreground : colors.muted} weight={view === id ? 'fill' : 'regular'} />}
+              <Text style={[typography.labelMd, { color: view === id ? colors.foreground : colors.muted }]}>
+                {id === 'upcoming' ? 'All Events' : id === 'saved' ? 'Saved' + (saved.size ? ` (${saved.size})` : '') : 'Archive'}
               </Text>
             </Pressable>
           ))}
         </View>
 
-        <View style={[styles.search, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <MagnifyingGlass size={21} color={colors.muted} />
+        <View style={[styles.search, { backgroundColor: colors.surfaceElevated, borderColor: colors.borderSubtle }]}>
+          <MagnifyingGlass size={20} color={colors.muted} />
           <TextInput accessibilityLabel="Search events" placeholder="Search events or clubs" placeholderTextColor={colors.muted}
             value={search} onChangeText={setSearch} returnKeyType="search" style={[styles.searchInput, { color: colors.foreground }]} />
-          {search !== '' && <Pressable onPress={() => setSearch('')} accessibilityRole="button" style={styles.iconButton}><X size={20} color={colors.muted} /></Pressable>}
+          {search !== '' && <Pressable onPress={() => setSearch('')} accessibilityRole="button" style={styles.iconButton}><X size={18} color={colors.muted} /></Pressable>}
         </View>
 
         {view !== 'past' && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
             {HORIZONS.map((item) => (
               <Pressable key={item.id} onPress={() => setHorizon(item.id)} accessibilityRole="button" accessibilityState={{ selected: horizon === item.id }}
-                style={[styles.chip, { backgroundColor: horizon === item.id ? colors.primary : colors.surface, borderColor: horizon === item.id ? colors.primary : colors.border }]}>
-                <Text style={[typography.labelSm, { color: horizon === item.id ? '#000' : colors.foregroundSecondary }]}>{item.label}</Text>
+                style={[styles.chip, { backgroundColor: horizon === item.id ? colors.foreground : colors.surfaceElevated, borderColor: horizon === item.id ? colors.foreground : colors.borderSubtle }]}>
+                <Text style={[typography.labelSm, { color: horizon === item.id ? colors.background : colors.foregroundSecondary }]}>{item.label}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -122,29 +129,21 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
         <FilterPills selectedCategory={category === 'all' ? null : category} onSelectCategory={(c) => setCategory(c || 'all')} />
         
         {error && (
-          <View accessibilityRole="alert" style={[styles.notice, { backgroundColor: colors.highlight }]}>
+          <View accessibilityRole="alert" style={[styles.notice, { backgroundColor: colors.errorContainer }]}>
             <Text style={[typography.bodySm, { color: colors.foregroundSecondary, flex: 1 }]}>{error}</Text>
-            <Pressable onPress={refresh} disabled={refreshing} accessibilityRole="button" style={styles.iconButton}><ArrowClockwise size={22} color={colors.primary} /></Pressable>
+            <Pressable onPress={refresh} disabled={refreshing} accessibilityRole="button" style={styles.iconButton}><ArrowClockwise size={20} color={colors.error} /></Pressable>
           </View>
         )}
 
         <View style={styles.resultsHeader}>
           <View style={{ flex: 1 }}>
-            <Text accessibilityRole="header" style={[typography.displayMd, { color: colors.foreground }]}>
-              {view === 'saved' ? 'YOUR SAVED' : view === 'past' ? 'ARCHIVE' : 'THE GRID'}
-            </Text>
+            <SectionLabel>{view === 'saved' ? 'Saved Plans' : view === 'past' ? 'Archive' : 'The Feed'}</SectionLabel>
           </View>
           <Pressable onPress={() => setPersonalized(!personalized)} accessibilityRole="checkbox" accessibilityState={{ checked: personalized }}
-            style={[styles.preferenceButton, { borderColor: personalized ? colors.primary : colors.border, backgroundColor: personalized ? colors.highlight : colors.surface }]}>
-            <SlidersHorizontal size={18} color={colors.primary} /><Text style={[typography.labelSm, { color: colors.primary }]}>FOR YOU</Text>
+            style={[styles.preferenceButton, { borderColor: personalized ? colors.accent : colors.borderSubtle, backgroundColor: personalized ? colors.accentSoft : 'transparent' }]}>
+            <SlidersHorizontal size={16} color={personalized ? colors.accent : colors.muted} /><Text style={[typography.labelSm, { color: personalized ? colors.accent : colors.muted }]}>For You</Text>
           </Pressable>
         </View>
-        
-        {personalized && (
-          <Pressable onPress={onEditInterests} accessibilityRole="button" style={styles.editInterests}>
-            <Text style={[typography.bodySm, { color: colors.primary }]}>Edit your interests</Text><ArrowRight size={16} color={colors.primary} />
-          </Pressable>
-        )}
       </View>
     </View>
   );
@@ -157,11 +156,11 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
         numColumns={columns} 
         keyExtractor={(event) => event.id} 
         style={{ flex: 1, width: '100%' }}
-        contentContainerStyle={{ paddingBottom: 120 + insets.bottom, paddingTop: spacing.xl }}
-        columnWrapperStyle={columns > 1 ? { paddingHorizontal: spacing.marginMobile, gap: 16 } : undefined} 
+        contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
+        columnWrapperStyle={columns > 1 ? { paddingHorizontal, gap: spacing.md } : undefined} 
         ListHeaderComponent={header}
         renderItem={({ item }) => (
-          <View style={{ width: columns === 1 ? '100%' : ((100 - (columns - 1) * 2) / columns) + '%' as `${number}%`, paddingHorizontal: columns === 1 ? spacing.marginMobile : 0 }}>
+          <View style={{ width: columns === 1 ? '100%' : ((100 - (columns - 1) * 2) / columns) + '%' as `${number}%`, paddingHorizontal: columns === 1 ? paddingHorizontal : 0 }}>
             <EventCard event={item} saved={saved.has(item.id)} onToggleSave={() => onToggleSave(item.id)} onPress={() => onOpenEvent(item)} isPast={isPastEvent(item, now)} />
           </View>
         )}
@@ -169,21 +168,21 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
         initialNumToRender={6} maxToRenderPerBatch={6} windowSize={5}
         keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}
         ListEmptyComponent={(
-          <View style={[styles.empty, { borderColor: colors.border, marginHorizontal: spacing.marginMobile }]}>
-            {loading ? <ActivityIndicator color={colors.primary} /> : <BookmarkSimple size={32} color={colors.primary} weight="bold" />}
+          <View style={[styles.empty, { borderColor: colors.borderSubtle, marginHorizontal: paddingHorizontal }]}>
+            {loading ? <ActivityIndicator color={colors.muted} /> : <BookmarkSimple size={32} color={colors.muted} weight="light" />}
             <Text style={[typography.titleLg, { color: colors.foreground, textAlign: 'center' }]}>
-              {loading ? 'LOADING HYPE' : hasFilters ? 'NO MATCHES' : 'DEAD AIR'}
+              {loading ? 'Loading...' : hasFilters ? 'No events found.' : 'All caught up.'}
             </Text>
             {!loading && (
-              <Pressable onPress={hasFilters ? reset : refresh} style={[styles.emptyAction, { backgroundColor: colors.primary }]}>
-                <Text style={[typography.labelMd, { color: '#000' }]}>{hasFilters ? 'CLEAR FILTERS' : 'REFRESH'}</Text>
+              <Pressable onPress={hasFilters ? reset : refresh} style={[styles.emptyAction, { backgroundColor: colors.surfaceElevated }]}>
+                <Text style={[typography.labelMd, { color: colors.foreground }]}>{hasFilters ? 'Clear Filters' : 'Refresh'}</Text>
               </Pressable>
             )}
           </View>
         )}
         ListFooterComponent={(
-          <View style={[styles.footer, { borderTopColor: colors.border, marginHorizontal: spacing.marginMobile }]}>
-            <Text style={[typography.bodySm, { color: colors.muted }]}>End of feed.</Text>
+          <View style={[styles.footer, { borderTopColor: colors.borderSubtle, marginHorizontal: paddingHorizontal }]}>
+            <Text style={[typography.bodySm, { color: colors.muted }]}>Made for the moments between classes.</Text>
           </View>
         )} 
       />
@@ -192,32 +191,17 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
 }
 
 const styles = StyleSheet.create({
-  tickerTape: {
-    width: '100%',
-    paddingVertical: 10,
-    marginTop: spacing.sm,
-    transform: [{ rotate: '-1deg' }],
-  },
-  tickerText: {
-    ...typography.displayMd,
-    fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 2,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
   tabs: { flexDirection: 'row', gap: spacing.lg, borderBottomWidth: 1, marginBottom: spacing.lg },
-  tab: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: spacing.sm - 2, borderBottomWidth: 2 },
-  search: { minHeight: 56, borderWidth: 1, borderRadius: radii.md, paddingLeft: 16, paddingRight: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  searchInput: { ...typography.bodyMd, flex: 1, minWidth: 0, height: 54 }, 
+  tab: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 6, borderBottomWidth: 2 },
+  search: { minHeight: 50, borderWidth: 1, borderRadius: radii.xl, paddingLeft: 16, paddingRight: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  searchInput: { ...typography.bodyMd, flex: 1, minWidth: 0, height: 48 }, 
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chips: { gap: 8, paddingTop: 14 }, 
-  chip: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: radii.sm, borderWidth: 1 },
-  notice: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, borderRadius: radii.md, marginBottom: 20 },
-  resultsHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: spacing.xl, marginBottom: spacing.md },
-  preferenceButton: { flexDirection: 'row', gap: 8, alignItems: 'center', paddingHorizontal: 12, minHeight: 44, borderWidth: 1, borderRadius: radii.sm },
-  editInterests: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginBottom: spacing.md },
-  empty: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 20, borderWidth: 2, borderStyle: 'solid', gap: 14, marginBottom: 24, borderRadius: 0 },
-  emptyAction: { paddingHorizontal: 20, minHeight: 48, justifyContent: 'center', marginTop: 12, borderRadius: 0 },
+  chip: { minHeight: 40, paddingHorizontal: 16, justifyContent: 'center', borderRadius: radii.full, borderWidth: 1 },
+  notice: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, borderRadius: radii.lg, marginBottom: 20 },
+  resultsHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: spacing.xl, marginBottom: spacing.sm },
+  preferenceButton: { flexDirection: 'row', gap: 6, alignItems: 'center', paddingHorizontal: 12, minHeight: 36, borderWidth: 1, borderRadius: radii.full },
+  empty: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 20, borderWidth: 1, gap: 14, marginBottom: 24, borderRadius: radii.xl },
+  emptyAction: { paddingHorizontal: 20, minHeight: 44, justifyContent: 'center', marginTop: 12, borderRadius: radii.full },
   footer: { borderTopWidth: 1, paddingVertical: 24, gap: 8, marginTop: spacing.xl },
 });

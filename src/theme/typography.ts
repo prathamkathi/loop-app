@@ -1,137 +1,150 @@
 /**
- * Loop Design System — Typography (Electric Campus)
+ * Loop Design System — Typography (Elite & Classy)
  *
- * Display / Headline: Space Grotesk (brutalist, loud, wide)
- * Body / Label / Data: Inter (neutral, highly readable)
+ * Exclusively utilizing Inter for flawless, premium readability.
+ * Sentence-case headings, strict tracking control, geometric purity.
  */
 
 import { Platform, TextStyle } from 'react-native';
 
-const headingFamily = Platform.select({
-  web: 'SpaceGrotesk_700Bold, sans-serif',
-  ios: 'SpaceGrotesk_700Bold',
-  android: 'SpaceGrotesk_700Bold',
-  default: 'SpaceGrotesk_700Bold',
-});
-
-const bodyFamily = Platform.select({
-  web: 'Inter_400Regular, sans-serif',
+const interFamily = Platform.select({
+  web: 'Inter_400Regular, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   ios: 'Inter_400Regular',
   android: 'Inter_400Regular',
   default: 'Inter_400Regular',
 });
 
-const labelFamily = Platform.select({
-  web: 'Inter_600SemiBold, sans-serif',
+const interMedium = Platform.select({
+  web: 'Inter_500Medium, -apple-system, BlinkMacSystemFont, sans-serif',
+  ios: 'Inter_500Medium',
+  android: 'Inter_500Medium',
+  default: 'Inter_500Medium',
+});
+
+const interSemiBold = Platform.select({
+  web: 'Inter_600SemiBold, -apple-system, BlinkMacSystemFont, sans-serif',
   ios: 'Inter_600SemiBold',
   android: 'Inter_600SemiBold',
   default: 'Inter_600SemiBold',
 });
 
+const interBold = Platform.select({
+  web: 'Inter_700Bold, -apple-system, BlinkMacSystemFont, sans-serif',
+  ios: 'Inter_700Bold',
+  android: 'Inter_700Bold',
+  default: 'Inter_700Bold',
+});
+
 export const typography = {
-  // Headings
+  // Headings - Refined, sentence case, tight but not aggressive tracking
   displayXl: {
-    fontFamily: headingFamily,
-    fontSize: 52,
+    fontFamily: interBold,
+    fontSize: 48,
     fontWeight: '700',
-    letterSpacing: -1.8,
+    letterSpacing: -1.0,
     lineHeight: 56,
-    textTransform: 'uppercase',
   } as TextStyle,
   displayLg: {
-    fontFamily: headingFamily,
-    fontSize: 38,
+    fontFamily: interBold,
+    fontSize: 40,
     fontWeight: '700',
-    letterSpacing: -1.2,
-    lineHeight: 42,
-    textTransform: 'uppercase',
+    letterSpacing: -0.8,
+    lineHeight: 48,
   } as TextStyle,
-  displayMd: { // text-3xl font-semibold tracking-tight
-    fontFamily: headingFamily,
-    fontSize: 30,
+  displayMd: { 
+    fontFamily: interBold,
+    fontSize: 32,
     fontWeight: '700',
-    letterSpacing: -0.75,
-    lineHeight: 36,
-    textTransform: 'uppercase',
+    letterSpacing: -0.6,
+    lineHeight: 40,
   } as TextStyle,
-  titleXl: { // text-2xl font-semibold leading-tight
-    fontFamily: headingFamily,
+  titleXl: { 
+    fontFamily: interSemiBold,
     fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 32,
-    textTransform: 'uppercase',
-  } as TextStyle,
-  titleLg: { // text-lg font-semibold tracking-tight leading-snug
-    fontFamily: headingFamily,
-    fontSize: 18,
     fontWeight: '600',
-    letterSpacing: -0.45,
-    lineHeight: 25,
+    letterSpacing: -0.4,
+    lineHeight: 32,
   } as TextStyle,
-  titleMd: { // text-lg font-medium leading-snug
-    fontFamily: headingFamily,
+  titleLg: { 
+    fontFamily: interSemiBold,
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: -0.3,
+    lineHeight: 28,
+  } as TextStyle,
+  titleMd: { 
+    fontFamily: interMedium,
     fontSize: 18,
     fontWeight: '500',
-    lineHeight: 25,
-  } as TextStyle,
-  
-  // Body
-  bodyMd: { // text-base
-    fontFamily: bodyFamily,
-    fontSize: 16,
-    fontWeight: '400',
-    lineHeight: 24,
-  } as TextStyle,
-  bodySm: { // text-sm
-    fontFamily: bodyFamily,
-    fontSize: 14,
-    fontWeight: '400',
-    lineHeight: 20,
-  } as TextStyle,
-  bodyXs: { // text-xs
-    fontFamily: bodyFamily,
-    fontSize: 12,
-    fontWeight: '400',
-    lineHeight: 16,
-  } as TextStyle,
-  
-  // Labels
-  labelCaps: { // text-xs font-semibold uppercase tracking-[0.22em]
-    fontFamily: labelFamily,
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 2.64, 
-    lineHeight: 16,
-  } as TextStyle,
-  labelMd: { // text-sm font-semibold
-    fontFamily: labelFamily,
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
+    letterSpacing: -0.2,
+    lineHeight: 26,
   } as TextStyle,
   titleSm: {
-    fontFamily: headingFamily,
+    fontFamily: interSemiBold,
     fontSize: 16,
     fontWeight: '600',
+    letterSpacing: -0.1,
+    lineHeight: 24,
+  } as TextStyle,
+  
+  // Body - Optimized for legibility and airiness
+  bodyMd: { 
+    fontFamily: interFamily,
+    fontSize: 16,
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: 24,
+  } as TextStyle,
+  bodySm: { 
+    fontFamily: interFamily,
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0,
     lineHeight: 22,
   } as TextStyle,
+  bodyXs: { 
+    fontFamily: interFamily,
+    fontSize: 13,
+    fontWeight: '400',
+    letterSpacing: 0.1,
+    lineHeight: 18,
+  } as TextStyle,
+  
+  // Labels - Precise, structured
+  labelCaps: { 
+    fontFamily: interSemiBold,
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2, 
+    lineHeight: 16,
+  } as TextStyle,
   labelLg: {
-    fontFamily: labelFamily,
+    fontFamily: interSemiBold,
     fontSize: 15,
     fontWeight: '600',
+    letterSpacing: -0.1,
     lineHeight: 20,
   } as TextStyle,
-  labelSm: { // text-xs font-medium
-    fontFamily: labelFamily,
+  labelMd: { 
+    fontFamily: interSemiBold,
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: -0.1,
+    lineHeight: 20,
+  } as TextStyle,
+  labelSm: { 
+    fontFamily: interMedium,
     fontSize: 12,
     fontWeight: '500',
+    letterSpacing: 0,
     lineHeight: 16,
   } as TextStyle,
   caption: {
-    fontFamily: bodyFamily,
+    fontFamily: interFamily,
     fontSize: 11,
     fontWeight: '400',
-    lineHeight: 15,
+    letterSpacing: 0.1,
+    lineHeight: 16,
   } as TextStyle,
 } as const;

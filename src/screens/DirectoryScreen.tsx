@@ -3,10 +3,10 @@ import {
   View, Text, Image, ScrollView, Pressable, TextInput, StyleSheet, Animated, Easing, Platform, useWindowDimensions, Linking,
 } from 'react-native';
 import {
-  ArrowRight, ArrowUpRight, FirstAid, Heartbeat, BookOpen, Trophy, Buildings, MapPin, PhoneCall, MagnifyingGlass, X, InstagramLogo, ShieldCheck
+  ArrowUpRight, FirstAid, MagnifyingGlass, X, InstagramLogo
 } from 'phosphor-react-native';
 import { useTheme, typography, radii, shadows, spacing } from '../theme';
-import { DIRECTORY, type DirectoryItem } from '../data/directory';
+import { DIRECTORY } from '../data/directory';
 import { CLUBS, type ClubItem } from '../data/clubs';
 import { openExternalLink, openInstagram } from '../utils/linking';
 
@@ -30,7 +30,7 @@ function AnimatedWrapper({ index, children }: { index: number; children: React.R
 export default function DirectoryScreen() {
   const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
-  const isDesktop = width >= 768;
+  const paddingHorizontal = width < 500 ? spacing.marginMobile : spacing.marginDesktop;
 
   const [activeBoard, setActiveBoard] = useState<string>('All');
   const [clubSearch, setClubSearch] = useState<string>('');
@@ -46,42 +46,48 @@ export default function DirectoryScreen() {
   }, [activeBoard, clubSearch]);
 
   const emergencyContacts = DIRECTORY.filter(d => d.category === 'Emergency');
-  const otherFacilities = DIRECTORY.filter(d => d.category !== 'Emergency');
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-      <Text style={[typography.displayXl, { color: colors.foreground, textTransform: 'uppercase', marginBottom: spacing.md }]}>
-        DIRECTORY
-      </Text>
+    <ScrollView style={[styles.scroll, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       
-      {/* Docked Emergency Pills */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.lg }}>
+      {/* Refined Header */}
+      <View style={{ paddingHorizontal, paddingTop: spacing.xl, paddingBottom: spacing.lg }}>
+        <Text style={[typography.caption, { color: colors.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }]}>
+          Campus Essentials
+        </Text>
+        <Text style={[typography.displayLg, { color: colors.foreground, marginBottom: spacing.xs }]}>
+          Directory
+        </Text>
+      </View>
+
+      {/* Elegant Translucent Emergency Pills */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal, gap: spacing.sm, paddingBottom: spacing.lg }}>
         {emergencyContacts.map((em) => (
           <Pressable 
             key={em.id} 
             onPress={() => em.phone ? Linking.openURL(`tel:${em.phone.replace(/[^0-9]/g, '')}`) : openExternalLink(em.url)}
             style={({ pressed }) => [
               styles.emergencyPill, 
-              { backgroundColor: '#FF3366' },
-              pressed && { transform: [{ scale: 0.95 }] },
+              { backgroundColor: isDark ? 'rgba(255, 59, 48, 0.15)' : 'rgba(255, 59, 48, 0.08)' },
+              pressed && { transform: [{ scale: 0.96 }] },
               Platform.OS === 'web' && ({ cursor: 'pointer' } as any)
             ]}
           >
-            <FirstAid size={16} color="#FFF" weight="bold" />
-            <Text style={[typography.labelLg, { color: '#FFF', fontWeight: '800' }]}>{em.name.toUpperCase()}</Text>
+            <FirstAid size={18} color={isDark ? '#FF453A' : '#FF3B30'} weight="fill" />
+            <Text style={[typography.labelLg, { color: isDark ? '#FF453A' : '#FF3B30' }]}>{em.name}</Text>
           </Pressable>
         ))}
       </ScrollView>
 
-      {/* Clubs Roster */}
-      <View style={{ marginBottom: spacing.xl }}>
-        <Text style={[typography.titleXl, { color: colors.foreground, textTransform: 'uppercase', marginBottom: spacing.md }]}>
-          ROSTER
+      {/* Clubs & Organizations */}
+      <View style={{ marginBottom: spacing.xl, paddingHorizontal }}>
+        <Text style={[typography.titleXl, { color: colors.foreground, marginBottom: spacing.md }]}>
+          Student Organizations
         </Text>
         
-        <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <MagnifyingGlass size={18} color={colors.muted} />
-          <TextInput placeholder="Search lineup..." placeholderTextColor={colors.muted} value={clubSearch} onChangeText={setClubSearch} style={[styles.searchInput, { color: colors.foreground }]} />
+        <View style={[styles.searchBar, { backgroundColor: colors.surfaceElevated, borderColor: colors.borderSubtle }]}>
+          <MagnifyingGlass size={20} color={colors.muted} />
+          <TextInput placeholder="Search clubs, teams, or boards..." placeholderTextColor={colors.muted} value={clubSearch} onChangeText={setClubSearch} style={[styles.searchInput, { color: colors.foreground }]} />
           {clubSearch.length > 0 && <Pressable onPress={() => setClubSearch('')} style={{ padding: spacing.xs }}><X size={16} color={colors.muted} weight="bold" /></Pressable>}
         </View>
 
@@ -92,38 +98,56 @@ export default function DirectoryScreen() {
               <Pressable key={tab} onPress={() => setActiveBoard(tab)}
                 style={({ pressed }) => [
                   styles.filterChip,
-                  { backgroundColor: active ? colors.primary : colors.surface, borderColor: active ? colors.primary : colors.border, transform: [{ scale: pressed ? 0.96 : 1 }] },
+                  { backgroundColor: active ? colors.foreground : 'transparent', borderColor: active ? colors.foreground : colors.borderSubtle },
+                  pressed && { transform: [{ scale: 0.96 }] },
                   Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
                 ]}>
-                <Text style={[typography.labelMd, { color: active ? '#000' : colors.muted, textTransform: 'uppercase' }]}>{tab}</Text>
+                <Text style={[typography.labelMd, { color: active ? colors.background : colors.muted }]}>{tab}</Text>
               </Pressable>
             );
           })}
         </ScrollView>
 
-        {/* Staggered Roster Blocks */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        {/* Elegant List Rows */}
+        <View style={styles.listContainer}>
           {filteredClubs.map((club, index) => (
             <AnimatedWrapper key={club.id} index={index}>
               <Pressable
                 onPress={() => openInstagram(club.handle)}
                 style={({ pressed }) => [
-                  styles.rosterBlock,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                  pressed && { transform: [{ scale: 0.98 }] },
+                  styles.clubRow,
+                  { borderBottomColor: colors.borderSubtle },
+                  pressed && { opacity: 0.7 },
                   Platform.OS === 'web' && ({ cursor: 'pointer' } as any)
                 ]}
               >
-                <Text style={[typography.displayMd, { color: colors.foreground, fontSize: 24, lineHeight: 28, textTransform: 'uppercase' }]} numberOfLines={2}>
-                  {club.name}
-                </Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 12 }}>
-                  <Text style={[typography.labelCaps, { color: colors.primary }]}>{club.parentTag}</Text>
-                  <InstagramLogo size={20} color={colors.muted} />
+                <Image
+                  source={{ uri: club.avatar }}
+                  style={[styles.clubAvatar, { backgroundColor: colors.surfaceElevated }]}
+                  onError={(e) => {
+                    e.currentTarget.setNativeProps({
+                      src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(club.name) + '&background=E5E5EA&color=1C1C1E',
+                    });
+                  }}
+                />
+                <View style={styles.clubInfo}>
+                  <Text style={[typography.titleSm, { color: colors.foreground, marginBottom: 2 }]} numberOfLines={1}>
+                    {club.name}
+                  </Text>
+                  <Text style={[typography.bodySm, { color: colors.muted }]} numberOfLines={1}>
+                    {club.parentTag} · {club.handle}
+                  </Text>
                 </View>
+                <ArrowUpRight size={18} color={colors.muted} weight="regular" />
               </Pressable>
             </AnimatedWrapper>
           ))}
+
+          {filteredClubs.length === 0 && (
+            <View style={{ paddingVertical: 40, alignItems: 'center' }}>
+              <Text style={[typography.bodyMd, { color: colors.muted }]}>No organizations found.</Text>
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -132,11 +156,14 @@ export default function DirectoryScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  scrollContent: { paddingHorizontal: spacing.marginMobile, paddingTop: spacing.xl, paddingBottom: 120 },
-  emergencyPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderRadius: radii.full, borderBottomRightRadius: 0 },
-  searchBar: { flexDirection: 'row', alignItems: 'center', height: 48, borderRadius: 0, borderWidth: 1, paddingHorizontal: spacing.md, marginTop: spacing.md, gap: spacing.sm },
-  searchInput: { flex: 1, height: '100%', fontSize: 16, fontFamily: 'Inter_500Medium' },
-  filterScroll: { gap: spacing.sm, paddingVertical: spacing.md },
+  scrollContent: { paddingBottom: 120 },
+  emergencyPill: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingVertical: 14, borderRadius: radii.full },
+  searchBar: { flexDirection: 'row', alignItems: 'center', height: 48, borderRadius: radii.full, borderWidth: 1, paddingHorizontal: spacing.md, marginTop: spacing.xs, gap: spacing.sm },
+  searchInput: { flex: 1, height: '100%', fontSize: 16, fontFamily: 'Inter_400Regular' },
+  filterScroll: { gap: spacing.sm, paddingVertical: spacing.lg },
   filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: radii.full, borderWidth: 1 },
-  rosterBlock: { width: 160, height: 160, padding: 16, borderRadius: 0, borderWidth: 1, justifyContent: 'space-between', backgroundColor: '#111' },
+  listContainer: { marginTop: spacing.sm },
+  clubRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, gap: 14 },
+  clubAvatar: { width: 50, height: 50, borderRadius: radii.full },
+  clubInfo: { flex: 1, justifyContent: 'center' },
 });

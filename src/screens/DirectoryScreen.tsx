@@ -30,7 +30,8 @@ import {
   InstagramLogo,
   Sparkle,
 } from 'phosphor-react-native';
-import { useTheme, typography, radii, shadows } from '../theme';
+import { useTheme, typography, radii, shadows, spacing } from '../theme';
+import PageHeader from '../components/PageHeader';
 import SectionLabel from '../components/SectionLabel';
 import { DIRECTORY, type DirectoryItem } from '../data/directory';
 import { CLUBS, type ClubItem } from '../data/clubs';
@@ -159,13 +160,12 @@ export default function DirectoryScreen() {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      <SectionLabel>Campus Directory</SectionLabel>
-      <Text style={[styles.heading, { color: colors.foreground }]}>
-        IIT Delhi Essentials
-      </Text>
-      <Text style={[styles.subtitle, { color: colors.muted }]}>
-        Quick access to 24×7 emergency numbers, hospital care, student wellness, libraries, sports facilities, and 40+ student organizations.
-      </Text>
+      <PageHeader
+        sectionLabel="CAMPUS DIRECTORY"
+        title="IIT Delhi Essentials"
+        subtitle="Quick access to 24×7 emergency numbers, hospital care, student wellness, libraries, sports facilities, and 40+ student organizations."
+        isDesktop={isDesktop}
+      />
 
       {/* Facilities Category Pills */}
       <View style={styles.catPillSection}>
@@ -230,11 +230,11 @@ export default function DirectoryScreen() {
                     {d.mapImage && (
                       <Image source={{ uri: d.mapImage }} style={styles.mapImage} resizeMode="cover" />
                     )}
-                    <View style={styles.mapGradient} />
+                    <View style={[styles.mapGradient, { backgroundColor: colors.surfaceOverlay }]} />
                     <View style={styles.mapContent}>
                       <View style={{ flex: 1, paddingRight: 16 }}>
                         <View style={styles.badgeRow}>
-                          <View style={[styles.facilityBadge, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(2, 132, 199, 0.12)' }]}>
+                          <View style={[styles.facilityBadge, { backgroundColor: colors.facilityBlue }]}>
                             <MapPin size={12} color={isDark ? '#38BDF8' : '#0284C7'} weight="bold" />
                             <Text style={[styles.facilityBadgeText, { color: isDark ? '#38BDF8' : '#0284C7' }]}>CAMPUS MAP</Text>
                           </View>
@@ -269,10 +269,10 @@ export default function DirectoryScreen() {
                     styles.card,
                     {
                       backgroundColor: isEmergency && isDark
-                        ? 'rgba(225, 29, 72, 0.07)'
+                        ? colors.highlight
                         : colors.surface,
                       borderColor: isEmergency
-                        ? isDark ? 'rgba(225, 29, 72, 0.35)' : 'rgba(225, 29, 72, 0.25)'
+                        ? colors.facilityCrimson
                         : colors.border,
                     },
                     shadows.card,
@@ -287,7 +287,7 @@ export default function DirectoryScreen() {
                             {d.category.toUpperCase()}
                           </Text>
                           {d.hours.includes('24') && (
-                            <View style={[styles.liveDotBadge, { backgroundColor: isDark ? 'rgba(52, 211, 153, 0.16)' : 'rgba(16, 185, 129, 0.12)' }]}>
+                            <View style={[styles.liveDotBadge, { backgroundColor: colors.facilityGreen }]}>
                               <View style={styles.liveDot} />
                               <Text style={styles.liveDotText}>24×7</Text>
                             </View>
@@ -339,7 +339,7 @@ export default function DirectoryScreen() {
                           styles.linkActionBtn,
                           {
                             borderColor: colors.border,
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                            backgroundColor: colors.surfaceHover,
                             transform: [{ scale: pressed ? 0.96 : 1 }],
                           },
                           Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
@@ -477,7 +477,7 @@ export default function DirectoryScreen() {
                       {club.description}
                     </Text>
                   </View>
-                  <View style={[styles.openInstagramBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
+                  <View style={[styles.openInstagramBtn, { backgroundColor: colors.surfaceHover }]}>
                     <ArrowUpRight size={16} color={colors.foreground} weight="bold" />
                   </View>
                 </Pressable>
@@ -513,32 +513,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingHorizontal: spacing.marginMobile,
+    paddingTop: spacing.md,
     paddingBottom: 120,
   },
-  heading: {
-    ...typography.titleXl,
-    fontSize: 26,
-    fontWeight: '700',
-    marginTop: 6,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    ...typography.bodyMd,
-    marginTop: 6,
-    maxWidth: 640,
-    lineHeight: 22,
-  },
   catPillSection: {
-    marginVertical: 18,
+    marginVertical: spacing.md,
   },
   catPillScroll: {
-    gap: 8,
+    gap: spacing.sm,
   },
   catPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingHorizontal: spacing.md - 2,
+    paddingVertical: spacing.sm - 1,
     borderRadius: radii.full,
     borderWidth: 1,
   },
@@ -547,7 +534,7 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: 'column',
-    gap: 16,
+    gap: spacing.md,
   },
   gridDesktop: {
     flexDirection: 'row',
@@ -565,8 +552,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radii.xl,
     borderWidth: 1,
-    padding: 18,
-    gap: 12,
+    padding: spacing.md + 2,
+    gap: spacing.sm + spacing.xs,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -576,7 +563,7 @@ const styles = StyleSheet.create({
   cardIconWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: spacing.sm + spacing.xs,
     flex: 1,
   },
   cardCategory: {
@@ -587,8 +574,8 @@ const styles = StyleSheet.create({
   liveDotBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 6,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm - 2,
     paddingVertical: 2,
     borderRadius: radii.full,
   },
@@ -618,10 +605,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(255,255,255,0.06)',
-    gap: 12,
+    gap: spacing.sm + spacing.xs,
   },
   locationRow: {
     flexDirection: 'row',
@@ -636,9 +623,9 @@ const styles = StyleSheet.create({
   callActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    gap: spacing.sm - 2,
+    paddingHorizontal: spacing.sm + spacing.xs,
+    paddingVertical: spacing.sm - 1,
     borderRadius: radii.full,
   },
   callActionText: {
@@ -649,9 +636,9 @@ const styles = StyleSheet.create({
   linkActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    gap: spacing.sm - 2,
+    paddingHorizontal: spacing.sm + spacing.xs,
+    paddingVertical: spacing.sm - 1,
     borderRadius: radii.full,
     borderWidth: 1,
   },
@@ -677,25 +664,24 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
   },
   mapContent: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 20,
+    padding: spacing.marginMobile,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
   badgeRow: {
-    marginBottom: 6,
+    marginBottom: spacing.sm - 2,
   },
   facilityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingHorizontal: 8,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: radii.full,
     alignSelf: 'flex-start',
@@ -714,7 +700,7 @@ const styles = StyleSheet.create({
   mapDetail: {
     ...typography.bodySm,
     color: 'rgba(255, 255, 255, 0.85)',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   mapBtn: {
     width: 44,
@@ -724,17 +710,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   clubsSection: {
-    marginTop: 42,
+    marginTop: spacing.xl,
   },
   clubsTitle: {
     ...typography.titleXl,
     fontSize: 22,
     fontWeight: '700',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   clubsSubtitle: {
     ...typography.bodySm,
-    marginTop: 4,
+    marginTop: spacing.xs,
     lineHeight: 18,
   },
   searchBar: {
@@ -743,9 +729,9 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: radii.lg,
     borderWidth: 1,
-    paddingHorizontal: 12,
-    marginTop: 16,
-    gap: 10,
+    paddingHorizontal: spacing.sm + spacing.xs,
+    marginTop: spacing.md,
+    gap: spacing.sm + 2,
   },
   searchInput: {
     flex: 1,
@@ -753,15 +739,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   clearBtn: {
-    padding: 4,
+    padding: spacing.xs,
   },
   filterScroll: {
-    gap: 8,
-    paddingVertical: 14,
+    gap: spacing.sm,
+    paddingVertical: spacing.md - 2,
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingHorizontal: spacing.sm + spacing.xs,
+    paddingVertical: spacing.sm - 1,
     borderRadius: radii.full,
     borderWidth: 1,
   },
@@ -770,15 +756,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   clubList: {
-    gap: 12,
+    gap: spacing.sm + spacing.xs,
   },
   clubRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing.sm + spacing.xs,
     borderRadius: radii.xl,
     borderWidth: 1,
-    gap: 14,
+    gap: spacing.sm + spacing.xs,
   },
   clubAvatar: {
     width: 46,

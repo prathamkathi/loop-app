@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, FlatList, ScrollView, Text, TextInput, StyleSheet, useWindowDimensions, ActivityIndicator, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MagnifyingGlass, X, BookmarkSimple, ArrowClockwise, SlidersHorizontal, ArrowRight } from 'phosphor-react-native';
-import { useTheme, typography, radii } from '../theme';
+import { useTheme, typography, radii, spacing } from '../theme';
 import EventCard from '../components/EventCard';
+import PageHeader from '../components/PageHeader';
 import FilterPills from '../components/FilterPills';
 import type { EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
@@ -49,17 +50,20 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
   const dateLabel = new Date(now).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' });
 
   const header = <>
-    <View style={[styles.intro, { borderBottomColor: colors.border }]}>
-      <Text style={[styles.eyebrow, { color: colors.primary }]}>IIT DELHI / CAMPUS LIFE</Text>
-      <Text accessibilityRole="header" style={[styles.heading, { color: colors.foreground }, contentWidth < 500 && styles.headingMobile]}>Find your next{'\n'}campus moment.</Text>
-      <View style={styles.introBottom}>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>Talks, tournaments, late-night gigs.{'\n'}Make room for something beyond class.</Text>
-        {contentWidth >= 850 && <View style={styles.dateStamp}>
-          <Text style={[typography.labelMd, { color: colors.foreground }]}>{dateLabel}</Text>
-          <Text style={[typography.bodySm, { color: colors.muted }]}>{upcomingCount} upcoming · IIT Delhi</Text>
-        </View>}
-      </View>
-    </View>
+    <PageHeader
+      sectionLabel="IIT DELHI / CAMPUS LIFE"
+      title={<>Find your next{'\n'}campus moment.</>}
+      subtitle={<>Talks, tournaments, late-night gigs.{'\n'}Make room for something beyond class.</>}
+      rightElement={
+        contentWidth >= 850 ? (
+          <View style={{ alignItems: 'flex-end', gap: spacing.sm - spacing.xs }}>
+            <Text style={[typography.labelMd, { color: colors.foreground }]}>{dateLabel}</Text>
+            <Text style={[typography.bodySm, { color: colors.muted }]}>{upcomingCount} upcoming · IIT Delhi</Text>
+          </View>
+        ) : undefined
+      }
+      isDesktop={contentWidth >= 500}
+    />
     <View style={[styles.tabs, { borderBottomColor: colors.border }]}>
       {(['upcoming', 'saved', 'past'] as const).map((id) => <Pressable key={id} onPress={() => changeView(id)} accessibilityRole="tab" accessibilityState={{ selected: view === id }}
         accessibilityLabel={id === 'upcoming' ? 'Discover events' : id === 'saved' ? 'Saved events' : 'Past events'}
@@ -124,14 +128,9 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
 }
 const styles = StyleSheet.create({
   list: { flex: 1, width: '100%', alignSelf: 'center', maxWidth: 1240 },
-  content: { paddingTop: 20 }, intro: { paddingBottom: 28, borderBottomWidth: 1 },
-  eyebrow: { ...typography.labelCaps, fontSize: 11, letterSpacing: 2, marginBottom: 16 },
-  heading: { ...typography.displayMd, fontSize: 52, lineHeight: 56, letterSpacing: -1.8 },
-  headingMobile: { fontSize: 38, lineHeight: 42, letterSpacing: -1.2 },
-  subtitle: { ...typography.bodyMd, lineHeight: 24 },
-  introBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginTop: 18 },
-  dateStamp: { gap: 6, alignItems: 'flex-end' }, tabs: { flexDirection: 'row', gap: 24, borderBottomWidth: 1, marginBottom: 24 },
-  tab: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 6, borderBottomWidth: 2 },
+  content: { paddingTop: spacing.lg },
+  tabs: { flexDirection: 'row', gap: spacing.lg, borderBottomWidth: 1, marginBottom: spacing.lg },
+  tab: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: spacing.sm - 2, borderBottomWidth: 2 },
   search: { minHeight: 56, borderWidth: 1, borderRadius: radii.lg, paddingLeft: 16, paddingRight: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
   searchInput: { ...typography.bodyMd, flex: 1, minWidth: 0, height: 54 }, iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   chips: { gap: 8, paddingTop: 14 }, chip: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: radii.full, borderWidth: 1 },

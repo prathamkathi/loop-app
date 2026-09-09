@@ -15,7 +15,8 @@ import { ImageSquare, Clock, MapPin, Sparkle, ShieldWarning, CalendarBlank } fro
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { BlurView } from 'expo-blur';
-import { useTheme, typography, radii, shadows } from '../theme';
+import { useTheme, typography, radii, shadows, spacing } from '../theme';
+import PageHeader from '../components/PageHeader';
 import SectionLabel from '../components/SectionLabel';
 import FloatingField from '../components/FloatingField';
 import { enhanceEventDraft } from '../utils/geminiAI';
@@ -378,11 +379,12 @@ export default function SubmitScreen(props: Props) {
       <View style={[styles.mainLayout, isDesktop && styles.desktopLayout]}>
         {/* Left Column: Form Section */}
         <View style={[styles.formColumn, isDesktop && styles.desktopFormColumn]}>
-          <SectionLabel>Creator Portal</SectionLabel>
-          <Text style={[styles.heading, { color: colors.foreground }]}>Create Event</Text>
-          <Text style={[styles.subtitle, { color: colors.muted }]}>
-            Share the details. Help your next audience find you.
-          </Text>
+          <PageHeader
+            sectionLabel="CREATOR PORTAL"
+            title="Create Event"
+            subtitle="Share the details. Help your next audience find you."
+            isDesktop={isDesktop}
+          />
 
           {/* Upload Area */}
           <Pressable
@@ -671,17 +673,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.marginMobile,
+    paddingTop: spacing.md,
     paddingBottom: 120,
   },
   mainLayout: {
     flexDirection: 'column',
-    gap: 36,
+    gap: spacing.xl,
   },
   desktopLayout: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 48,
+    gap: spacing.xl,
   },
   formColumn: {
     flex: 1,
@@ -697,19 +700,11 @@ const styles = StyleSheet.create({
     flex: 0.9,
     maxWidth: 420,
     position: 'sticky' as any,
-    top: 24,
-  },
-  heading: {
-    ...typography.displayMd,
-    marginBottom: 8,
-  },
-  subtitle: {
-    ...typography.bodyMd,
-    marginBottom: 24,
+    top: spacing.lg,
   },
   previewHeading: {
     ...typography.titleLg,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   upload: {
     minHeight: 180,
@@ -718,10 +713,11 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: spacing.lg,
+    marginTop: spacing.lg,
     overflow: 'hidden',
     position: 'relative',
-    padding: 20,
+    padding: spacing.marginMobile,
   },
   uploadInner: {
     alignItems: 'center',
@@ -743,11 +739,11 @@ const styles = StyleSheet.create({
     ...typography.bodyXs,
   },
   formFields: {
-    gap: 18,
+    gap: spacing.md + 2,
   },
   row: {
     flexDirection: 'row',
-    gap: 14,
+    gap: spacing.sm + 6,
   },
   // Preview Card
   previewCard: {

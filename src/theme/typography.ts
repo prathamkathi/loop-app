@@ -30,6 +30,20 @@ const labelFamily = Platform.select({
 
 export const typography = {
   // Headings
+  displayXl: {
+    fontFamily: headingFamily,
+    fontSize: 52,
+    fontWeight: '600',
+    letterSpacing: -1.8,
+    lineHeight: 56,
+  } as TextStyle,
+  displayLg: {
+    fontFamily: headingFamily,
+    fontSize: 38,
+    fontWeight: '600',
+    letterSpacing: -1.2,
+    lineHeight: 42,
+  } as TextStyle,
   displayMd: { // text-3xl font-semibold tracking-tight
     fontFamily: headingFamily,
     fontSize: 30,

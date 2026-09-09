@@ -66,6 +66,12 @@ export type ThemeColors = {
   highlight: string;
   highlightDim: string;
 
+  facilityBlue: string;
+  facilityGreen: string;
+  facilityCrimson: string;
+  surfaceHover: string;
+  surfaceOverlay: string;
+
   foreground: string;
   foregroundSecondary: string;
   muted: string;
@@ -99,6 +105,12 @@ export const lightColors: ThemeColors = {
   highlight: palette.roseWater,
   highlightDim: palette.roseWaterDim,
 
+  facilityBlue: 'rgba(2, 132, 199, 0.12)',
+  facilityGreen: 'rgba(16, 185, 129, 0.12)',
+  facilityCrimson: 'rgba(225, 29, 72, 0.15)',
+  surfaceHover: 'rgba(0,0,0,0.03)',
+  surfaceOverlay: 'rgba(0, 0, 0, 0.65)',
+
   foreground: palette.ink,
   foregroundSecondary: palette.stone700,
   muted: palette.stone500,
@@ -131,6 +143,12 @@ export const darkColors: ThemeColors = {
 
   highlight: 'rgba(225, 29, 72, 0.12)',
   highlightDim: 'rgba(225, 29, 72, 0.20)',
+
+  facilityBlue: 'rgba(56, 189, 248, 0.18)',
+  facilityGreen: 'rgba(52, 211, 153, 0.16)',
+  facilityCrimson: 'rgba(225, 29, 72, 0.35)',
+  surfaceHover: 'rgba(255,255,255,0.05)',
+  surfaceOverlay: 'rgba(0, 0, 0, 0.65)',
 
   foreground: '#FFFFFF',
   foregroundSecondary: '#E2E8F0',

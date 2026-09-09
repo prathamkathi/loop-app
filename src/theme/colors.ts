@@ -22,12 +22,12 @@ export const palette = {
   roseWaterDim: '#F8D7DC',
 
   // Neutrals — Light
-  alabaster: '#FDFCF8',
+  alabaster: '#F8F7F4',
   white: '#FFFFFF',
   stone50: '#FAFAF9',
   stone200: '#E7E5E4',
   stone400: '#A8A29E',
-  stone500: '#78716C',
+  stone500: '#6D6661',
   stone700: '#44403C',
   stone900: '#1C1917',
 
@@ -82,8 +82,8 @@ export const lightColors: ThemeColors = {
   surface: palette.white,
   surfaceElevated: palette.white,
   card: palette.white,
-  border: 'rgba(138, 21, 56, 0.10)',
-  borderSubtle: 'rgba(138, 21, 56, 0.06)',
+  border: '#E0DDD8',
+  borderSubtle: '#EEEAE5',
 
   primary: palette.crimson,
   primarySoft: palette.crimsonSoft,
@@ -101,7 +101,7 @@ export const lightColors: ThemeColors = {
   foregroundSecondary: palette.stone700,
   muted: palette.stone500,
 
-  success: palette.emerald,
+  success: '#167447',
   error: palette.error,
   errorContainer: palette.errorContainer,
   onError: palette.white,
@@ -109,14 +109,14 @@ export const lightColors: ThemeColors = {
 };
 
 export const darkColors: ThemeColors = {
-  background: '#090A0F',
-  surface: '#13151F',
-  surfaceElevated: '#1A1D2C',
-  card: '#12141E',
+  background: '#131314',
+  surface: '#1D1D1F',
+  surfaceElevated: '#252527',
+  card: '#1D1D1F',
   border: 'rgba(255, 255, 255, 0.09)',
   borderSubtle: 'rgba(255, 255, 255, 0.05)',
 
-  primary: '#E11D48',       // Vibrant, refined crimson rose for dark surfaces
+  primary: '#C94D6C',
   primarySoft: '#FB7185',
   primaryMuted: 'rgba(225, 29, 72, 0.45)',
   onPrimary: palette.white,

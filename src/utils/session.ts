@@ -40,15 +40,14 @@ export function ensureSignedIn(): Promise<void> {
   if (pending) return pending;
 
   pending = authReady
-    .then(async (restored) => {
-      if (restored) return; // a real or anonymous session already exists
+    .then(async () => {
+      if (auth.currentUser) return;
       await signInAnonymously(auth);
     })
     .catch((err) => {
       console.error('Anonymous sign-in failed:', err);
-      pending = null; // allow a later retry
       throw err;
-    });
+    }).finally(() => { pending = null; });
 
   return pending;
 }
@@ -79,8 +78,8 @@ async function readClaims(user: User | null, forceRefresh: boolean): Promise<Coo
 
 /** One-shot check of the current user's coordinator status. */
 export async function getCoordinatorInfo(forceRefresh = true): Promise<CoordinatorInfo> {
-  const restored = await authReady;
-  return readClaims(auth.currentUser ?? restored, forceRefresh);
+  await authReady;
+  return readClaims(auth.currentUser, forceRefresh);
 }
 
 /** Backwards-compatible boolean form. */
@@ -96,7 +95,12 @@ export async function isCoordinator(): Promise<boolean> {
 export function onCoordinatorChange(
   callback: (info: CoordinatorInfo) => void,
 ): () => void {
-  return onAuthStateChanged(auth, (user) => {
-    readClaims(user, true).then(callback);
+  let revision = 0;
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const current = ++revision;
+    readClaims(user, true).then((info) => {
+      if (current === revision) callback(info);
+    });
   });
+  return () => { revision++; unsubscribe(); };
 }

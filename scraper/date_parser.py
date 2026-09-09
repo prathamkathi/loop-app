@@ -1,6 +1,7 @@
 """Canonical date and time parsing for LOOP scraper."""
+from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 
 MONTH_NAMES = {
@@ -35,7 +36,8 @@ def parse_date_and_time(date_str: str | None, time_str: str | None = None) -> da
     raw_date = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", clean, flags=re.IGNORECASE)
     raw_time = str(time_str).strip() if time_str else ""
 
-    now = datetime.now()
+    campus_timezone = timezone(timedelta(hours=5, minutes=30))
+    now = datetime.now(campus_timezone)
     year = now.year
     month = now.month
     day = now.day
@@ -61,7 +63,7 @@ def parse_date_and_time(date_str: str | None, time_str: str | None = None) -> da
             explicit_year = False
             if re.match(r"^\d{1,2}$", tokens[0]):
                 day = int(tokens[0])
-                m_key = tokens[1].lower()[:3]
+                m_key = tokens[1].lower()
                 if m_key in MONTH_NAMES:
                     month = MONTH_NAMES[m_key]
                 else:
@@ -70,7 +72,7 @@ def parse_date_and_time(date_str: str | None, time_str: str | None = None) -> da
                     year = int(tokens[2])
                     explicit_year = True
             else:
-                m_key = tokens[0].lower()[:3]
+                m_key = tokens[0].lower()
                 if m_key in MONTH_NAMES:
                     month = MONTH_NAMES[m_key]
                 else:
@@ -83,17 +85,19 @@ def parse_date_and_time(date_str: str | None, time_str: str | None = None) -> da
                     year = int(tokens[2])
                     explicit_year = True
 
-            if not explicit_year and month < now.month:
+            if not explicit_year and now.month >= 11 and month <= 2:
                 year += 1
         else:
             return None
 
     # Parse time
     if raw_time and raw_time.lower() not in UNUSABLE_DATES:
-        ampm_match = re.search(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)", raw_time, re.IGNORECASE)
+        ampm_match = re.fullmatch(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)", raw_time, re.IGNORECASE)
         if ampm_match:
             hour = int(ampm_match.group(1))
             minute = int(ampm_match.group(2)) if ampm_match.group(2) else 0
+            if hour < 1 or hour > 12 or minute > 59:
+                return None
             is_pm = ampm_match.group(3).upper() == "PM"
             if is_pm and hour != 12:
                 hour += 12
@@ -104,8 +108,10 @@ def parse_date_and_time(date_str: str | None, time_str: str | None = None) -> da
             if military_match:
                 hour = int(military_match.group(1))
                 minute = int(military_match.group(2))
+            else:
+                return None
 
     try:
-        return datetime(year, month, day, hour, minute)
+        return datetime(year, month, day, hour, minute, tzinfo=campus_timezone)
     except Exception:
         return None

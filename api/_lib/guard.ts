@@ -21,6 +21,7 @@ const PRODUCTION_ORIGINS = [
 const DEV_ORIGINS = [
   'http://localhost:8081',
   'http://localhost:19006',
+  'http://127.0.0.1:8081',
 ];
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
@@ -58,12 +59,13 @@ export async function guard(
 ): Promise<Caller | null> {
   const origin = req.headers?.origin;
 
-  // Browsers and API callers must provide an allowed origin to prevent bypassing CORS
-  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+  // Native clients do not send Origin. Firebase tokens authorize every request;
+  // CORS only controls which browser origins may read the response.
+  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
     res.status(403).json({ error: 'Origin not allowed' });
     return null;
   }
-  res.setHeader('Access-Control-Allow-Origin', origin);
+  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -141,7 +143,6 @@ export async function checkRateLimit(uid: string, limitPerHour: number = 20): Pr
     });
   } catch (err) {
     console.error('Rate limit error:', err);
-    return true; // Fail-open on transient database failure
+    return false; // Do not spend provider quota when the limiter cannot verify it.
   }
 }
-

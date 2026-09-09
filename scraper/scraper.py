@@ -220,16 +220,16 @@ def run_apify_pipeline(
                 starts_at = parse_date_and_time(date, time_str)
 
                 # Deterministic Completeness Gate (T2.2)
-                is_complete, status = evaluate_completeness(parsed_data, starts_at)
-                if force_pending:
-                    status = "pending"
+                is_complete, _suggested_status = evaluate_completeness(parsed_data, starts_at)
+                # Extraction confidence never substitutes for coordinator review.
+                status = "pending"
                 print(f"[Gate] Post {ig_post_id} ('{title}') -> status: '{status}' (is_complete={is_complete}, force_pending={force_pending}, isEvent={is_event}, category='{category}', starts_at={starts_at})")
 
                 # F-52: Secondary deduplication by (host, title) to prevent multiple posts of the same event
                 clean_handle = handle.lstrip("@").strip()
                 if db is not None:
-                    existing_matches = db.collection('events').where('host', '==', clean_handle).where('title', '==', title).limit(1).get()
-                    if existing_matches:
+                    existing_matches = db.collection('events').where('host', '==', clean_handle).where('title', '==', title).limit(20).get()
+                    if any(match.to_dict().get('date') == date for match in existing_matches):
                         print(f"[Dedupe Skip] Event '{title}' from @{clean_handle} already exists in Firestore.")
                         continue
 
@@ -276,7 +276,7 @@ def run_apify_pipeline(
                         "blurb": blurb,
                         "image": public_url,
                         "category": category if category in ALLOWED_CATEGORIES else "Campus Notices",
-                        "confidence": confidence / 100 if isinstance(confidence, (int, float)) else 0.5,
+                        "confidence": max(0, min(1, confidence / 100 if confidence > 1 else confidence)) if isinstance(confidence, (int, float)) else 0,
                         "status": status,
                         "postKind": post_kind,
                         "isEvent": is_event,
@@ -287,8 +287,7 @@ def run_apify_pipeline(
                         "contacts": clean_contacts,
                         "createdAt": firestore.SERVER_TIMESTAMP,
                     }
-                    if starts_at is not None:
-                        event_doc["startsAt"] = starts_at
+                    event_doc["startsAt"] = starts_at
 
                     if dry_run:
                         print(f"[Dry Run] Would write event '{title}' ({doc_id}) to Firestore:")

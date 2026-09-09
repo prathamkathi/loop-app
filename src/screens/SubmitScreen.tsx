@@ -25,6 +25,8 @@ import { httpsCallable, apiErrorMessage } from '../utils/vercelClient';
 import { onCoordinatorChange } from '../utils/session';
 import { getClubAvatar } from '../data/avatars';
 import { parseDateAndTimeString } from '../utils/dateParser';
+import { CANONICAL_CATEGORIES, type CanonicalCategory } from '../data/categories';
+import { normalizeCategory } from '../utils/categoryMeta';
 
 type Props = {
   onNavigate?: (tab: string) => void;
@@ -45,7 +47,7 @@ export default function SubmitScreen(props: Props) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPolishing, setIsPolishing] = useState(false);
-  const [geminiCategory, setGeminiCategory] = useState<string>('Independent');
+  const [geminiCategory, setGeminiCategory] = useState<CanonicalCategory>('Cultural & Arts');
   const [geminiConfidence, setGeminiConfidence] = useState<number>(0);
   const [aspectRatio, setAspectRatio] = useState<number>(0.8);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -200,13 +202,14 @@ export default function SubmitScreen(props: Props) {
           const parseRemote = httpsCallable('parseEventPoster');
           const { data: parsed }: any = await parseRemote({ imageB64: base64Str, mimeType });
 
-          if (parsed.title) setTitle(parsed.title);
-          if (parsed.date) setDate(parsed.date);
-          if (parsed.startTime) setTime(parsed.startTime);
-          if (parsed.venue) setVenue(parsed.venue);
-          if (parsed.summary) setDesc(parsed.summary);
-          if (parsed.category) setGeminiCategory(parsed.category);
-          if (parsed.confidenceScore) setGeminiConfidence(parsed.confidenceScore);
+          if (typeof parsed.title === 'string') setTitle(parsed.title);
+          if (typeof parsed.date === 'string') setDate(parsed.date);
+          if (typeof parsed.startTime === 'string') setTime(parsed.startTime);
+          if (typeof parsed.venue === 'string') setVenue(parsed.venue);
+          if (typeof parsed.summary === 'string') setDesc(parsed.summary);
+          const category = normalizeCategory(parsed.category);
+          if (category) setGeminiCategory(category);
+          setGeminiConfidence(typeof parsed.confidenceScore === 'number' ? Math.min(1, Math.max(0, parsed.confidenceScore)) : 0);
         } catch (err) {
           console.error('Gemini extraction error:', err);
           showAlert('Note', 'Poster uploaded. Could not parse all fields automatically — please fill details manually.');
@@ -249,11 +252,17 @@ export default function SubmitScreen(props: Props) {
   const handleSubmit = async () => {
     if (isSubmitting || isAnalyzing) return;
 
-    if (!title || !date || !time || !venue) {
+    if (!title.trim() || !date.trim() || !time.trim() || !venue.trim()) {
       showAlert('Missing Details', 'Please fill in the Event Name, Date, Time, and Venue.');
       return;
     }
 
+    const parsedDate = parseDateAndTimeString(date, time);
+    if (!parsedDate || !parsedDate.hasTime) {
+      showAlert('Check date and time', 'Enter a real date and start time, for example 15 Oct 2026 and 18:30.');
+      return;
+    }
+    if (!coordinator) return;
     setIsSubmitting(true);
     try {
       let downloadURL = '';
@@ -275,13 +284,7 @@ export default function SubmitScreen(props: Props) {
       }
 
       // Parse date+time into a Firestore Timestamp for sorting/expiry (F-14, F-15)
-      let startsAt: Timestamp | null = null;
-      try {
-        const parsed = parseDateAndTimeString(date, time);
-        if (parsed && !isNaN(parsed.date.getTime())) {
-          startsAt = Timestamp.fromDate(parsed.date);
-        }
-      } catch { /* startsAt stays null — will be filled by backfill or coordinator */ }
+      const startsAt = Timestamp.fromDate(parsedDate.date);
 
       // Read real club identity from claims (F-19)
       let realHost = 'Campus Club';
@@ -297,10 +300,10 @@ export default function SubmitScreen(props: Props) {
       }
 
       await addDoc(collection(db, 'events'), {
-        title,
-        date,
-        time,
-        venue,
+        title: title.trim(),
+        date: date.trim(),
+        time: time.trim(),
+        venue: venue.trim(),
         blurb: desc || title + ' happening at ' + venue + '.',
         image: downloadURL,
         category: geminiCategory,
@@ -321,6 +324,8 @@ export default function SubmitScreen(props: Props) {
       setDesc('');
       setImageUri(null);
       setImageBase64(null);
+      setGeminiConfidence(0);
+      setGeminiCategory('Cultural & Arts');
       
       if (props.onNavigate) {
         props.onNavigate('queue');
@@ -376,7 +381,7 @@ export default function SubmitScreen(props: Props) {
           <SectionLabel>Creator Portal</SectionLabel>
           <Text style={[styles.heading, { color: colors.foreground }]}>Create Event</Text>
           <Text style={[styles.subtitle, { color: colors.muted }]}>
-            Craft an exclusive experience for the IIT Delhi community.
+            Share the details. Help your next audience find you.
           </Text>
 
           {/* Upload Area */}
@@ -446,6 +451,13 @@ export default function SubmitScreen(props: Props) {
           {/* Form Fields */}
           <View style={styles.formFields}>
             <FloatingField label="Event Name" value={title} onChangeText={setTitle} />
+            <Text style={[typography.labelMd, { color: colors.foreground }]}>Category</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {CANONICAL_CATEGORIES.map((category) => <Pressable key={category} onPress={() => setGeminiCategory(category)} accessibilityRole="radio" accessibilityState={{ selected: geminiCategory === category }}
+                style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radii.md, borderWidth: 1, borderColor: geminiCategory === category ? colors.primary : colors.border, backgroundColor: geminiCategory === category ? colors.highlight : colors.surface }}>
+                <Text style={[typography.labelSm, { color: geminiCategory === category ? colors.primary : colors.foreground }]}>{category}</Text>
+              </Pressable>)}
+            </View>
             <View style={styles.row}>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }}>

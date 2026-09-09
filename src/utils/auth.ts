@@ -16,7 +16,8 @@ export async function getStoredStudentProfile(): Promise<StudentProfile | null> 
   try {
     const raw = await AsyncStorage.getItem(STUDENT_PROFILE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as StudentProfile;
+    const profile = JSON.parse(raw);
+    return profile && typeof profile.name === 'string' && typeof profile.firstName === 'string' && profile.firstName.length > 0 && typeof profile.kerberosId === 'string' ? profile : null;
   } catch {
     return null;
   }

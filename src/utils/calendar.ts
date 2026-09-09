@@ -51,25 +51,21 @@ function toGoogleCalendarDateOnly(date: Date): string {
  * Generate a Google Calendar URL for the given event (supports both EventItem and CalendarEvent).
  * Emits an all-day entry (dates=YYYYMMDD/YYYYMMDD) if no valid time was announced.
  */
-export function getGoogleCalendarUrl(event: CalendarEvent | EventItem): string {
+export function getGoogleCalendarUrl(event: CalendarEvent | EventItem): string | null {
   const parsed = parseDateAndTime((event as any).date, (event as any).time);
   const startsAtDate = toValidDate((event as any).startsAt);
 
   let startDate: Date;
   let hasTime = false;
 
-  if (startsAtDate && parsed?.hasTime) {
+  if (startsAtDate) {
     startDate = startsAtDate;
-    hasTime = true;
+    hasTime = Boolean(parsed?.hasTime || parseDateAndTime('2026-01-01', event.time)?.hasTime);
   } else if (parsed) {
     startDate = parsed.date;
     hasTime = parsed.hasTime;
-  } else if (startsAtDate) {
-    startDate = startsAtDate;
-    const timeParsed = parseDateAndTime('2026-01-01', (event as any).time);
-    hasTime = Boolean(timeParsed?.hasTime);
   } else {
-    startDate = new Date();
+    return null;
   }
 
   const title = event.title || 'IIT Delhi Campus Event';
@@ -103,6 +99,7 @@ export function getGoogleCalendarUrl(event: CalendarEvent | EventItem): string {
  */
 export async function openGoogleCalendar(event: CalendarEvent | EventItem): Promise<void> {
   const url = getGoogleCalendarUrl(event);
+  if (!url) return;
   await openExternalLink(url);
 }
 

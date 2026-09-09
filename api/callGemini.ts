@@ -9,15 +9,16 @@ export default async function handler(req: any, res: any) {
   const caller = await guard(req, res);
   if (!caller) return;
 
-  const allowed = await checkRateLimit(caller.uid, 20);
-  if (!allowed) {
-    return res.status(429).json({ error: 'Rate limit exceeded. You can send up to 20 queries per hour.' });
-  }
-
   try {
     const { prompt, systemInstruction } = req.body?.data || req.body || {};
     
-    if (!prompt) return res.status(400).json({ error: 'Missing prompt.' });
+    if (typeof prompt !== 'string' || !prompt.trim() || prompt.length > 24000 ||
+        (systemInstruction !== undefined && (typeof systemInstruction !== 'string' || systemInstruction.length > 6000))) {
+      return res.status(400).json({ error: 'Provide a text prompt of up to 24,000 characters.' });
+    }
+    if (!await checkRateLimit(caller.uid, 20)) {
+      return res.status(429).json({ error: 'Request limit reached or temporarily unavailable. Please try again later.' });
+    }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY is missing.' });
@@ -36,7 +37,7 @@ export default async function handler(req: any, res: any) {
           },
         });
 
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(prompt, { timeout: 4000 });
         const text = result.response.text();
         if (text) return res.status(200).json({ data: { text: text.trim() } });
       } catch (e: any) {
@@ -47,10 +48,9 @@ export default async function handler(req: any, res: any) {
 
     return res.status(502).json({
       error: 'All AI models failed to respond. Please try again in a few moments.',
-      details: lastError?.message || 'Upstream models unavailable',
     });
   } catch (error: any) {
     console.error('[callGemini] Fatal handler error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'The campus assistant is temporarily unavailable.' });
   }
 }

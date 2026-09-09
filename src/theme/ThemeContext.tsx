@@ -41,13 +41,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (stored === 'light' || stored === 'dark' || stored === 'system') {
         setModeState(stored);
       }
-      setLoaded(true);
-    });
+    }).catch(() => {}).finally(() => setLoaded(true));
   }, []);
 
   const setMode = useCallback((newMode: ThemeMode) => {
     setModeState(newMode);
-    AsyncStorage.setItem(THEME_STORAGE_KEY, newMode);
+    AsyncStorage.setItem(THEME_STORAGE_KEY, newMode).catch(() => {});
   }, []);
 
   const toggleTheme = useCallback(() => {

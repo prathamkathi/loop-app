@@ -68,11 +68,6 @@ let html = fs.readFileSync(indexHtmlPath, 'utf8');
 
 const headTags = [];
 
-if (!html.includes('fonts.googleapis.com')) {
-  headTags.push(
-    '  <link rel="preconnect" href="https://fonts.googleapis.com" />\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />'
-  );
-}
 
 if (!html.includes('manifest.json')) {
   headTags.push('  <link rel="manifest" href="/manifest.json" />');

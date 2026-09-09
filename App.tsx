@@ -1,8 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { collection, query, where, getDocs, onSnapshot, limit, orderBy, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from 'firebase/firestore';
+import { useEventFeed } from './src/hooks/useEventFeed';
+import { normalizeEvent } from './src/utils/eventDiscovery';
 import { db } from './src/config/firebase';
 import { ensureSignedIn } from './src/utils/session';
 import { useCustomFonts } from "./src/utils/useFonts";
@@ -34,8 +36,6 @@ import {
   saveInterests,
   loadSavedEvents,
   saveSavedEvents,
-  loadReminder,
-  saveReminder,
 } from './src/utils/storage';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import PWAInstallBanner from './src/components/PWAInstallBanner';
@@ -45,19 +45,17 @@ function AppContent() {
   const { profile, signIn, signOut } = useStudentAuth();
 
   // Navigation state
-  const [fontsLoaded] = useCustomFonts();
+  const [fontsLoaded, fontError] = useCustomFonts();
   const [mode, setMode] = useState<'student' | 'studio'>('student');
   const [activeTab, setActiveTab] = useState<TabId>('home');
 
   // Data state
   const [interests, setInterests] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
-  const [reminder, setReminder] = useState(60);
   const [activeEvent, setActiveEvent] = useState<EventItem | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAIConcierge, setShowAIConcierge] = useState(false);
-  const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -66,20 +64,12 @@ function AppContent() {
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.title = 'Loop | IIT Delhi Events';
-      if (!document.getElementById('loop-fonts-stylesheet')) {
-        const link = document.createElement('link');
-        link.id = 'loop-fonts-stylesheet';
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap';
-        document.head.appendChild(link);
-      }
     }
     (async () => {
-      const [storedInterests, interestsSet, storedSaved, storedReminder] = await Promise.all([
+      const [storedInterests, interestsSet, storedSaved] = await Promise.all([
         loadInterests(),
         hasSetInterests(),
         loadSavedEvents(),
-        loadReminder(),
       ]);
       if (interestsSet) {
         setInterests(new Set(storedInterests));
@@ -88,147 +78,12 @@ function AppContent() {
         setInterests(new Set(CATEGORIES.filter((c: string) => c !== 'All')));
       }
       if (storedSaved.length > 0) setSaved(new Set(storedSaved));
-      setReminder(storedReminder);
     })();
   }, []);
 
-  // Prune any stale/deleted event IDs from saved storage once live events load
-  useEffect(() => {
-    if (liveEvents.length > 0 && saved.size > 0) {
-      const validIds = new Set(liveEvents.map((e) => e.id));
-      const pruned = new Set<string>();
-      let changed = false;
-      saved.forEach((id) => {
-        if (validIds.has(id)) {
-          pruned.add(id);
-        } else {
-          changed = true;
-        }
-      });
-      if (changed) {
-        setSaved(pruned);
-        saveSavedEvents([...pruned]);
-      }
-    }
-  }, [liveEvents.length]);
+  const { events: liveEvents, loading: eventsLoading, error: feedError, refresh: refetchEvents } = useEventFeed(saved);
 
-  const [eventsLoading, setEventsLoading] = useState(true);
-  const [feedError, setFeedError] = useState<string | null>(null);
-  const isLiveLoadedRef = useRef(false);
-
-  // T-09: Offline persistence for feed (U15: prevent race condition with live snapshot)
-  useEffect(() => {
-    import('@react-native-async-storage/async-storage').then(({ default: AsyncStorage }) => {
-      AsyncStorage.getItem('@loop_feed_cache').then((cached) => {
-        if (cached && !isLiveLoadedRef.current) {
-          try {
-            setLiveEvents(JSON.parse(cached));
-            setEventsLoading(false); // Paint immediately
-          } catch {}
-        }
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    // Every read and API call needs a Firebase identity; students get one
-    // anonymously. Fire-and-forget: the snapshot listener below retries on
-    // auth state change, and a failure surfaces through feedError.
-    ensureSignedIn().catch(() => setFeedError('Could not connect to campus servers.'));
-  }, []);
-
-  useEffect(() => {
-    // B-03 & D-1: Live events query with orderBy('startsAt', 'asc') and graceful fallback
-    const qOrdered = query(
-      collection(db, 'events'), 
-      where("status", "==", "approved"),
-      orderBy("startsAt", "asc"),
-      limit(50)
-    );
-    const qFallback = query(
-      collection(db, 'events'), 
-      where("status", "==", "approved"),
-      limit(50)
-    );
-
-    let activeUnsubscribe: (() => void) | null = null;
-
-    const handleSnapshot = (snapshot: any) => {
-      isLiveLoadedRef.current = true;
-      const fetched = snapshot.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as EventItem[];
-      setLiveEvents(fetched);
-      setEventsLoading(false);
-      setFeedError(null);
-      
-      import('@react-native-async-storage/async-storage').then(({ default: AsyncStorage }) => {
-        AsyncStorage.setItem('@loop_feed_cache', JSON.stringify(fetched)).catch(console.warn);
-      });
-    };
-
-    activeUnsubscribe = onSnapshot(
-      qOrdered,
-      handleSnapshot,
-      (err) => {
-        console.warn('Ordered query failed (index may still be deploying), falling back to unordered feed:', err);
-        // Fall back to unordered query so a missing/deploying index never blanks the feed
-        if (activeUnsubscribe) activeUnsubscribe();
-        activeUnsubscribe = onSnapshot(
-          qFallback,
-          handleSnapshot,
-          (fallbackErr) => {
-            console.error('Failed to load live events even on fallback:', fallbackErr);
-            setFeedError("Couldn't load events. Pull to refresh or try again shortly.");
-            setEventsLoading(false);
-          }
-        );
-      }
-    );
-
-    return () => {
-      if (activeUnsubscribe) activeUnsubscribe();
-    };
-  }, []);
-
-  const refetchEvents = useCallback(async () => {
-    try {
-      const qOrdered = query(
-        collection(db, 'events'),
-        where("status", "==", "approved"),
-        orderBy("startsAt", "asc"),
-        limit(50)
-      );
-      const snap = await getDocs(qOrdered);
-      isLiveLoadedRef.current = true;
-      const fetched = snap.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as EventItem[];
-      setLiveEvents(fetched);
-      setFeedError(null);
-    } catch (err) {
-      try {
-        const qFallback = query(
-          collection(db, 'events'),
-          where("status", "==", "approved"),
-          limit(50)
-        );
-        const snap = await getDocs(qFallback);
-        isLiveLoadedRef.current = true;
-        const fetched = snap.docs.map((doc: any) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as EventItem[];
-        setLiveEvents(fetched);
-        setFeedError(null);
-      } catch (fallbackErr) {
-        console.error('Refetch failed on both paths:', fallbackErr);
-        setFeedError("Couldn't refresh events. Check connection.");
-      }
-    }
-  }, []);
+  useEffect(() => { ensureSignedIn().catch(() => {}); }, []);
 
   // Notifications generation
   useEffect(() => {
@@ -349,12 +204,6 @@ function AppContent() {
     });
   }, []);
 
-  // Reminder
-  const handleReminderChange = useCallback((v: number) => {
-    setReminder(v);
-    saveReminder(v);
-  }, []);
-
   // Reset filters
   const resetFilters = useCallback(() => {
     setInterests(new Set());
@@ -416,7 +265,7 @@ function AppContent() {
     }
   };
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -432,6 +281,7 @@ function AppContent() {
           mode={mode}
           isDark={isDark}
           onToggleTheme={toggleTheme}
+          onToggleMode={toggleMode}
           onNotification={() => setShowNotifications(true)}
           notificationCount={unreadCount}
           studentProfile={profile}

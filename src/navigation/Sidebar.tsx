@@ -29,7 +29,7 @@ export default function Sidebar({
           <Text style={{ color: colors.primary }}>.</Text>
         </Text>
         <Text style={[styles.context, { color: colors.muted }]}>
-          Campus Concierge
+          IIT Delhi · Campus life
         </Text>
       </View>
 
@@ -50,7 +50,7 @@ export default function Sidebar({
                 active && [
                   styles.activeNav,
                   {
-                    backgroundColor: isDark ? 'rgba(196, 77, 106, 0.18)' : 'rgba(138, 21, 56, 0.08)',
+                    backgroundColor: colors.highlight,
                   },
                 ],
                 Platform.OS === 'web' && ({
@@ -112,7 +112,7 @@ export default function Sidebar({
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 250,
+    width: 232,
     height: '100%',
     borderRightWidth: 1,
     paddingTop: 36,

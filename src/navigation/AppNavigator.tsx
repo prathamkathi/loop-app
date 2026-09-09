@@ -22,8 +22,8 @@ export default function AppNavigator({
   children,
 }: Props) {
   const { width } = useWindowDimensions();
-  const { colors, isDark, toggleTheme } = useTheme();
-  const isDesktop = width >= 768;
+  const { colors } = useTheme();
+  const isDesktop = width >= 1024;
   const tabs = mode === 'student' ? STUDENT_TABS : STUDIO_TABS;
 
   return (

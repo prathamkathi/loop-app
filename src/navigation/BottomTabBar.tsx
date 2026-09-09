@@ -14,10 +14,10 @@ type Tab = {
 };
 
 export const STUDENT_TABS: Tab[] = [
-  { id: 'home', label: 'Home', Icon: House },
+  { id: 'home', label: 'Discover', Icon: House },
   { id: 'pulse', label: 'Pulse', Icon: Pulse },
   { id: 'directory', label: 'Directory', Icon: Compass },
-  { id: 'curate', label: 'Curate', Icon: SlidersHorizontal },
+  { id: 'curate', label: 'Interests', Icon: SlidersHorizontal },
 ];
 
 export const STUDIO_TABS: Tab[] = [

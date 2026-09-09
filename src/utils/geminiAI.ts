@@ -71,22 +71,6 @@ Answer the student's question accurately based on the campus data above:
   }
 }
 
-export async function generateEventPitch(
-  eventTitle: string,
-  category: string,
-  blurb: string
-): Promise<string> {
-  const systemInstruction =
-    'You write a single snappy, charismatic sentence (under 20 words) highlighting why an IIT Delhi student should not miss this event.';
-  const prompt = `Event: "${eventTitle}" (${category})\nBlurb: ${blurb}\n\nWrite a 1-sentence personalized pitch:`;
-
-  try {
-    const res = await callGeminiViaFunction(prompt, systemInstruction);
-    return res.replace(/^["']|["']$/g, '').trim();
-  } catch {
-    return 'An unmissable campus gathering organized by fellow students.';
-  }
-}
 
 export async function enhanceEventDraft(
   rawTitle: string,
@@ -112,5 +96,25 @@ Return a valid JSON object with keys:
       polishedBlurb: rawBlurb,
       tags: ['#CampusLife', '#IITDelhi', '#Loop'],
     };
+  }
+}
+
+export async function generateEventPitch(
+  title: string,
+  category: string,
+  blurb: string
+): Promise<string> {
+  const systemInstruction = `
+You are a campus event marketer.
+Write a 1-sentence engaging pitch explaining why a student should attend this event.
+Keep it under 100 characters.
+`.trim();
+
+  const prompt = `Title: ${title}\nCategory: ${category}\nDescription: ${blurb}\n\nPitch:`;
+
+  try {
+    return await callGeminiViaFunction(prompt, systemInstruction);
+  } catch {
+    return 'An exciting event you won\'t want to miss on campus!';
   }
 }

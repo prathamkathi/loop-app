@@ -40,11 +40,9 @@ export function httpsCallable(functionName: string) {
     if (!token) throw new ApiError(401, 'Sign in required');
 
     let response: Response;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
     try {
-      const signal = typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal
-        ? (AbortSignal as any).timeout(15000)
-        : undefined;
-
       response = await fetch(`${VERCEL_URL}/${functionName}`, {
         method: 'POST',
         headers: {
@@ -52,13 +50,15 @@ export function httpsCallable(functionName: string) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ data }),
-        signal,
+        signal: controller.signal,
       });
     } catch (err: any) {
       if (err?.name === 'TimeoutError' || err?.name === 'AbortError' || err?.message?.toLowerCase().includes('timeout')) {
         throw new ApiError(408, 'Request timed out. Campus AI servers took too long to respond.');
       }
       throw new ApiError(0, 'Network unavailable');
+    } finally {
+      clearTimeout(timer);
     }
 
     if (!response.ok) {

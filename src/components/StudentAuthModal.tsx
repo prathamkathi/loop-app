@@ -103,12 +103,12 @@ export default function StudentAuthModal({
           <View style={styles.header}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.title, { color: colors.foreground }]}>
-                {currentProfile ? 'Student Profile' : 'Sign In to Loop'}
+                {currentProfile ? 'Campus profile' : 'Make Loop yours'}
               </Text>
               <Text style={[styles.subtitle, { color: colors.muted }]}>
                 {currentProfile
-                  ? 'Your verified IIT Delhi campus profile'
-                  : 'Personalize your greeting, reminders & saved events'}
+                  ? 'Your profile is saved on this device. It is not an institute-verified account.'
+                  : 'Set up an optional profile on this device. Browsing and bookmarks work without one.'}
               </Text>
             </View>
             <Pressable
@@ -268,7 +268,7 @@ export default function StudentAuthModal({
               <Pressable
                 onPress={handleManualSignIn}
                 accessibilityRole="button"
-                accessibilityLabel="Sign in"
+                accessibilityLabel="Save campus profile"
                 style={({ pressed }) => [
                   styles.submitBtn,
                   { backgroundColor: colors.primary },
@@ -276,10 +276,13 @@ export default function StudentAuthModal({
                   pressed && { transform: [{ scale: 0.98 }] },
                 ]}
               >
-                <Text style={[styles.submitBtnText, { color: colors.onPrimary }]}>Sign In</Text>
+                <Text style={[styles.submitBtnText, { color: colors.onPrimary }]}>Save profile</Text>
               </Pressable>
             </ScrollView>
           )}
+          {!currentProfile && onToggleMode && <Pressable onPress={() => { onToggleMode(); onClose(); }} accessibilityRole="button" accessibilityLabel="Open Club Studio sign-in" style={{ minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={[typography.labelMd, { color: colors.primary }]}>Club coordinator? Open Studio</Text>
+          </Pressable>}
         </KeyboardAvoidingView>
       </View>
     </Modal>

@@ -11,14 +11,14 @@
 import { Platform, TextStyle } from 'react-native';
 
 const outfitFamily = Platform.select({
-  web: '"Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  web: 'Outfit_600SemiBold, sans-serif',
   ios: 'Outfit_600SemiBold',
   android: 'Outfit_600SemiBold',
   default: 'Outfit_600SemiBold',
 });
 
 const geistFamily = Platform.select({
-  web: '"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  web: 'Geist_400Regular, sans-serif',
   ios: 'Geist_400Regular',
   android: 'Geist_400Regular',
   default: 'Geist_400Regular',

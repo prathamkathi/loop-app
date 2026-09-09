@@ -12,7 +12,7 @@
  */
 
 export function parseEventTimestamp(val: any): Date | null {
-  if (!val) return null;
+  if (val === null || val === undefined || val === '') return null;
 
   try {
     // 1. Live Firestore Timestamp
@@ -24,8 +24,10 @@ export function parseEventTimestamp(val: any): Date | null {
     // 2. Serialized Firestore Timestamp from AsyncStorage cache
     if (typeof val === 'object') {
       const sec = val.seconds ?? val._seconds;
-      if (typeof sec === 'number' && !isNaN(sec)) {
-        return new Date(sec * 1000);
+      if (typeof sec === 'number' && Number.isFinite(sec)) {
+        const nanos = val.nanoseconds ?? val._nanoseconds ?? 0;
+        const date = new Date(sec * 1000 + (typeof nanos === 'number' ? nanos / 1e6 : 0));
+        return Number.isNaN(date.getTime()) ? null : date;
       }
     }
 

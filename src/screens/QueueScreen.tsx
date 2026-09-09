@@ -84,6 +84,9 @@ export default function QueueScreen() {
   const [authError, setAuthError] = useState('');
   const [studioUser, setStudioUser] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
+  const [clubId, setClubId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [queueError, setQueueError] = useState('');
 
   // Inspection & Category Picker state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -99,13 +102,18 @@ export default function QueueScreen() {
 
   // Restore coordinator session
   useEffect(() => {
-    const unsubscribe = onCoordinatorChange(({ isCoordinator }) => {
+    const unsubscribe = onCoordinatorChange(({ isCoordinator, isAdmin, clubId }) => {
+      setClubId(clubId);
+      setIsAdmin(isAdmin);
       const user = auth.currentUser;
       if (user && isCoordinator) {
         setStudioUser(user.email || 'coordinator');
         setAuthenticated(true);
         setAuthError('');
       } else {
+        setQueue([]);
+        setRejectedList([]);
+        setEditableItem(null);
         setAuthenticated(false);
         setStudioUser('');
         if (user && !user.isAnonymous) {
@@ -119,9 +127,12 @@ export default function QueueScreen() {
   const fetchQueue = useCallback(async () => {
     if (!authenticated) return;
     setLoading(true);
+    setQueueError('');
     try {
+      if (!isAdmin && !clubId) throw new Error('Your coordinator account has no club assigned. Contact an administrator.');
+      const scope = isAdmin ? [] : [where('host', '==', clubId)];
       // 1. Fetch pending
-      const qPending = query(collection(db, 'events'), where("status", "==", "pending"), limit(50));
+      const qPending = query(collection(db, 'events'), where("status", "==", "pending"), ...scope, limit(50));
       const snapshotPending = await getDocs(qPending);
       const fetchedPending = snapshotPending.docs.map(docSnap => {
         const data = docSnap.data();
@@ -157,7 +168,7 @@ export default function QueueScreen() {
       }
 
       // 2. Fetch rejected archive
-      const qRejected = query(collection(db, 'events'), where("status", "==", "rejected"), limit(50));
+      const qRejected = query(collection(db, 'events'), where("status", "==", "rejected"), ...scope, limit(50));
       const snapshotRejected = await getDocs(qRejected);
       const fetchedRejected = snapshotRejected.docs.map(docSnap => {
         const data = docSnap.data();
@@ -189,10 +200,11 @@ export default function QueueScreen() {
       setRejectedList(fetchedRejected);
     } catch (err) {
       console.error('Error fetching queue & rejected:', err);
+      setQueueError('Could not load the moderation queue. Check your connection and club permissions, then refresh.');
     } finally {
       setLoading(false);
     }
-  }, [authenticated]);
+  }, [authenticated, isAdmin, clubId]);
 
   useEffect(() => {
     fetchQueue();
@@ -213,7 +225,7 @@ export default function QueueScreen() {
 
   const handleNext = useCallback(() => {
     setQueue((prev) => {
-      const nextQueue = prev.slice(1);
+      const nextQueue = prev.filter((item) => item.id !== editableItem?.id);
       if (nextQueue.length > 0) {
         setEditableItem({ ...nextQueue[0] });
       } else {
@@ -222,7 +234,7 @@ export default function QueueScreen() {
       return nextQueue;
     });
     resetPan();
-  }, [resetPan]);
+  }, [resetPan, editableItem?.id]);
 
   const handleApprove = async () => {
     if (isProcessing || !editableItem) return;
@@ -252,8 +264,20 @@ export default function QueueScreen() {
 
       // F-56: Calculate startsAt on approval to preserve chronological feed order
       const startsAtDate = parseDateTimeStrings(editableItem.date, editableItem.time || editableItem.startTime);
+      if (!editableItem.title.trim() || (!startsAtDate && approvedCategory !== 'Campus Notices')) {
+        showAlert('Check event details', 'A title and valid event date are required before publishing.');
+        resetPan();
+        return;
+      }
+      if (updateData.actionUrl && !/^https?:\/\//i.test(updateData.actionUrl)) {
+        showAlert('Check official link', 'Use a full https:// or http:// address.');
+        resetPan();
+        return;
+      }
       if (startsAtDate) {
         updateData.startsAt = Timestamp.fromDate(startsAtDate);
+      } else {
+        updateData.startsAt = null;
       }
 
       await updateDoc(doc(db, 'events', editableItem.id), updateData);
@@ -282,6 +306,7 @@ export default function QueueScreen() {
       handleNext();
     } catch (err) {
       console.error('Reject error:', err);
+      resetPan();
       showAlert('Action Failed', 'Could not reject this event.');
     } finally {
       setIsProcessing(false);
@@ -289,6 +314,7 @@ export default function QueueScreen() {
   };
 
   const handleRestoreRejected = async (itemToRestore: ScrapedItem) => {
+    if (isProcessing) return;
     setIsProcessing(true);
     try {
       await updateDoc(doc(db, 'events', itemToRestore.id), {
@@ -297,7 +323,7 @@ export default function QueueScreen() {
       // Move from rejected list back to pending queue
       setRejectedList((prev) => prev.filter((i) => i.id !== itemToRestore.id));
       const restored = { ...itemToRestore, status: 'pending' as const };
-      setQueue((prev) => [restored, ...prev]);
+      setQueue((prev) => [...prev, restored]);
       if (!editableItem) {
         setEditableItem(restored);
       }
@@ -311,6 +337,7 @@ export default function QueueScreen() {
   };
 
   const handleApproveRejected = async (itemToApprove: ScrapedItem) => {
+    if (isProcessing) return;
     setIsProcessing(true);
     try {
       const cat = normalizeCategory(itemToApprove.category || itemToApprove.eventType);
@@ -322,6 +349,10 @@ export default function QueueScreen() {
         updateData.category = cat;
       }
       const startsAtDate = parseDateTimeStrings(itemToApprove.date, itemToApprove.time || itemToApprove.startTime);
+      if (!cat || !itemToApprove.title.trim() || (!startsAtDate && cat !== 'Campus Notices')) {
+        showAlert('Review required', 'Restore this event to the queue and correct its category, title and date before publishing.');
+        return;
+      }
       if (startsAtDate) {
         updateData.startsAt = Timestamp.fromDate(startsAtDate);
       }
@@ -359,11 +390,10 @@ export default function QueueScreen() {
     });
   };
 
-  const panResponder = React.useRef(
-    PanResponder.create({
+  const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (e, gestureState) => {
-        return Math.abs(gestureState.dx) > 25;
+        return !isProcessing && Math.abs(gestureState.dx) > 25 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
       },
       onPanResponderMove: Animated.event([null, { dx: pan.x }], {
         useNativeDriver: false,
@@ -393,8 +423,7 @@ export default function QueueScreen() {
           }).start();
         }
       },
-    })
-  ).current;
+    });
 
   const updateField = (field: keyof ScrapedItem, value: any) => {
     if (editableItem) {
@@ -583,6 +612,10 @@ export default function QueueScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         {/* Header */}
+        {queueError ? <View accessibilityRole="alert" style={[styles.errorBox, { marginBottom: 16 }]}>
+          <Text style={styles.errorText}>{queueError}</Text>
+          <Pressable onPress={onRefresh} accessibilityRole="button" style={{ minHeight: 44, justifyContent: 'center' }}><Text style={{ color: colors.primary }}>Retry queue</Text></Pressable>
+        </View> : null}
         <View style={styles.header}>
           <View>
             <SectionLabel style={{ marginBottom: 0 }}>Curator Cockpit</SectionLabel>

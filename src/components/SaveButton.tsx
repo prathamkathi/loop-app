@@ -7,9 +7,10 @@ type Props = {
   saved: boolean;
   onPress: () => void;
   light?: boolean;
+  inline?: boolean;
 };
 
-export default function SaveButton({ saved, onPress, light = false }: Props) {
+export default function SaveButton({ saved, onPress, light = false, inline = false }: Props) {
   const { colors, isDark } = useTheme();
 
   return (
@@ -20,6 +21,7 @@ export default function SaveButton({ saved, onPress, light = false }: Props) {
       }}
       style={({ pressed }) => [
         styles.btn,
+        inline && { position: 'relative', top: 0, right: 0 },
         saved
           ? { backgroundColor: colors.primary }
           : light
@@ -29,6 +31,7 @@ export default function SaveButton({ saved, onPress, light = false }: Props) {
         { transform: [{ scale: pressed ? 0.9 : 1 }] },
       ]}
       accessibilityRole="button"
+      accessibilityState={{ selected: saved }}
       accessibilityLabel={saved ? 'Remove bookmark' : 'Bookmark event'}
     >
       <BookmarkSimple
@@ -45,9 +48,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,

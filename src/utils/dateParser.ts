@@ -85,7 +85,7 @@ export function parseDateAndTimeString(
       if (/^\d{1,2}$/.test(tokens[0])) {
         // "5 September [2026]" or "02 Sep"
         day = parseInt(tokens[0], 10);
-        const mKey = tokens[1].toLowerCase().slice(0, 3);
+        const mKey = tokens[1].toLowerCase();
         if (mKey in MONTH_NAMES) {
           month = MONTH_NAMES[mKey];
         } else {
@@ -97,7 +97,7 @@ export function parseDateAndTimeString(
         }
       } else {
         // "September 5 [2026]" or "Oct 24"
-        const mKey = tokens[0].toLowerCase().slice(0, 3);
+        const mKey = tokens[0].toLowerCase();
         if (mKey in MONTH_NAMES) {
           month = MONTH_NAMES[mKey];
         } else {
@@ -115,7 +115,7 @@ export function parseDateAndTimeString(
       }
 
       // Rollover: If month has passed (e.g. current Nov, event is Jan), assume next year if no explicit year
-      if (!explicitYear && month < now.getMonth()) {
+      if (!explicitYear && now.getMonth() >= 10 && month <= 1) {
         year += 1;
       }
     } else {
@@ -125,10 +125,11 @@ export function parseDateAndTimeString(
 
   // Parse time: "8:30 PM", "8:30pm", "8 PM", "18:30", "18:00"
   if (rawTime && !UNUSABLE_DATES.has(rawTime.toLowerCase())) {
-    const ampmMatch = rawTime.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+    const ampmMatch = rawTime.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
     if (ampmMatch) {
       hours = parseInt(ampmMatch[1], 10);
       minutes = ampmMatch[2] ? parseInt(ampmMatch[2], 10) : 0;
+      if (hours < 1 || hours > 12 || minutes > 59) return null;
       const isPM = ampmMatch[3].toUpperCase() === 'PM';
       if (isPM && hours !== 12) hours += 12;
       if (!isPM && hours === 12) hours = 0;
@@ -138,13 +139,16 @@ export function parseDateAndTimeString(
       if (militaryMatch) {
         hours = parseInt(militaryMatch[1], 10);
         minutes = parseInt(militaryMatch[2], 10);
+        if (hours > 23 || minutes > 59) return null;
         hasTime = true;
+      } else {
+        return null;
       }
     }
   }
 
   const result = new Date(year, month, day, hours, minutes, 0);
-  if (isNaN(result.getTime())) return null;
+  if (isNaN(result.getTime()) || result.getFullYear() !== year || result.getMonth() !== month || result.getDate() !== day) return null;
 
   return { date: result, hasTime };
 }

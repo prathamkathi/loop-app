@@ -5,6 +5,9 @@ export default async function handler(req: any, res: any) {
   // Only coordinators may mint upload signatures.
   const caller = await guard(req, res, { requireCoordinator: true });
   if (!caller) return;
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    return res.status(503).json({ error: 'Poster uploads are not configured. Contact the administrator.' });
+  }
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

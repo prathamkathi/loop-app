@@ -33,8 +33,7 @@ import {
 import { BlurView } from 'expo-blur';
 import { useTheme, typography, radii, shadows } from '../theme';
 import { openGoogleCalendar } from '../utils/calendar';
-import { openInstagram } from '../utils/linking';
-import { openWhatsApp } from './EventCard';
+import { openInstagram, openWhatsApp, openExternalLink } from '../utils/linking';
 import { generateEventPitch } from '../utils/geminiAI';
 import { CLUBS } from '../data/clubs';
 import { getOptimizedImageUrl } from "../utils/cloudinary";
@@ -76,7 +75,7 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
 
   useEffect(() => {
     let isMounted = true;
-    generateEventPitch(event.title, event.category, event.blurb || '').then((res) => {
+    generateEventPitch(event.title, event.category, event.blurb || '').then((res: string) => {
       if (isMounted) setAiPitch(res);
     });
     return () => {

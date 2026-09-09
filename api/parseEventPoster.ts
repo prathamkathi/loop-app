@@ -1,7 +1,7 @@
 export const config = { api: { bodyParser: { sizeLimit: "10mb" } } };
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { guard } from './_lib/guard';
+import { guard, checkRateLimit } from './_lib/guard';
 
 const ALLOWED_CATEGORIES = [
   'Cultural & Arts', 'Tech & Innovation', 'Fests & Major Events', 
@@ -34,8 +34,13 @@ export default async function handler(req: any, res: any) {
     // Vercel parses the JSON body automatically into req.body
     const { imageB64, mimeType = 'image/jpeg', caption } = req.body?.data || req.body || {};
     
-    if (!imageB64) {
-      return res.status(400).json({ error: 'Missing imageB64 parameter.' });
+    if (typeof imageB64 !== 'string' || !imageB64 || imageB64.length > 8000000 ||
+        !['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(mimeType) ||
+        (caption !== undefined && (typeof caption !== 'string' || caption.length > 10000))) {
+      return res.status(400).json({ error: 'Provide a supported poster image and a caption under 10,000 characters.' });
+    }
+    if (!await checkRateLimit(caller.uid, 20)) {
+      return res.status(429).json({ error: 'Poster extraction limit reached. Please try again later.' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -54,7 +59,7 @@ export default async function handler(req: any, res: any) {
       try {
         const model = genAI.getGenerativeModel({
           model: modelName,
-          systemInstruction: SYSTEM_PROMPT,
+          systemInstruction: SYSTEM_PROMPT.replace('current year is 2026', 'current year is ' + new Date().getFullYear()),
           generationConfig: {
             temperature: 0.1,
             topP: 0.95,
@@ -66,11 +71,16 @@ export default async function handler(req: any, res: any) {
         const result = await model.generateContent([
           userPrompt,
           { inlineData: { data: base64Data, mimeType } },
-        ]);
+        ], { timeout: 4000 });
 
         const text = result.response.text();
         const cleanText = text.replace(/```(?:json)?|```/gi, '').trim();
         const parsed = JSON.parse(cleanText);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Invalid extraction object');
+        for (const field of ['title', 'host', 'date', 'startTime', 'endTime', 'venue', 'category', 'summary']) {
+          if (typeof parsed[field] !== 'string') parsed[field] = null;
+        }
+        parsed.confidenceScore = typeof parsed.confidenceScore === 'number' ? Math.min(1, Math.max(0, parsed.confidenceScore)) : 0;
 
         if (parsed.category && !ALLOWED_CATEGORIES.includes(parsed.category)) {
           parsed.category = null;
@@ -87,6 +97,6 @@ export default async function handler(req: any, res: any) {
     throw lastError || new Error('All vision extraction models failed.');
   } catch (error: any) {
     console.error('Gemini error:', error);
-    res.status(500).json({ error: 'Gemini extraction failed.', details: error.message });
+    res.status(502).json({ error: 'Poster extraction is unavailable. You can enter the event details manually.' });
   }
 }

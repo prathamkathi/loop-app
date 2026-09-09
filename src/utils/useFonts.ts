@@ -1,12 +1,10 @@
-import { useFonts, Outfit_400Regular, Outfit_600SemiBold, Outfit_700Bold } from '@expo-google-fonts/outfit';
-import { Geist_400Regular, Geist_600SemiBold } from '@expo-google-fonts/geist';
+import { useFonts } from 'expo-font';
+import { Outfit_600SemiBold } from '@expo-google-fonts/outfit/600SemiBold';
+import { Geist_400Regular } from '@expo-google-fonts/geist/400Regular';
 
 export function useCustomFonts() {
   return useFonts({
-    Outfit_400Regular,
     Outfit_600SemiBold,
-    Outfit_700Bold,
     Geist_400Regular,
-    Geist_600SemiBold,
   });
 }

@@ -53,8 +53,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMode(mode === 'dark' ? 'light' : mode === 'light' ? 'dark' : 'light');
   }, [mode, setMode]);
 
-  const isDark =
-    mode === 'dark' || (mode === 'system' && systemScheme === 'dark');
+  const isDark = true;
 
   const colors = isDark ? darkColors : lightColors;
 

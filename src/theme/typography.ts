@@ -1,31 +1,31 @@
 /**
- * Loop Design System — Typography
+ * Loop Design System — Typography (Electric Campus)
  *
- * Display / Headline: Manrope (elegant, modern, editorial)
- * Body / Label / Data: DM Sans (clear, highly readable)
+ * Display / Headline: Space Grotesk (brutalist, loud, wide)
+ * Body / Label / Data: Inter (neutral, highly readable)
  */
 
 import { Platform, TextStyle } from 'react-native';
 
 const headingFamily = Platform.select({
-  web: 'Manrope_600SemiBold, sans-serif',
-  ios: 'Manrope_600SemiBold',
-  android: 'Manrope_600SemiBold',
-  default: 'Manrope_600SemiBold',
+  web: 'SpaceGrotesk_700Bold, sans-serif',
+  ios: 'SpaceGrotesk_700Bold',
+  android: 'SpaceGrotesk_700Bold',
+  default: 'SpaceGrotesk_700Bold',
 });
 
 const bodyFamily = Platform.select({
-  web: 'DMSans_400Regular, sans-serif',
-  ios: 'DMSans_400Regular',
-  android: 'DMSans_400Regular',
-  default: 'DMSans_400Regular',
+  web: 'Inter_400Regular, sans-serif',
+  ios: 'Inter_400Regular',
+  android: 'Inter_400Regular',
+  default: 'Inter_400Regular',
 });
 
 const labelFamily = Platform.select({
-  web: 'DMSans_500Medium, sans-serif',
-  ios: 'DMSans_500Medium',
-  android: 'DMSans_500Medium',
-  default: 'DMSans_500Medium',
+  web: 'Inter_600SemiBold, sans-serif',
+  ios: 'Inter_600SemiBold',
+  android: 'Inter_600SemiBold',
+  default: 'Inter_600SemiBold',
 });
 
 export const typography = {
@@ -33,29 +33,33 @@ export const typography = {
   displayXl: {
     fontFamily: headingFamily,
     fontSize: 52,
-    fontWeight: '600',
+    fontWeight: '700',
     letterSpacing: -1.8,
     lineHeight: 56,
+    textTransform: 'uppercase',
   } as TextStyle,
   displayLg: {
     fontFamily: headingFamily,
     fontSize: 38,
-    fontWeight: '600',
+    fontWeight: '700',
     letterSpacing: -1.2,
     lineHeight: 42,
+    textTransform: 'uppercase',
   } as TextStyle,
   displayMd: { // text-3xl font-semibold tracking-tight
     fontFamily: headingFamily,
     fontSize: 30,
-    fontWeight: '600',
+    fontWeight: '700',
     letterSpacing: -0.75,
     lineHeight: 36,
+    textTransform: 'uppercase',
   } as TextStyle,
   titleXl: { // text-2xl font-semibold leading-tight
     fontFamily: headingFamily,
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '700',
     lineHeight: 32,
+    textTransform: 'uppercase',
   } as TextStyle,
   titleLg: { // text-lg font-semibold tracking-tight leading-snug
     fontFamily: headingFamily,

@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, FlatList, ScrollView, Text, TextInput, StyleSheet, useWindowDimensions, ActivityIndicator, Pressable } from 'react-native';
+import { View, FlatList, ScrollView, Text, TextInput, StyleSheet, useWindowDimensions, ActivityIndicator, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MagnifyingGlass, X, BookmarkSimple, ArrowClockwise, SlidersHorizontal, ArrowRight } from 'phosphor-react-native';
 import { useTheme, typography, radii, spacing } from '../theme';
 import EventCard from '../components/EventCard';
-import PageHeader from '../components/PageHeader';
 import FilterPills from '../components/FilterPills';
 import type { EventItem } from '../data/events';
-import { CATEGORIES } from '../data/categories';
 import { filterEvents, isPastEvent, type DiscoveryView, type TimeHorizon } from '../utils/eventDiscovery';
 
 type Props = {
@@ -20,12 +18,14 @@ const HORIZONS: Array<{ id: TimeHorizon; label: string }> = [
   { id: 'all', label: 'Any date' }, { id: 'today', label: 'Today' },
   { id: 'weekend', label: 'This weekend' }, { id: 'week', label: 'Next 7 days' },
 ];
+
 export default function HomeScreen({ interests, saved, liveEvents, loading, error, onRefresh, onToggleSave, onOpenEvent, onEditInterests, onOpenAI }: Props) {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const contentWidth = width - (width >= 1024 ? 232 : 0);
-  const columns = contentWidth >= 1080 ? 3 : contentWidth >= 650 ? 2 : 1;
+  
+  // Immersive layouts use less horizontal margins, we'll keep grid padding inside items
+  const columns = width >= 1080 ? 3 : width >= 650 ? 2 : 1;
   const [view, setView] = useState<DiscoveryView>('upcoming');
   const [category, setCategory] = useState('all');
   const [horizon, setHorizon] = useState<TimeHorizon>('all');
@@ -33,114 +33,191 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
   const [personalized, setPersonalized] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [now, setNow] = useState(Date.now);
+  
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(timer); }, []);
+  
   const refresh = useCallback(async () => {
     setRefreshing(true);
     try { await onRefresh?.(); } finally { setRefreshing(false); }
   }, [onRefresh]);
+  
   const filtered = useMemo(() => filterEvents(liveEvents, { view, category, horizon, search, interests, saved, personalized, now }),
     [liveEvents, view, category, horizon, search, interests, saved, personalized, now]);
-  const upcomingCount = liveEvents.filter((event) => !isPastEvent(event, now)).length;
-  const featured = view === 'upcoming' && category === 'all' && horizon === 'all' && !search && !personalized
-    ? filtered.find((event) => event.featured) || filtered[0] : null;
-  const rest = featured ? filtered.filter((event) => event.id !== featured.id) : filtered;
+  
+  // For the hype engine, we grab top 3 events for spotlight
+  const isDefaultView = view === 'upcoming' && category === 'all' && horizon === 'all' && !search && !personalized;
+  const spotlightEvents = isDefaultView ? filtered.slice(0, 3) : [];
+  const rest = isDefaultView ? filtered.slice(3) : filtered;
+  
   const hasFilters = Boolean(search || category !== 'all' || horizon !== 'all' || personalized);
   const reset = () => { setSearch(''); setCategory('all'); setHorizon('all'); setPersonalized(false); };
   const changeView = (next: DiscoveryView) => { setView(next); reset(); };
-  const dateLabel = new Date(now).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' });
 
-  const header = <>
-    <PageHeader
-      sectionLabel="IIT DELHI / CAMPUS LIFE"
-      title={<>Find your next{'\n'}campus moment.</>}
-      subtitle={<>Talks, tournaments, late-night gigs.{'\n'}Make room for something beyond class.</>}
-      rightElement={
-        contentWidth >= 850 ? (
-          <View style={{ alignItems: 'flex-end', gap: spacing.sm - spacing.xs }}>
-            <Text style={[typography.labelMd, { color: colors.foreground }]}>{dateLabel}</Text>
-            <Text style={[typography.bodySm, { color: colors.muted }]}>{upcomingCount} upcoming · IIT Delhi</Text>
+  const header = (
+    <View style={{ marginBottom: spacing.xl }}>
+      {/* Immersive Spotlight Carousel */}
+      {spotlightEvents.length > 0 && (
+        <View style={{ marginBottom: spacing.xl }}>
+          <FlatList
+            data={spotlightEvents}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={e => e.id}
+            snapToInterval={width}
+            decelerationRate="fast"
+            renderItem={({ item }) => (
+              <View style={{ width, paddingHorizontal: spacing.marginMobile }}>
+                <EventCard 
+                  event={item} 
+                  saved={saved.has(item.id)} 
+                  onToggleSave={() => onToggleSave(item.id)} 
+                  onPress={() => onOpenEvent(item)} 
+                  featured 
+                />
+              </View>
+            )}
+          />
+          
+          {/* Brutalist Ticker Tape */}
+          <View style={[styles.tickerTape, { backgroundColor: colors.primary }]}>
+            <Text style={[styles.tickerText, { color: '#000' }]} numberOfLines={1}>
+              HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY · HAPPENING TODAY
+            </Text>
           </View>
-        ) : undefined
-      }
-      isDesktop={contentWidth >= 500}
-    />
-    <View style={[styles.tabs, { borderBottomColor: colors.border }]}>
-      {(['upcoming', 'saved', 'past'] as const).map((id) => <Pressable key={id} onPress={() => changeView(id)} accessibilityRole="tab" accessibilityState={{ selected: view === id }}
-        accessibilityLabel={id === 'upcoming' ? 'Discover events' : id === 'saved' ? 'Saved events' : 'Past events'}
-        style={[styles.tab, { borderBottomColor: view === id ? colors.primary : 'transparent' }]}>
-        {id === 'saved' && <BookmarkSimple size={17} color={view === id ? colors.primary : colors.muted} />}
-        <Text style={[typography.labelMd, { color: view === id ? colors.primary : colors.muted }]}>{id === 'upcoming' ? 'Discover' : id === 'saved' ? 'Saved' + (saved.size ? ' (' + saved.size + ')' : '') : 'Past events'}</Text>
-      </Pressable>)}
-    </View>
-    <View style={[styles.search, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <MagnifyingGlass size={21} color={colors.muted} />
-      <TextInput accessibilityLabel="Search events, clubs or venues" placeholder="Search events, clubs or venues" placeholderTextColor={colors.muted}
-        value={search} onChangeText={setSearch} returnKeyType="search" style={[styles.searchInput, { color: colors.foreground }]} />
-      {search !== '' && <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Clear search" style={styles.iconButton}><X size={20} color={colors.muted} /></Pressable>}
-    </View>
-    {view !== 'past' && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-      {HORIZONS.map((item) => <Pressable key={item.id} onPress={() => setHorizon(item.id)} accessibilityRole="button" accessibilityState={{ selected: horizon === item.id }}
-        style={[styles.chip, { backgroundColor: horizon === item.id ? colors.accent : colors.surface, borderColor: horizon === item.id ? colors.accent : colors.border }]}>
-        <Text style={[typography.labelSm, { color: horizon === item.id ? colors.onAccent : colors.foregroundSecondary }]}>{item.label}</Text>
-      </Pressable>)}
-    </ScrollView>}
-    <FilterPills selectedCategory={category === 'all' ? null : category} onSelectCategory={(c) => setCategory(c || 'all')} />
-    {error && <View accessibilityRole="alert" style={[styles.notice, { backgroundColor: colors.highlight }]}>
-      <Text style={[typography.bodySm, { color: colors.foregroundSecondary, flex: 1 }]}>{error}</Text>
-      <Pressable onPress={refresh} disabled={refreshing} accessibilityRole="button" accessibilityLabel="Retry loading events" style={styles.iconButton}><ArrowClockwise size={22} color={colors.primary} /></Pressable>
-    </View>}
-    {featured && <View style={styles.featured}>
-      <Text style={[styles.sectionLabel, { color: colors.muted }]}>{featured.featured ? 'IN THE SPOTLIGHT' : 'UP NEXT ON CAMPUS'}</Text>
-      <EventCard event={featured} saved={saved.has(featured.id)} onToggleSave={() => onToggleSave(featured.id)} onPress={() => onOpenEvent(featured)} featured />
-    </View>}
-    <View style={styles.resultsHeader}>
-      <View style={{ flex: 1 }}>
-        <Text accessibilityRole="header" style={[typography.titleXl, { color: colors.foreground }]}>{view === 'saved' ? 'Your saved plans' : view === 'past' ? 'Around campus, recently' : featured ? 'More to explore' : 'Explore campus'}</Text>
-        <Text accessibilityLiveRegion="polite" style={[typography.bodySm, { color: colors.muted, marginTop: 4 }]}>{loading ? 'Finding campus events…' : rest.length + (rest.length === 1 ? ' event' : ' events') + (hasFilters ? ' match your filters' : view === 'past' ? ' in the recent archive' : ' to discover')}</Text>
+        </View>
+      )}
+
+      <View style={{ paddingHorizontal: spacing.marginMobile }}>
+        <View style={[styles.tabs, { borderBottomColor: colors.border }]}>
+          {(['upcoming', 'saved', 'past'] as const).map((id) => (
+            <Pressable key={id} onPress={() => changeView(id)} accessibilityRole="tab" accessibilityState={{ selected: view === id }}
+              style={[styles.tab, { borderBottomColor: view === id ? colors.primary : 'transparent' }]}>
+              {id === 'saved' && <BookmarkSimple size={17} color={view === id ? colors.primary : colors.muted} />}
+              <Text style={[typography.labelMd, { color: view === id ? colors.primary : colors.muted, textTransform: 'uppercase' }]}>
+                {id === 'upcoming' ? 'Discover' : id === 'saved' ? 'Saved' + (saved.size ? ' (' + saved.size + ')' : '') : 'Past events'}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={[styles.search, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <MagnifyingGlass size={21} color={colors.muted} />
+          <TextInput accessibilityLabel="Search events" placeholder="Search events or clubs" placeholderTextColor={colors.muted}
+            value={search} onChangeText={setSearch} returnKeyType="search" style={[styles.searchInput, { color: colors.foreground }]} />
+          {search !== '' && <Pressable onPress={() => setSearch('')} accessibilityRole="button" style={styles.iconButton}><X size={20} color={colors.muted} /></Pressable>}
+        </View>
+
+        {view !== 'past' && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+            {HORIZONS.map((item) => (
+              <Pressable key={item.id} onPress={() => setHorizon(item.id)} accessibilityRole="button" accessibilityState={{ selected: horizon === item.id }}
+                style={[styles.chip, { backgroundColor: horizon === item.id ? colors.primary : colors.surface, borderColor: horizon === item.id ? colors.primary : colors.border }]}>
+                <Text style={[typography.labelSm, { color: horizon === item.id ? '#000' : colors.foregroundSecondary }]}>{item.label}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
+        
+        <FilterPills selectedCategory={category === 'all' ? null : category} onSelectCategory={(c) => setCategory(c || 'all')} />
+        
+        {error && (
+          <View accessibilityRole="alert" style={[styles.notice, { backgroundColor: colors.highlight }]}>
+            <Text style={[typography.bodySm, { color: colors.foregroundSecondary, flex: 1 }]}>{error}</Text>
+            <Pressable onPress={refresh} disabled={refreshing} accessibilityRole="button" style={styles.iconButton}><ArrowClockwise size={22} color={colors.primary} /></Pressable>
+          </View>
+        )}
+
+        <View style={styles.resultsHeader}>
+          <View style={{ flex: 1 }}>
+            <Text accessibilityRole="header" style={[typography.displayMd, { color: colors.foreground }]}>
+              {view === 'saved' ? 'YOUR SAVED' : view === 'past' ? 'ARCHIVE' : 'THE GRID'}
+            </Text>
+          </View>
+          <Pressable onPress={() => setPersonalized(!personalized)} accessibilityRole="checkbox" accessibilityState={{ checked: personalized }}
+            style={[styles.preferenceButton, { borderColor: personalized ? colors.primary : colors.border, backgroundColor: personalized ? colors.highlight : colors.surface }]}>
+            <SlidersHorizontal size={18} color={colors.primary} /><Text style={[typography.labelSm, { color: colors.primary }]}>FOR YOU</Text>
+          </Pressable>
+        </View>
+        
+        {personalized && (
+          <Pressable onPress={onEditInterests} accessibilityRole="button" style={styles.editInterests}>
+            <Text style={[typography.bodySm, { color: colors.primary }]}>Edit your interests</Text><ArrowRight size={16} color={colors.primary} />
+          </Pressable>
+        )}
       </View>
-      <Pressable onPress={() => setPersonalized(!personalized)} accessibilityRole="checkbox" accessibilityState={{ checked: personalized }} accessibilityLabel="Only show my interests"
-        style={[styles.preferenceButton, { borderColor: personalized ? colors.primary : colors.border, backgroundColor: personalized ? colors.highlight : colors.surface }]}>
-        <SlidersHorizontal size={18} color={colors.primary} /><Text style={[typography.labelSm, { color: colors.primary }]}>For you</Text>
-      </Pressable>
     </View>
-    {personalized && <Pressable onPress={onEditInterests} accessibilityRole="button" style={styles.editInterests}><Text style={[typography.bodySm, { color: colors.primary }]}>Edit your interests</Text><ArrowRight size={16} color={colors.primary} /></Pressable>}
-  </>;
-  return <FlatList key={columns} data={rest} numColumns={columns} keyExtractor={(event) => event.id} style={styles.list}
-    contentContainerStyle={[styles.content, { paddingHorizontal: contentWidth < 500 ? 20 : 32, paddingBottom: width < 1024 ? 108 + insets.bottom : 40 }]}
-    columnWrapperStyle={columns > 1 ? styles.gridRow : undefined} ListHeaderComponent={header}
-    renderItem={({ item }) => <View style={{ width: columns === 1 ? '100%' : ((100 - (columns - 1) * 2) / columns) + '%' as `${number}%`, marginBottom: 24 }}>
-      <EventCard event={item} saved={saved.has(item.id)} onToggleSave={() => onToggleSave(item.id)} onPress={() => onOpenEvent(item)} isPast={isPastEvent(item, now)} />
-    </View>}
-    refreshing={refreshing} onRefresh={onRefresh ? refresh : undefined} initialNumToRender={6} maxToRenderPerBatch={6} windowSize={5}
-    keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}
-    ListEmptyComponent={<View style={[styles.empty, { borderColor: colors.border }]}>
-      {loading ? <ActivityIndicator color={colors.primary} /> : <BookmarkSimple size={32} color={colors.primary} weight="duotone" />}
-      <Text style={[typography.titleLg, { color: colors.foreground, textAlign: 'center' }]}>{loading ? 'Loading campus events' : featured ? 'You’re all caught up.' : hasFilters ? 'No events match just yet.' : view === 'saved' ? 'Good plans deserve a bookmark.' : error ? 'Let’s reconnect.' : 'A quiet moment on campus.'}</Text>
-      <Text style={[styles.emptyText, { color: colors.muted }]}>{hasFilters ? 'Try another date or category, or clear your search.' : view === 'saved' ? 'Save an event to keep its poster, time and venue close at hand.' : 'Check back for the next round of events from IIT Delhi clubs.'}</Text>
-      {!loading && <Pressable onPress={hasFilters ? reset : view === 'saved' ? () => changeView('upcoming') : refresh} accessibilityRole="button" style={[styles.emptyAction, { backgroundColor: colors.primary }]}>
-        <Text style={[typography.labelMd, { color: colors.onPrimary }]}>{hasFilters ? 'Clear filters' : view === 'saved' ? 'Discover events' : 'Refresh events'}</Text>
-      </Pressable>}
-    </View>}
-    ListFooterComponent={<View style={[styles.footer, { borderTopColor: colors.border }]}>
-      <Text style={[typography.bodySm, { color: colors.muted }]}>Made for the moments between classes.</Text>
-      {onOpenAI && <Pressable onPress={onOpenAI} accessibilityRole="button" style={styles.editInterests}><Text style={[typography.labelMd, { color: colors.primary }]}>Need a hand? Ask Loop</Text><ArrowRight size={17} color={colors.primary} /></Pressable>}
-    </View>} />;
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <FlatList 
+        key={columns} 
+        data={rest} 
+        numColumns={columns} 
+        keyExtractor={(event) => event.id} 
+        style={{ flex: 1, width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 120 + insets.bottom, paddingTop: spacing.xl }}
+        columnWrapperStyle={columns > 1 ? { paddingHorizontal: spacing.marginMobile, gap: 16 } : undefined} 
+        ListHeaderComponent={header}
+        renderItem={({ item }) => (
+          <View style={{ width: columns === 1 ? '100%' : ((100 - (columns - 1) * 2) / columns) + '%' as `${number}%`, paddingHorizontal: columns === 1 ? spacing.marginMobile : 0 }}>
+            <EventCard event={item} saved={saved.has(item.id)} onToggleSave={() => onToggleSave(item.id)} onPress={() => onOpenEvent(item)} isPast={isPastEvent(item, now)} />
+          </View>
+        )}
+        refreshing={refreshing} onRefresh={onRefresh ? refresh : undefined} 
+        initialNumToRender={6} maxToRenderPerBatch={6} windowSize={5}
+        keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}
+        ListEmptyComponent={(
+          <View style={[styles.empty, { borderColor: colors.border, marginHorizontal: spacing.marginMobile }]}>
+            {loading ? <ActivityIndicator color={colors.primary} /> : <BookmarkSimple size={32} color={colors.primary} weight="bold" />}
+            <Text style={[typography.titleLg, { color: colors.foreground, textAlign: 'center' }]}>
+              {loading ? 'LOADING HYPE' : hasFilters ? 'NO MATCHES' : 'DEAD AIR'}
+            </Text>
+            {!loading && (
+              <Pressable onPress={hasFilters ? reset : refresh} style={[styles.emptyAction, { backgroundColor: colors.primary }]}>
+                <Text style={[typography.labelMd, { color: '#000' }]}>{hasFilters ? 'CLEAR FILTERS' : 'REFRESH'}</Text>
+              </Pressable>
+            )}
+          </View>
+        )}
+        ListFooterComponent={(
+          <View style={[styles.footer, { borderTopColor: colors.border, marginHorizontal: spacing.marginMobile }]}>
+            <Text style={[typography.bodySm, { color: colors.muted }]}>End of feed.</Text>
+          </View>
+        )} 
+      />
+    </View>
+  );
 }
+
 const styles = StyleSheet.create({
-  list: { flex: 1, width: '100%', alignSelf: 'center', maxWidth: 1240 },
-  content: { paddingTop: spacing.lg },
+  tickerTape: {
+    width: '100%',
+    paddingVertical: 10,
+    marginTop: spacing.sm,
+    transform: [{ rotate: '-1deg' }],
+  },
+  tickerText: {
+    ...typography.displayMd,
+    fontSize: 20,
+    lineHeight: 24,
+    letterSpacing: 2,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   tabs: { flexDirection: 'row', gap: spacing.lg, borderBottomWidth: 1, marginBottom: spacing.lg },
   tab: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: spacing.sm - 2, borderBottomWidth: 2 },
-  search: { minHeight: 56, borderWidth: 1, borderRadius: radii.lg, paddingLeft: 16, paddingRight: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  searchInput: { ...typography.bodyMd, flex: 1, minWidth: 0, height: 54 }, iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  chips: { gap: 8, paddingTop: 14 }, chip: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: radii.full, borderWidth: 1 },
-  categories: { gap: 8, paddingVertical: 12 }, category: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', borderBottomWidth: 1, borderRadius: radii.md },
+  search: { minHeight: 56, borderWidth: 1, borderRadius: radii.md, paddingLeft: 16, paddingRight: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  searchInput: { ...typography.bodyMd, flex: 1, minWidth: 0, height: 54 }, 
+  iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  chips: { gap: 8, paddingTop: 14 }, 
+  chip: { minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: radii.sm, borderWidth: 1 },
   notice: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, borderRadius: radii.md, marginBottom: 20 },
-  featured: { marginTop: 16, marginBottom: 36 }, sectionLabel: { ...typography.labelCaps, fontSize: 11, letterSpacing: 1.8, marginBottom: 14 },
-  resultsHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 16, marginBottom: 24 },
-  preferenceButton: { flexDirection: 'row', gap: 8, alignItems: 'center', paddingHorizontal: 12, minHeight: 44, borderWidth: 1, borderRadius: radii.md },
-  gridRow: { gap: '2%' }, editInterests: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
-  empty: { alignItems: 'center', paddingVertical: 40, paddingHorizontal: 20, borderWidth: 1, borderStyle: 'dashed', borderRadius: radii.lg, gap: 14, marginBottom: 24 },
-  emptyText: { ...typography.bodySm, textAlign: 'center', maxWidth: 380 }, emptyAction: { paddingHorizontal: 20, minHeight: 48, justifyContent: 'center', borderRadius: radii.full, marginTop: 6 },
-  footer: { borderTopWidth: 1, paddingVertical: 24, gap: 8 },
+  resultsHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: spacing.xl, marginBottom: spacing.md },
+  preferenceButton: { flexDirection: 'row', gap: 8, alignItems: 'center', paddingHorizontal: 12, minHeight: 44, borderWidth: 1, borderRadius: radii.sm },
+  editInterests: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginBottom: spacing.md },
+  empty: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 20, borderWidth: 2, borderStyle: 'solid', gap: 14, marginBottom: 24, borderRadius: 0 },
+  emptyAction: { paddingHorizontal: 20, minHeight: 48, justifyContent: 'center', marginTop: 12, borderRadius: 0 },
+  footer: { borderTopWidth: 1, paddingVertical: 24, gap: 8, marginTop: spacing.xl },
 });

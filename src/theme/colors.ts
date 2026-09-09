@@ -1,44 +1,39 @@
 /**
- * Loop Design System — Color Tokens
+ * Loop Design System — Color Tokens (Electric Campus)
  *
- * Light mode: Paper canvas, Ink text, Crimson primary, Olive accents
- * Dark mode: Obsidian canvas, desaturated Crimson tints, soft-white text
+ * Void Black canvas, Neon Lime primary, Electric Violet accents
+ * Dark mode everywhere.
  */
 
 export const palette = {
   // Brand
-  crimson: '#8A1538',
-  crimsonSoft: '#A8324F',
-  crimsonMuted: 'rgba(138, 21, 56, 0.7)',
+  neonLime: '#CCFF00',
+  neonLimeSoft: '#E6FF80',
+  neonLimeMuted: 'rgba(204, 255, 0, 0.2)',
 
   // Brand Accents
-  olive: '#64735a',
+  electricViolet: '#7000FF',
 
-  // Canvas & Ink
-  paper: '#faf9f6',
-  ink: '#302c2a',
+  // Canvas
+  voidBlack: '#050505',
+  voidSurface: '#121212',
+  voidElevated: '#1A1A1A',
   
   // Highlight
-  roseWater: '#FDECEF',
-  roseWaterDim: '#F8D7DC',
+  glass: 'rgba(255, 255, 255, 0.04)',
+  glassHover: 'rgba(255, 255, 255, 0.08)',
+  glassDim: 'rgba(255, 255, 255, 0.02)',
 
-  // Neutrals — Light
+  // Neutrals
   white: '#FFFFFF',
-  stone50: '#FAFAF9',
-  stone200: '#E7E5E4',
+  silver: '#888891',
   stone400: '#A8A29E',
   stone500: '#6D6661',
   stone700: '#44403C',
 
-  // Neutrals — Dark
-  obsidian: '#0A0A0C',
-  obsidianCard: '#161618',
-  obsidianElevated: '#1E1E20',
-  obsidianMuted: '#A1A1AA',
-
   // Semantic
-  error: '#BA1A1A',
-  errorContainer: '#FFD9DD',
+  error: '#FF3366',
+  errorContainer: 'rgba(255, 51, 102, 0.15)',
 
   // Transparent helpers
   transparent: 'transparent',
@@ -61,7 +56,7 @@ export type ThemeColors = {
   accentSoft: string;
   onAccent: string;
   
-  olive: string;
+  olive: string; // Deprecated but kept for type compatibility
 
   highlight: string;
   highlightDim: string;
@@ -83,80 +78,45 @@ export type ThemeColors = {
   whatsapp: string;
 };
 
-export const lightColors: ThemeColors = {
-  background: palette.paper,
-  surface: palette.white,
-  surfaceElevated: palette.white,
-  card: palette.white,
-  border: '#E0DDD8',
-  borderSubtle: '#EEEAE5',
+const electricTheme: ThemeColors = {
+  background: palette.voidBlack,
+  surface: palette.voidSurface,
+  surfaceElevated: palette.voidElevated,
+  card: palette.voidSurface,
+  border: 'rgba(255, 255, 255, 0.1)',
+  borderSubtle: 'rgba(255, 255, 255, 0.05)',
 
-  primary: palette.crimson,
-  primarySoft: palette.crimsonSoft,
-  primaryMuted: palette.crimsonMuted,
-  onPrimary: palette.white,
+  primary: palette.neonLime,
+  primarySoft: palette.neonLimeSoft,
+  primaryMuted: palette.neonLimeMuted,
+  onPrimary: '#000000', // Black text on lime
 
-  accent: palette.ink,
-  accentSoft: palette.stone700,
+  accent: palette.electricViolet,
+  accentSoft: '#8F33FF',
   onAccent: palette.white,
   
-  olive: palette.olive,
+  olive: '#CCFF00', // Override olive with lime for old components
 
-  highlight: palette.roseWater,
-  highlightDim: palette.roseWaterDim,
+  highlight: palette.glass,
+  highlightDim: palette.glassDim,
 
-  facilityBlue: 'rgba(2, 132, 199, 0.12)',
-  facilityGreen: 'rgba(16, 185, 129, 0.12)',
-  facilityCrimson: 'rgba(225, 29, 72, 0.15)',
-  surfaceHover: 'rgba(0,0,0,0.03)',
-  surfaceOverlay: 'rgba(0, 0, 0, 0.65)',
+  facilityBlue: 'rgba(56, 189, 248, 0.15)',
+  facilityGreen: 'rgba(204, 255, 0, 0.15)', // Neon lime tint
+  facilityCrimson: 'rgba(255, 51, 102, 0.15)', // Error tint
+  surfaceHover: palette.glassHover,
+  surfaceOverlay: 'rgba(0, 0, 0, 0.75)',
 
-  foreground: palette.ink,
-  foregroundSecondary: palette.stone700,
-  muted: palette.stone500,
+  foreground: palette.white,
+  foregroundSecondary: '#D1D1D6',
+  muted: palette.silver,
 
-  success: '#167447',
+  success: '#CCFF00',
   error: palette.error,
   errorContainer: palette.errorContainer,
   onError: palette.white,
-  whatsapp: '#25D366',
+  whatsapp: '#CCFF00',
 };
 
-export const darkColors: ThemeColors = {
-  background: '#131314',
-  surface: '#1D1D1F',
-  surfaceElevated: '#252527',
-  card: '#1D1D1F',
-  border: 'rgba(255, 255, 255, 0.09)',
-  borderSubtle: 'rgba(255, 255, 255, 0.05)',
-
-  primary: '#C94D6C',
-  primarySoft: '#FB7185',
-  primaryMuted: 'rgba(225, 29, 72, 0.45)',
-  onPrimary: palette.white,
-
-  accent: palette.white,
-  accentSoft: '#E2E8F0',
-  onAccent: palette.ink,
-  
-  olive: '#8b9c80', // Lighter olive for dark mode
-
-  highlight: 'rgba(225, 29, 72, 0.12)',
-  highlightDim: 'rgba(225, 29, 72, 0.20)',
-
-  facilityBlue: 'rgba(56, 189, 248, 0.18)',
-  facilityGreen: 'rgba(52, 211, 153, 0.16)',
-  facilityCrimson: 'rgba(225, 29, 72, 0.35)',
-  surfaceHover: 'rgba(255,255,255,0.05)',
-  surfaceOverlay: 'rgba(0, 0, 0, 0.65)',
-
-  foreground: '#FFFFFF',
-  foregroundSecondary: '#E2E8F0',
-  muted: '#94A3B8',
-
-  success: '#34D399',
-  error: '#F87171',
-  errorContainer: 'rgba(248, 113, 113, 0.14)',
-  onError: '#FFFFFF',
-  whatsapp: '#25D366',
-};
+// Force dark mode everywhere
+export const lightColors: ThemeColors = electricTheme;
+export const darkColors: ThemeColors = electricTheme;

@@ -1,13 +1,26 @@
-import { useFonts } from 'expo-font';
-import { Manrope_600SemiBold, Manrope_700Bold } from '@expo-google-fonts/manrope';
-import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { 
+  useFonts as useExpoFonts, 
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold 
+} from '@expo-google-fonts/inter';
+import { 
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+  SpaceGrotesk_700Bold 
+} from '@expo-google-fonts/space-grotesk';
 
 export function useCustomFonts() {
-  return useFonts({
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_700Bold,
+  return useExpoFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    SpaceGrotesk_400Regular,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
   });
 }

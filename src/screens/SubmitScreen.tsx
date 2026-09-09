@@ -375,537 +375,165 @@ export default function SubmitScreen(props: Props) {
   }
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-      <View style={[styles.mainLayout, isDesktop && styles.desktopLayout]}>
-        {/* Left Column: Form Section */}
-        <View style={[styles.formColumn, isDesktop && styles.desktopFormColumn]}>
-          <PageHeader
-            sectionLabel="CREATOR PORTAL"
-            title="Create Event"
-            subtitle="Share the details. Help your next audience find you."
-            isDesktop={isDesktop}
-          />
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* Story Creator Background (Active when image uploaded) */}
+      {imageUri && (
+        <View style={StyleSheet.absoluteFill}>
+          <Image source={{ uri: imageUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <BlurView intensity={70} tint="dark" style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.4)' }]} />
+        </View>
+      )}
 
-          {/* Upload Area */}
-          <Pressable
-            onPress={handlePickImage}
-            disabled={isAnalyzing}
-            accessibilityRole="button"
-            accessibilityLabel="Upload cover poster"
-            style={({ pressed }) => [
-              styles.upload,
-              {
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : colors.border,
-                backgroundColor: isDark ? colors.surface : 'rgba(138, 21, 56, 0.02)',
-                opacity: isAnalyzing ? 0.6 : 1,
-              },
-              Platform.OS === 'web' && ({
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }),
-              pressed && { transform: [{ scale: 0.99 }] },
-            ]}
-          >
-            {imageUri ? (
-              <View style={{ flex: 1, width: '100%', height: '100%' }}>
-                <Image source={{ uri: imageUri }} style={[StyleSheet.absoluteFill, { borderRadius: radii.xl }]} />
-                <Pressable
-                  onPress={() => {
-                    setImageUri(null);
-                    setImageBase64(null);
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel="Remove uploaded poster"
-                  style={({ pressed }) => [
-                    {
-                      position: 'absolute',
-                      top: 12,
-                      right: 12,
-                      width: 32,
-                      height: 32,
-                      borderRadius: 16,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    },
-                    pressed && { opacity: 0.7 },
-                    Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                  ]}
-                >
-                  <Text style={{ color: 'white', fontWeight: 'bold' }}>✕</Text>
-                </Pressable>
-              </View>
-            ) : (
-              <View style={styles.uploadInner}>
-                <View style={[styles.uploadIconCircle, { backgroundColor: colors.highlight }]}>
-                  <ImageSquare size={32} color={colors.primary} weight="regular" />
-                </View>
-                <Text style={[styles.uploadText, { color: colors.foreground }]}>
-                  Tap or click to upload cover poster
-                </Text>
-                <Text style={[styles.uploadHint, { color: colors.muted }]}>
-                  High-res vertical image recommended (4:5)
-                </Text>
-              </View>
-            )}
-          </Pressable>
-
-          {/* Form Fields */}
-          <View style={styles.formFields}>
-            <FloatingField label="Event Name" value={title} onChangeText={setTitle} />
-            <Text style={[typography.labelMd, { color: colors.foreground }]}>Category</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {CANONICAL_CATEGORIES.map((category) => <Pressable key={category} onPress={() => setGeminiCategory(category)} accessibilityRole="radio" accessibilityState={{ selected: geminiCategory === category }}
-                style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radii.md, borderWidth: 1, borderColor: geminiCategory === category ? colors.primary : colors.border, backgroundColor: geminiCategory === category ? colors.highlight : colors.surface }}>
-                <Text style={[typography.labelSm, { color: geminiCategory === category ? colors.primary : colors.foreground }]}>{category}</Text>
-              </Pressable>)}
-            </View>
-            <View style={styles.row}>
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }}>
-                  <View style={{ flex: 1 }}>
-                    <FloatingField label="Date (e.g. 15 Oct)" value={date} onChangeText={setDate} />
-                  </View>
-                  <Pressable
-                    onPress={openDatePicker}
-                    style={({ pressed }) => [
-                      styles.pickerBtn,
-                      { borderColor: colors.border, backgroundColor: colors.surface },
-                      pressed && { opacity: 0.7 },
-                    ]}
-                    accessibilityLabel="Pick date from calendar"
-                    accessibilityRole="button"
-                  >
-                    <CalendarBlank size={18} color={colors.primary} weight="bold" />
-                  </Pressable>
-                </View>
-                {showDatePicker && Platform.OS !== 'web' && (
-                  <DateTimePicker
-                    value={new Date()}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={handleDateChange}
-                  />
-                )}
-              </View>
-
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }}>
-                  <View style={{ flex: 1 }}>
-                    <FloatingField label="Time (e.g. 6:30 PM)" value={time} onChangeText={setTime} />
-                  </View>
-                  <Pressable
-                    onPress={openTimePicker}
-                    style={({ pressed }) => [
-                      styles.pickerBtn,
-                      { borderColor: colors.border, backgroundColor: colors.surface },
-                      pressed && { opacity: 0.7 },
-                    ]}
-                    accessibilityLabel="Pick time"
-                    accessibilityRole="button"
-                  >
-                    <Clock size={18} color={colors.primary} weight="bold" />
-                  </Pressable>
-                </View>
-                {showTimePicker && Platform.OS !== 'web' && (
-                  <DateTimePicker
-                    value={new Date()}
-                    mode="time"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={handleTimeChange}
-                  />
-                )}
-              </View>
-            </View>
-            <FloatingField label="Venue Location" value={venue} onChangeText={setVenue} />
-            <View style={styles.aiCopyRow}>
-              <Text style={[styles.fieldSectionLabel, { color: colors.muted }]}>Description & Copywriting</Text>
-              <Pressable
-                onPress={handleAIPolish}
-                disabled={isPolishing || (!title && !desc)}
-                accessibilityRole="button"
-                accessibilityLabel={isPolishing ? 'Polishing copywriting with AI' : 'AI Polish Copy'}
-                style={({ pressed }) => [
-                  styles.aiPolishBtn,
-                  { backgroundColor: colors.highlight, borderColor: colors.border },
-                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                  pressed && { transform: [{ scale: 0.95 }] },
-                ]}
-              >
-                <Sparkle size={14} color={colors.primary} weight="fill" />
-                <Text style={[styles.aiPolishBtnText, { color: colors.primary }]}>
-                  {isPolishing ? 'Polishing...' : '✨ AI Polish Copy'}
-                </Text>
-              </Pressable>
-            </View>
-            <FloatingField label="Brief Description" value={desc} onChangeText={setDesc} multiline />
-          </View>
-
-          {/* Submit Action */}
-          <View style={[styles.submitRow, { borderTopColor: colors.border }]}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={[styles.mainLayout, isDesktop && styles.desktopLayout]}>
+          {/* Left Column: Form Section */}
+          <View style={[styles.formColumn, isDesktop && styles.desktopFormColumn]}>
+            <Text style={[styles.heading, { color: colors.foreground }]}>CREATE EVENT</Text>
+            
+            {/* Upload Area (Glassmorphic if background active) */}
             <Pressable
-              onPress={handleSubmit}
-              disabled={isAnalyzing || isSubmitting}
+              onPress={handlePickImage}
+              disabled={isAnalyzing}
               accessibilityRole="button"
-              accessibilityLabel={isSubmitting ? 'Creating event' : 'Create Event'}
               style={({ pressed }) => [
-                styles.submitBtn,
+                styles.upload,
                 {
-                  backgroundColor: colors.primary,
-                  opacity: isAnalyzing || isSubmitting ? 0.6 : 1,
+                  borderColor: imageUri ? 'rgba(255,255,255,0.2)' : colors.border,
+                  backgroundColor: imageUri ? 'rgba(0,0,0,0.3)' : colors.surface,
                 },
-                Platform.OS === 'web' && ({
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 14px rgba(138, 21, 56, 0.2)',
-                }),
-                pressed && { transform: [{ scale: 0.97 }] },
+                pressed && { transform: [{ scale: 0.99 }] },
               ]}
             >
-              {isSubmitting ? (
-                <ActivityIndicator size="small" color={colors.onPrimary} />
+              {imageUri ? (
+                <View style={{ flex: 1, width: '100%', height: '100%' }}>
+                  <Image source={{ uri: imageUri }} style={[StyleSheet.absoluteFill, { borderRadius: radii.xl }]} />
+                  <Pressable onPress={() => { setImageUri(null); setImageBase64(null); }} style={styles.removeUploadBtn}>
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>✕</Text>
+                  </Pressable>
+                </View>
               ) : (
-                <Text style={[styles.submitText, { color: colors.onPrimary }]}>Create Event</Text>
+                <View style={styles.uploadInner}>
+                  <View style={[styles.uploadIconCircle, { backgroundColor: colors.primary }]}>
+                    <ImageSquare size={32} color="#000" weight="bold" />
+                  </View>
+                  <Text style={[typography.labelMd, { color: colors.foreground }]}>UPLOAD FLYER</Text>
+                </View>
+              )}
+            </Pressable>
+
+            {/* Form Fields - Glassmorphic Panels */}
+            <View style={styles.formFields}>
+              <View style={[styles.glassInputContainer, imageUri && styles.glassActive]}>
+                <FloatingField label="EVENT NAME" value={title} onChangeText={setTitle} />
+              </View>
+              
+              <Text style={[typography.labelMd, { color: colors.foreground, marginTop: 12 }]}>CATEGORY</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {CANONICAL_CATEGORIES.map((cat) => (
+                  <Pressable key={cat} onPress={() => setGeminiCategory(cat)}
+                    style={[styles.glassChip, imageUri && styles.glassActive, geminiCategory === cat && { borderColor: colors.primary }]}>
+                    <Text style={[typography.labelSm, { color: geminiCategory === cat ? colors.primary : colors.foreground }]}>{cat}</Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <View style={styles.row}>
+                <View style={[styles.glassInputContainer, imageUri && styles.glassActive, { flex: 1 }]}>
+                  <FloatingField label="DATE" value={date} onChangeText={setDate} />
+                </View>
+                <View style={[styles.glassInputContainer, imageUri && styles.glassActive, { flex: 1 }]}>
+                  <FloatingField label="TIME" value={time} onChangeText={setTime} />
+                </View>
+              </View>
+
+              <View style={[styles.glassInputContainer, imageUri && styles.glassActive]}>
+                <FloatingField label="VENUE" value={venue} onChangeText={setVenue} />
+              </View>
+
+              <View style={styles.aiCopyRow}>
+                <Text style={[typography.labelMd, { color: colors.foreground }]}>COPYWRITING</Text>
+                <Pressable onPress={handleAIPolish} disabled={isPolishing || (!title && !desc)}
+                  style={({ pressed }) => [
+                    styles.aiPolishBtn,
+                    { borderColor: colors.accent, backgroundColor: isPolishing ? colors.accent : 'transparent' },
+                    pressed && { transform: [{ scale: 0.95 }] },
+                  ]}>
+                  <Sparkle size={14} color={isPolishing ? '#FFF' : colors.accent} weight="fill" />
+                  <Text style={[typography.labelSm, { color: isPolishing ? '#FFF' : colors.accent, fontWeight: 'bold' }]}>
+                    {isPolishing ? 'POLISHING...' : 'AI POLISH'}
+                  </Text>
+                </Pressable>
+              </View>
+              
+              <View style={[styles.glassInputContainer, imageUri && styles.glassActive]}>
+                <FloatingField label="DESCRIPTION" value={desc} onChangeText={setDesc} multiline />
+              </View>
+            </View>
+
+            <Pressable onPress={handleSubmit} disabled={isAnalyzing || isSubmitting}
+              style={({ pressed }) => [
+                styles.submitBtn,
+                { backgroundColor: colors.primary, opacity: isAnalyzing || isSubmitting ? 0.6 : 1 },
+                pressed && { transform: [{ scale: 0.97 }] },
+              ]}>
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color="#000" />
+              ) : (
+                <Text style={[typography.titleMd, { color: '#000', fontWeight: '800' }]}>SUBMIT EVENT</Text>
               )}
             </Pressable>
           </View>
-        </View>
 
-        {/* Right Column: Sticky Live Preview */}
-        <View style={[styles.previewColumn, isDesktop && styles.desktopPreviewColumn]}>
-          <SectionLabel>Live Preview</SectionLabel>
-          <Text style={[styles.previewHeading, { color: colors.foreground }]}>Preview Card</Text>
-
-          <View
-            style={[
-              styles.previewCard,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-              shadows.card,
-            ]}
-          >
-            <View style={[styles.previewImage, { backgroundColor: colors.accent }]}>
-              {imageUri ? (
-                <Image source={{ uri: imageUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-              ) : (
-                <View style={[styles.placeholderArt, { backgroundColor: isDark ? colors.accent : '#F7EBF0' }]}>
-                  <ImageSquare size={32} color={colors.primary} weight="duotone" />
-                  <Text style={[styles.placeholderText, { color: colors.primary }]}>Image Preview</Text>
-                </View>
-              )}
-              <View style={styles.previewGradient} />
-
-              {/* Status Badge */}
-              <View style={[styles.draftBadge, { backgroundColor: isDark ? 'rgba(24, 24, 27, 0.85)' : 'rgba(255, 255, 255, 0.85)' }]}>
-                <View style={[styles.draftDot, { backgroundColor: colors.primary }]} />
-                <Text style={[styles.draftText, { color: colors.foreground }]}>Draft</Text>
-              </View>
-
-              {/* Date Badge */}
-              <View style={[styles.dateBadge, { backgroundColor: isDark ? 'rgba(24, 24, 27, 0.9)' : '#FFFFFF' }]}>
-                <Text style={[styles.monthText, { color: colors.primary }]}>{formattedMonth}</Text>
-                <Text style={[styles.dayNum, { color: colors.foreground }]}>{formattedDay}</Text>
-              </View>
-
-              {/* Analyzing Overlay */}
-              {isAnalyzing && (
-                <BlurView intensity={50} tint={isDark ? 'dark' : 'light'} style={styles.analyzingOverlay}>
-                  <ActivityIndicator size="large" color={colors.primary} />
-                  <View style={[styles.analyzingBadge, { backgroundColor: isDark ? 'rgba(24,24,27,0.9)' : 'rgba(255,255,255,0.9)' }]}>
-                    <Sparkle size={16} color={colors.primary} weight="fill" />
-                    <Text style={[styles.analyzingText, { color: colors.foreground }]}>
-                      Gemini Vision extracting details...
-                    </Text>
-                  </View>
-                </BlurView>
-              )}
-            </View>
-
-            <View style={styles.previewContent}>
-              <Text style={[styles.previewTitle, { color: colors.foreground }]} numberOfLines={2}>
-                {title || 'Untitled Event'}
-              </Text>
-
-              <View style={styles.previewRow}>
-                <Clock size={16} color={colors.primary} weight="regular" />
-                <Text style={[styles.previewText, { color: colors.muted }]}>
-                  {time || 'Select Time'}
-                </Text>
-              </View>
-
-              <View style={styles.previewRow}>
-                <MapPin size={16} color={colors.primary} weight="regular" />
-                <Text style={[styles.previewText, { color: colors.muted }]} numberOfLines={1}>
-                  {venue || 'TBD Location'}
-                </Text>
-              </View>
-
-              <Text style={[styles.previewDesc, { color: colors.muted }]} numberOfLines={3}>
-                {desc || 'Add a brief description to see how it will appear on the student feed.'}
-              </Text>
-            </View>
+          {/* Right Column Preview remains largely the same, but adapted for dark mode */}
+          <View style={[styles.previewColumn, isDesktop && styles.desktopPreviewColumn]}>
+             <Text style={[typography.labelMd, { color: colors.muted, marginBottom: spacing.md }]}>PREVIEW</Text>
+             {/* Simple visual proxy for the card since EventCard logic is complex */}
+             <View style={[styles.previewCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+               <View style={{ height: 280, backgroundColor: colors.highlight }}>
+                 {imageUri ? <Image source={{ uri: imageUri }} style={StyleSheet.absoluteFill} /> : <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: colors.primary }}>No image</Text></View>}
+                 {isAnalyzing && (
+                   <BlurView intensity={50} tint="dark" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
+                     <ActivityIndicator size="large" color={colors.primary} />
+                   </BlurView>
+                 )}
+               </View>
+               <View style={{ padding: spacing.md }}>
+                 <Text style={[typography.titleXl, { color: colors.foreground, textTransform: 'uppercase' }]}>{title || 'UNTITLED EVENT'}</Text>
+                 <Text style={[typography.bodySm, { color: colors.muted, marginTop: 8 }]}>{date || 'Date'} • {time || 'Time'}</Text>
+                 <Text style={[typography.bodySm, { color: colors.muted }]}>{venue || 'Venue'}</Text>
+               </View>
+             </View>
           </View>
+
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gateContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    padding: 32,
-  },
-  gateTitle: {
-    ...typography.titleLg,
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  gateBody: {
-    ...typography.bodySm,
-    textAlign: 'center',
-    maxWidth: 340,
-    lineHeight: 20,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.marginMobile,
-    paddingTop: spacing.md,
-    paddingBottom: 120,
-  },
-  mainLayout: {
-    flexDirection: 'column',
-    gap: spacing.xl,
-  },
-  desktopLayout: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.xl,
-  },
-  formColumn: {
-    flex: 1,
-  },
-  desktopFormColumn: {
-    flex: 1.1,
-    maxWidth: 640,
-  },
-  previewColumn: {
-    width: '100%',
-  },
-  desktopPreviewColumn: {
-    flex: 0.9,
-    maxWidth: 420,
-    position: 'sticky' as any,
-    top: spacing.lg,
-  },
-  previewHeading: {
-    ...typography.titleLg,
-    marginBottom: spacing.md,
-  },
-  upload: {
-    minHeight: 180,
-    borderRadius: radii.xl,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-    marginTop: spacing.lg,
-    overflow: 'hidden',
-    position: 'relative',
-    padding: spacing.marginMobile,
-  },
-  uploadInner: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  uploadIconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  uploadText: {
-    ...typography.labelMd,
-    fontSize: 15,
-  },
-  uploadHint: {
-    ...typography.bodyXs,
-  },
-  formFields: {
-    gap: spacing.md + 2,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: spacing.sm + 6,
-  },
-  // Preview Card
-  previewCard: {
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  previewImage: {
-    height: 220,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderArt: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  placeholderText: {
-    ...typography.labelSm,
-    fontWeight: '500',
-  },
-  previewGradient: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  },
-  draftBadge: {
-    position: 'absolute',
-    top: 14,
-    right: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-  },
-  draftDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
-  draftText: {
-    ...typography.labelCaps,
-    fontSize: 11,
-    letterSpacing: 1,
-  },
-  dateBadge: {
-    position: 'absolute',
-    bottom: 14,
-    left: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radii.md,
-    alignItems: 'center',
-    minWidth: 50,
-  },
-  monthText: {
-    ...typography.labelCaps,
-    fontSize: 10,
-  },
-  dayNum: {
-    ...typography.displayMd,
-    fontSize: 22,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
-  previewContent: {
-    padding: 20,
-    gap: 10,
-  },
-  previewTitle: {
-    ...typography.titleLg,
-  },
-  previewRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  previewText: {
-    ...typography.bodySm,
-  },
-  previewDesc: {
-    ...typography.bodySm,
-    marginTop: 4,
-    lineHeight: 20,
-  },
-  aiCopyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginBottom: 4,
-  },
-  fieldSectionLabel: {
-    ...typography.labelSm,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  aiPolishBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  pickerBtn: {
-    height: 48,
-    width: 44,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  aiPolishBtnText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  submitRow: {
-    borderTopWidth: 1,
-    paddingTop: 24,
-    marginTop: 28,
-    alignItems: 'flex-end',
-  },
-  submitBtn: {
-    paddingHorizontal: 32,
-    paddingVertical: 15,
-    borderRadius: radii.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitText: {
-    ...typography.labelMd,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  analyzingOverlay: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    ...(Platform.OS === 'web'
-      ? ({
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-        })
-      : {}),
-  },
-  analyzingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: radii.full,
-  },
-  analyzingText: {
-    ...typography.labelMd,
-    fontSize: 13,
-  },
+  gateContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32 },
+  gateTitle: { ...typography.titleLg, fontSize: 20, textAlign: 'center' },
+  gateBody: { ...typography.bodySm, textAlign: 'center', maxWidth: 340, lineHeight: 20 },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: spacing.marginMobile, paddingTop: spacing.xl, paddingBottom: 120 },
+  mainLayout: { flexDirection: 'column', gap: spacing.xl },
+  desktopLayout: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xl },
+  formColumn: { flex: 1 }, desktopFormColumn: { flex: 1.1, maxWidth: 640 },
+  previewColumn: { width: '100%' }, desktopPreviewColumn: { flex: 0.9, maxWidth: 420, position: 'sticky' as any, top: spacing.lg },
+  heading: { ...typography.displayMd, marginBottom: spacing.lg },
+  upload: { minHeight: 220, borderRadius: radii.xl, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg, overflow: 'hidden' },
+  uploadInner: { alignItems: 'center', gap: 12 },
+  uploadIconCircle: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center' },
+  removeUploadBtn: { position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  formFields: { gap: spacing.md },
+  row: { flexDirection: 'row', gap: spacing.sm },
+  glassInputContainer: { borderRadius: radii.lg, overflow: 'hidden', backgroundColor: 'transparent' },
+  glassActive: { backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  glassChip: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radii.md, borderWidth: 1, borderColor: 'transparent', backgroundColor: 'rgba(255,255,255,0.05)' },
+  aiCopyRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },
+  aiPolishBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderRadius: radii.full, paddingHorizontal: 12, paddingVertical: 6 },
+  submitBtn: { minHeight: 56, borderRadius: radii.full, justifyContent: 'center', alignItems: 'center', marginTop: spacing.xl },
+  previewCard: { borderRadius: radii.xl, borderWidth: 1, overflow: 'hidden' },
 });

@@ -1,507 +1,129 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Pressable,
-  TextInput,
-  StyleSheet,
-  Animated,
-  Easing,
-  Platform,
-  useWindowDimensions,
-  Linking,
+  View, Text, Image, ScrollView, Pressable, TextInput, StyleSheet, Animated, Easing, Platform, useWindowDimensions, Linking,
 } from 'react-native';
 import {
-  ArrowRight,
-  ArrowUpRight,
-  ShieldCheck,
-  FirstAid,
-  Heartbeat,
-  BookOpen,
-  Cpu,
-  Trophy,
-  Buildings,
-  MapPin,
-  PhoneCall,
-  MagnifyingGlass,
-  X,
-  InstagramLogo,
-  Sparkle,
+  ArrowRight, ArrowUpRight, FirstAid, Heartbeat, BookOpen, Trophy, Buildings, MapPin, PhoneCall, MagnifyingGlass, X, InstagramLogo, ShieldCheck
 } from 'phosphor-react-native';
 import { useTheme, typography, radii, shadows, spacing } from '../theme';
-import PageHeader from '../components/PageHeader';
-import SectionLabel from '../components/SectionLabel';
 import { DIRECTORY, type DirectoryItem } from '../data/directory';
 import { CLUBS, type ClubItem } from '../data/clubs';
 import { openExternalLink, openInstagram } from '../utils/linking';
 
+const BOARD_TABS = ['All', 'BRCA', 'CAIC', 'BSA', 'BSW', 'BSP', 'NSS', 'Independent'];
+const BOARD_COLORS: Record<string, string> = {
+  BRCA: '#E11D48', CAIC: '#2563EB', BSA: '#059669', BSW: '#D97706', BSP: '#7C3AED', NSS: '#0D9488', Independent: '#64748B', Official: '#475569',
+};
+
 function AnimatedWrapper({ index, children }: { index: number; children: React.ReactNode }) {
   const riseAnim = React.useRef(new Animated.Value(0)).current;
-
   React.useEffect(() => {
     Animated.timing(riseAnim, {
-      toValue: 1,
-      duration: 450,
-      delay: Math.min(index * 30, 250),
-      easing: Easing.bezier(0.22, 1, 0.36, 1),
-      useNativeDriver: true,
+      toValue: 1, duration: 450, delay: Math.min(index * 30, 250),
+      easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true,
     }).start();
   }, [index, riseAnim]);
-
-  const translateY = riseAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [14, 0],
-  });
-
-  return (
-    <Animated.View style={{ opacity: riseAnim, transform: [{ translateY }] }}>
-      {children}
-    </Animated.View>
-  );
+  const translateY = riseAnim.interpolate({ inputRange: [0, 1], outputRange: [14, 0] });
+  return <Animated.View style={{ opacity: riseAnim, transform: [{ translateY }] }}>{children}</Animated.View>;
 }
-
-const FACILITY_CATEGORIES = [
-  'All',
-  'Emergency',
-  'Academic',
-  'Wellness',
-  'Sports',
-  'Hostels',
-  'Transit',
-] as const;
-
-const BOARD_TABS = [
-  'All',
-  'BRCA',
-  'CAIC',
-  'BSA',
-  'BSW',
-  'BSP',
-  'NSS',
-  'Independent',
-];
-
-const BOARD_COLORS: Record<string, string> = {
-  BRCA: '#E11D48',
-  CAIC: '#2563EB',
-  BSA: '#059669',
-  BSW: '#D97706',
-  BSP: '#7C3AED',
-  NSS: '#0D9488',
-  Independent: '#64748B',
-  Official: '#475569',
-};
-
-const getFacilityIcon = (category: string, tone: string, isDark: boolean) => {
-  const color = tone === 'crimson' ? '#E11D48' : isDark ? '#38BDF8' : '#0284C7';
-  const size = 20;
-  const weight = 'duotone' as const;
-
-  switch (category) {
-    case 'Emergency':
-      return <FirstAid size={size} color="#E11D48" weight={weight} />;
-    case 'Wellness':
-      return <Heartbeat size={size} color={isDark ? '#34D399' : '#059669'} weight={weight} />;
-    case 'Academic':
-      return <BookOpen size={size} color={color} weight={weight} />;
-    case 'Sports':
-      return <Trophy size={size} color={isDark ? '#FBBF24' : '#D97706'} weight={weight} />;
-    case 'Hostels':
-      return <Buildings size={size} color={color} weight={weight} />;
-    case 'Transit':
-      return <MapPin size={size} color={color} weight={weight} />;
-    default:
-      return <ShieldCheck size={size} color={color} weight={weight} />;
-  }
-};
 
 export default function DirectoryScreen() {
   const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
 
-  const [activeFacilityCat, setActiveFacilityCat] = useState<string>('All');
   const [activeBoard, setActiveBoard] = useState<string>('All');
   const [clubSearch, setClubSearch] = useState<string>('');
 
-  // Filter Facilities
-  const filteredFacilities = useMemo(() => {
-    if (activeFacilityCat === 'All') return DIRECTORY;
-    return DIRECTORY.filter((d) => d.category === activeFacilityCat);
-  }, [activeFacilityCat]);
-
-  // Filter Clubs by Board & Search
   const filteredClubs = useMemo(() => {
     let list: ClubItem[] = CLUBS;
-    if (activeBoard !== 'All') {
-      list = list.filter((c) => c.parentTag === activeBoard);
-    }
+    if (activeBoard !== 'All') list = list.filter((c) => c.parentTag === activeBoard);
     if (clubSearch.trim()) {
       const q = clubSearch.toLowerCase().trim();
-      list = list.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.handle.toLowerCase().includes(q) ||
-          (c.description && c.description.toLowerCase().includes(q)) ||
-          c.parentTag.toLowerCase().includes(q)
-      );
+      list = list.filter(c => c.name.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q) || (c.description && c.description.toLowerCase().includes(q)) || c.parentTag.toLowerCase().includes(q));
     }
     return list;
   }, [activeBoard, clubSearch]);
 
+  const emergencyContacts = DIRECTORY.filter(d => d.category === 'Emergency');
+  const otherFacilities = DIRECTORY.filter(d => d.category !== 'Emergency');
+
   return (
-    <ScrollView
-      style={[
-        styles.scroll,
-        Platform.OS === 'web' && ({ maxWidth: 1280, width: '100%', alignSelf: 'center' } as any),
-      ]}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      <PageHeader
-        sectionLabel="CAMPUS DIRECTORY"
-        title="IIT Delhi Essentials"
-        subtitle="Quick access to 24×7 emergency numbers, hospital care, student wellness, libraries, sports facilities, and 40+ student organizations."
-        isDesktop={isDesktop}
-      />
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <Text style={[typography.displayXl, { color: colors.foreground, textTransform: 'uppercase', marginBottom: spacing.md }]}>
+        DIRECTORY
+      </Text>
+      
+      {/* Docked Emergency Pills */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.lg }}>
+        {emergencyContacts.map((em) => (
+          <Pressable 
+            key={em.id} 
+            onPress={() => em.phone ? Linking.openURL(`tel:${em.phone.replace(/[^0-9]/g, '')}`) : openExternalLink(em.url)}
+            style={({ pressed }) => [
+              styles.emergencyPill, 
+              { backgroundColor: '#FF3366' },
+              pressed && { transform: [{ scale: 0.95 }] },
+              Platform.OS === 'web' && ({ cursor: 'pointer' } as any)
+            ]}
+          >
+            <FirstAid size={16} color="#FFF" weight="bold" />
+            <Text style={[typography.labelLg, { color: '#FFF', fontWeight: '800' }]}>{em.name.toUpperCase()}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
-      {/* Facilities Category Pills */}
-      <View style={styles.catPillSection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catPillScroll}>
-          {FACILITY_CATEGORIES.map((cat) => {
-            const isSelected = activeFacilityCat === cat;
-            return (
-              <Pressable
-                key={cat}
-                onPress={() => setActiveFacilityCat(cat)}
-                accessibilityRole="button"
-                accessibilityLabel={`Filter facilities by ${cat}`}
-                style={({ pressed }) => [
-                  styles.catPill,
-                  {
-                    backgroundColor: isSelected ? colors.primary : colors.surface,
-                    borderColor: isSelected ? colors.primary : colors.border,
-                    transform: [{ scale: pressed ? 0.96 : 1 }],
-                  },
-                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.catPillText,
-                    {
-                      color: isSelected ? colors.onPrimary : colors.muted,
-                      fontWeight: isSelected ? '700' : '500',
-                    },
-                  ]}
-                >
-                  {cat}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Facilities Grid */}
-      <View style={[styles.grid, isDesktop && styles.gridDesktop]}>
-        {filteredFacilities.map((d, index) => {
-          const isMap = d.span === 'map';
-          const isEmergency = d.category === 'Emergency';
-
-          if (isMap) {
-            return (
-              <View key={d.id} style={isDesktop ? styles.gridItemWide : styles.gridItemFull}>
-                <AnimatedWrapper index={index}>
-                  <Pressable
-                    onPress={() => openExternalLink(d.url)}
-                    accessibilityRole="link"
-                    accessibilityLabel={`${d.name}, ${d.detail}`}
-                    style={({ pressed }) => [
-                      styles.mapCard,
-                      { borderColor: colors.border },
-                      shadows.card,
-                      Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
-                      pressed && { transform: [{ scale: 0.99 }] },
-                    ]}
-                  >
-                    {d.mapImage && (
-                      <Image source={{ uri: d.mapImage }} style={styles.mapImage} resizeMode="cover" />
-                    )}
-                    <View style={[styles.mapGradient, { backgroundColor: colors.surfaceOverlay }]} />
-                    <View style={styles.mapContent}>
-                      <View style={{ flex: 1, paddingRight: 16 }}>
-                        <View style={styles.badgeRow}>
-                          <View style={[styles.facilityBadge, { backgroundColor: colors.facilityBlue }]}>
-                            <MapPin size={12} color={isDark ? '#38BDF8' : '#0284C7'} weight="bold" />
-                            <Text style={[styles.facilityBadgeText, { color: isDark ? '#38BDF8' : '#0284C7' }]}>CAMPUS MAP</Text>
-                          </View>
-                        </View>
-                        <Text style={styles.mapTitle}>{d.name}</Text>
-                        <Text style={styles.mapDetail}>{d.detail}</Text>
-                      </View>
-                      <View style={[styles.mapBtn, { backgroundColor: colors.primary }]}>
-                        <ArrowRight size={20} color={colors.onPrimary} weight="bold" />
-                      </View>
-                    </View>
-                  </Pressable>
-                </AnimatedWrapper>
-              </View>
-            );
-          }
-
-          return (
-            <View
-              key={d.id}
-              style={
-                isDesktop
-                  ? d.span === 'hero' || d.span === 'wide'
-                    ? styles.gridItemWide
-                    : styles.gridItemHalf
-                  : styles.gridItemFull
-              }
-            >
-              <AnimatedWrapper index={index}>
-                <View
-                  style={[
-                    styles.card,
-                    {
-                      backgroundColor: isEmergency && isDark
-                        ? colors.highlight
-                        : colors.surface,
-                      borderColor: isEmergency
-                        ? colors.facilityCrimson
-                        : colors.border,
-                    },
-                    shadows.card,
-                  ]}
-                >
-                  <View style={styles.cardHeader}>
-                    <View style={styles.cardIconWrapper}>
-                      {getFacilityIcon(d.category, d.tone, isDark)}
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Text style={[styles.cardCategory, { color: isEmergency ? '#E11D48' : colors.primary }]}>
-                            {d.category.toUpperCase()}
-                          </Text>
-                          {d.hours.includes('24') && (
-                            <View style={[styles.liveDotBadge, { backgroundColor: colors.facilityGreen }]}>
-                              <View style={styles.liveDot} />
-                              <Text style={styles.liveDotText}>24×7</Text>
-                            </View>
-                          )}
-                        </View>
-                        <Text style={[styles.cardName, { color: colors.foreground }]} numberOfLines={1}>
-                          {d.name}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  <Text style={[styles.cardDetail, { color: colors.muted }]} numberOfLines={3}>
-                    {d.detail}
-                  </Text>
-
-                  <View style={styles.cardFooter}>
-                    <View style={styles.locationRow}>
-                      <MapPin size={13} color={colors.muted} weight="bold" />
-                      <Text style={[styles.locationText, { color: colors.muted }]} numberOfLines={1}>
-                        {d.location}
-                      </Text>
-                    </View>
-
-                    {/* Action Button: Call or Open Link */}
-                    {d.phone ? (
-                      <Pressable
-                        onPress={() => Linking.openURL(`tel:${d.phone!.replace(/[^0-9]/g, '')}`)}
-                        accessibilityRole="button"
-                        accessibilityLabel={`Call ${d.name} at ${d.phone}`}
-                        style={({ pressed }) => [
-                          styles.callActionBtn,
-                          {
-                            backgroundColor: isEmergency ? '#E11D48' : colors.primary,
-                            transform: [{ scale: pressed ? 0.96 : 1 }],
-                          },
-                          Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                        ]}
-                      >
-                        <PhoneCall size={14} color="#FFFFFF" weight="bold" />
-                        <Text style={styles.callActionText}>{d.action || `Call ${d.phone}`}</Text>
-                      </Pressable>
-                    ) : (
-                      <Pressable
-                        onPress={() => openExternalLink(d.url)}
-                        accessibilityRole="link"
-                        accessibilityLabel={d.action}
-                        style={({ pressed }) => [
-                          styles.linkActionBtn,
-                          {
-                            borderColor: colors.border,
-                            backgroundColor: colors.surfaceHover,
-                            transform: [{ scale: pressed ? 0.96 : 1 }],
-                          },
-                          Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                        ]}
-                      >
-                        <Text style={[styles.linkActionText, { color: colors.foreground }]}>{d.action}</Text>
-                        <ArrowUpRight size={14} color={colors.primary} weight="bold" />
-                      </Pressable>
-                    )}
-                  </View>
-                </View>
-              </AnimatedWrapper>
-            </View>
-          );
-        })}
-      </View>
-
-      {/* Clubs & Boards Section */}
-      <View style={styles.clubsSection}>
-        <SectionLabel>Student Organizations</SectionLabel>
-        <Text style={[styles.clubsTitle, { color: colors.foreground }]}>Clubs & Boards Directory</Text>
-        <Text style={[styles.clubsSubtitle, { color: colors.muted }]}>
-          IIT Delhi’s 40+ recognized clubs across cultural arts, technology, sports, social initiatives & student welfare.
+      {/* Clubs Roster */}
+      <View style={{ marginBottom: spacing.xl }}>
+        <Text style={[typography.titleXl, { color: colors.foreground, textTransform: 'uppercase', marginBottom: spacing.md }]}>
+          ROSTER
         </Text>
-
-        {/* Club Search Bar */}
-        <View
-          style={[
-            styles.searchBar,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
-          ]}
-        >
+        
+        <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <MagnifyingGlass size={18} color={colors.muted} />
-          <TextInput
-            placeholder="Search clubs by name, handle, or activity (e.g. Debsoc, PFC, Dance)..."
-            placeholderTextColor={colors.muted}
-            value={clubSearch}
-            onChangeText={setClubSearch}
-            style={[styles.searchInput, { color: colors.foreground }]}
-          />
-          {clubSearch.length > 0 && (
-            <Pressable
-              onPress={() => setClubSearch('')}
-              accessibilityRole="button"
-              accessibilityLabel="Clear club search"
-              style={styles.clearBtn}
-            >
-              <X size={16} color={colors.muted} weight="bold" />
-            </Pressable>
-          )}
+          <TextInput placeholder="Search lineup..." placeholderTextColor={colors.muted} value={clubSearch} onChangeText={setClubSearch} style={[styles.searchInput, { color: colors.foreground }]} />
+          {clubSearch.length > 0 && <Pressable onPress={() => setClubSearch('')} style={{ padding: spacing.xs }}><X size={16} color={colors.muted} weight="bold" /></Pressable>}
         </View>
 
-        {/* Board Category Filter Chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
           {BOARD_TABS.map((tab) => {
             const active = tab === activeBoard;
-            const boardColor = BOARD_COLORS[tab] || colors.primary;
-
             return (
-              <Pressable
-                key={tab}
-                onPress={() => setActiveBoard(tab)}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: active }}
-                accessibilityLabel={`Filter by ${tab}`}
+              <Pressable key={tab} onPress={() => setActiveBoard(tab)}
                 style={({ pressed }) => [
                   styles.filterChip,
-                  {
-                    backgroundColor: active ? boardColor : colors.surface,
-                    borderColor: active ? boardColor : colors.border,
-                    transform: [{ scale: pressed ? 0.96 : 1 }],
-                  },
-                  Platform.OS === 'web' && ({ cursor: 'pointer', transition: 'all 0.15s ease' } as any),
-                ]}
-              >
-                <Text style={[styles.filterChipText, { color: active ? '#FFFFFF' : colors.muted }]}>
-                  {tab}
-                </Text>
+                  { backgroundColor: active ? colors.primary : colors.surface, borderColor: active ? colors.primary : colors.border, transform: [{ scale: pressed ? 0.96 : 1 }] },
+                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any),
+                ]}>
+                <Text style={[typography.labelMd, { color: active ? '#000' : colors.muted, textTransform: 'uppercase' }]}>{tab}</Text>
               </Pressable>
             );
           })}
         </ScrollView>
 
-        {/* Club List */}
-        <View style={styles.clubList}>
-          {filteredClubs.map((club, index) => {
-            const boardColor = BOARD_COLORS[club.parentTag] || colors.primary;
-
-            return (
-              <AnimatedWrapper key={club.id} index={index}>
-                <Pressable
-                  onPress={() => openInstagram(club.handle)}
-                  accessibilityRole="link"
-                  accessibilityLabel={`${club.name}, Instagram handle ${club.handle}`}
-                  style={({ pressed }) => [
-                    styles.clubRow,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                    },
-                    shadows.card,
-                    Platform.OS === 'web' && ({
-                      cursor: 'pointer',
-                      transition: 'all 0.18s ease',
-                    }),
-                    pressed && { transform: [{ scale: 0.99 }] },
-                  ]}
-                >
-                  <Image
-                    source={{ uri: club.avatar }}
-                    style={styles.clubAvatar}
-                    onError={(e) => {
-                      e.currentTarget.setNativeProps({
-                        src: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(club.name) + '&background=8A1538&color=fff',
-                      });
-                    }}
-                  />
-                  <View style={styles.clubInfo}>
-                    <View style={styles.clubHeader}>
-                      <Text style={[styles.clubName, { color: colors.foreground }]} numberOfLines={1}>
-                        {club.name}
-                      </Text>
-                      <View style={[styles.boardBadge, { backgroundColor: boardColor + '20', borderColor: boardColor + '40' }]}>
-                        <Text style={[styles.boardBadgeText, { color: boardColor }]}>{club.parentTag}</Text>
-                      </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginVertical: 2 }}>
-                      <InstagramLogo size={13} color={colors.primary} weight="bold" />
-                      <Text style={[styles.clubHandle, { color: colors.primary }]}>{club.handle}</Text>
-                    </View>
-                    <Text style={[styles.clubDesc, { color: colors.muted }]} numberOfLines={2}>
-                      {club.description}
-                    </Text>
-                  </View>
-                  <View style={[styles.openInstagramBtn, { backgroundColor: colors.surfaceHover }]}>
-                    <ArrowUpRight size={16} color={colors.foreground} weight="bold" />
-                  </View>
-                </Pressable>
-              </AnimatedWrapper>
-            );
-          })}
-
-          {filteredClubs.length === 0 && (
-            <View style={[styles.emptyClubsBox, { borderColor: colors.border }]}>
-              <Text style={[styles.emptyClubsTitle, { color: colors.foreground }]}>No clubs found</Text>
-              <Text style={[styles.emptyClubsSubtitle, { color: colors.muted }]}>
-                Try clearing your search or selecting a different board filter.
-              </Text>
+        {/* Staggered Roster Blocks */}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+          {filteredClubs.map((club, index) => (
+            <AnimatedWrapper key={club.id} index={index}>
               <Pressable
-                onPress={() => {
-                  setClubSearch('');
-                  setActiveBoard('All');
-                }}
-                style={[styles.resetSearchBtn, { backgroundColor: colors.primary }]}
+                onPress={() => openInstagram(club.handle)}
+                style={({ pressed }) => [
+                  styles.rosterBlock,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  pressed && { transform: [{ scale: 0.98 }] },
+                  Platform.OS === 'web' && ({ cursor: 'pointer' } as any)
+                ]}
               >
-                <Text style={{ color: colors.onPrimary, fontWeight: '600', fontSize: 13 }}>Reset Filters</Text>
+                <Text style={[typography.displayMd, { color: colors.foreground, fontSize: 24, lineHeight: 28, textTransform: 'uppercase' }]} numberOfLines={2}>
+                  {club.name}
+                </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 12 }}>
+                  <Text style={[typography.labelCaps, { color: colors.primary }]}>{club.parentTag}</Text>
+                  <InstagramLogo size={20} color={colors.muted} />
+                </View>
               </Pressable>
-            </View>
-          )}
+            </AnimatedWrapper>
+          ))}
         </View>
       </View>
     </ScrollView>
@@ -509,331 +131,12 @@ export default function DirectoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.marginMobile,
-    paddingTop: spacing.md,
-    paddingBottom: 120,
-  },
-  catPillSection: {
-    marginVertical: spacing.md,
-  },
-  catPillScroll: {
-    gap: spacing.sm,
-  },
-  catPill: {
-    paddingHorizontal: spacing.md - 2,
-    paddingVertical: spacing.sm - 1,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  catPillText: {
-    fontSize: 13,
-  },
-  grid: {
-    flexDirection: 'column',
-    gap: spacing.md,
-  },
-  gridDesktop: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  gridItemFull: {
-    width: '100%',
-  },
-  gridItemHalf: {
-    width: '48.5%',
-  },
-  gridItemWide: {
-    width: '100%',
-  },
-  card: {
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    padding: spacing.md + 2,
-    gap: spacing.sm + spacing.xs,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  cardIconWrapper: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm + spacing.xs,
-    flex: 1,
-  },
-  cardCategory: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-  },
-  liveDotBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm - 2,
-    paddingVertical: 2,
-    borderRadius: radii.full,
-  },
-  liveDot: {
-    width: 5,
-    height: 5,
-    borderRadius: radii.full,
-    backgroundColor: '#34D399',
-  },
-  liveDotText: {
-    color: '#34D399',
-    fontSize: 9,
-    fontWeight: '800',
-  },
-  cardName: {
-    ...typography.labelLg,
-    fontSize: 17,
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  cardDetail: {
-    ...typography.bodySm,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255,255,255,0.06)',
-    gap: spacing.sm + spacing.xs,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    flex: 1,
-  },
-  locationText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  callActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm - 2,
-    paddingHorizontal: spacing.sm + spacing.xs,
-    paddingVertical: spacing.sm - 1,
-    borderRadius: radii.full,
-  },
-  callActionText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  linkActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm - 2,
-    paddingHorizontal: spacing.sm + spacing.xs,
-    paddingVertical: spacing.sm - 1,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  linkActionText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  mapCard: {
-    height: 200,
-    borderRadius: radii.xl,
-    overflow: 'hidden',
-    position: 'relative',
-    borderWidth: 1,
-  },
-  mapImage: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  mapGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  mapContent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.marginMobile,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  badgeRow: {
-    marginBottom: spacing.sm - 2,
-  },
-  facilityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: radii.full,
-    alignSelf: 'flex-start',
-  },
-  facilityBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-  },
-  mapTitle: {
-    ...typography.displayMd,
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  mapDetail: {
-    ...typography.bodySm,
-    color: 'rgba(255, 255, 255, 0.85)',
-    marginTop: spacing.xs,
-  },
-  mapBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clubsSection: {
-    marginTop: spacing.xl,
-  },
-  clubsTitle: {
-    ...typography.titleXl,
-    fontSize: 22,
-    fontWeight: '700',
-    marginTop: spacing.xs,
-  },
-  clubsSubtitle: {
-    ...typography.bodySm,
-    marginTop: spacing.xs,
-    lineHeight: 18,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 44,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm + spacing.xs,
-    marginTop: spacing.md,
-    gap: spacing.sm + 2,
-  },
-  searchInput: {
-    flex: 1,
-    height: '100%',
-    fontSize: 14,
-  },
-  clearBtn: {
-    padding: spacing.xs,
-  },
-  filterScroll: {
-    gap: spacing.sm,
-    paddingVertical: spacing.md - 2,
-  },
-  filterChip: {
-    paddingHorizontal: spacing.sm + spacing.xs,
-    paddingVertical: spacing.sm - 1,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  filterChipText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  clubList: {
-    gap: spacing.sm + spacing.xs,
-  },
-  clubRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.sm + spacing.xs,
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    gap: spacing.sm + spacing.xs,
-  },
-  clubAvatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: '#8A1538',
-  },
-  clubInfo: {
-    flex: 1,
-  },
-  clubHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  clubName: {
-    ...typography.labelLg,
-    fontSize: 15,
-    fontWeight: '700',
-    flex: 1,
-  },
-  boardBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  boardBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  clubHandle: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  clubDesc: {
-    ...typography.bodySm,
-    fontSize: 12,
-    lineHeight: 16,
-    marginTop: 2,
-  },
-  openInstagramBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyClubsBox: {
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    gap: 8,
-  },
-  emptyClubsTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  emptyClubsSubtitle: {
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  resetSearchBtn: {
-    marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: radii.full,
-  },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: spacing.marginMobile, paddingTop: spacing.xl, paddingBottom: 120 },
+  emergencyPill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderRadius: radii.full, borderBottomRightRadius: 0 },
+  searchBar: { flexDirection: 'row', alignItems: 'center', height: 48, borderRadius: 0, borderWidth: 1, paddingHorizontal: spacing.md, marginTop: spacing.md, gap: spacing.sm },
+  searchInput: { flex: 1, height: '100%', fontSize: 16, fontFamily: 'Inter_500Medium' },
+  filterScroll: { gap: spacing.sm, paddingVertical: spacing.md },
+  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: radii.full, borderWidth: 1 },
+  rosterBlock: { width: 160, height: 160, padding: 16, borderRadius: 0, borderWidth: 1, justifyContent: 'space-between', backgroundColor: '#111' },
 });

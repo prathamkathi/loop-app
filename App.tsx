@@ -20,6 +20,7 @@ import {
   saveReadNotificationIds,
   type NotificationItem,
 } from './src/utils/notifications';
+import { scheduleEventReminder, cancelEventReminder } from './src/utils/pushNotifications';
 import AICampusConcierge from './src/components/AICampusConcierge';
 import HomeScreen from './src/screens/HomeScreen';
 import PulseScreen from './src/screens/PulseScreen';
@@ -186,12 +187,18 @@ function AppContent() {
   const toggleSave = useCallback((id: string) => {
     setSaved((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+        cancelEventReminder(id);
+      } else {
+        next.add(id);
+        const event = liveEvents.find(e => e.id === id);
+        if (event) scheduleEventReminder(event);
+      }
       saveSavedEvents([...next]);
       return next;
     });
-  }, []);
+  }, [liveEvents]);
 
   // Toggle interest
   const toggleInterest = useCallback((cat: string) => {
@@ -335,7 +342,12 @@ function AppContent() {
   );
 }
 
-export default function App() {
+import * as Sentry from '@sentry/react-native';
+import { initSentry } from './src/config/sentry';
+
+initSentry();
+
+function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
@@ -346,3 +358,5 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+export default Sentry.wrap(App);

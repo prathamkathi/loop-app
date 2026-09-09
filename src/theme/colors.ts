@@ -1,10 +1,8 @@
 /**
  * Loop Design System — Color Tokens
  *
- * Light mode: Alabaster canvas, Crimson primary, Onyx accent, Rose Water highlights
- * Dark mode:  Obsidian canvas, desaturated Crimson tints, soft-white text
- *
- * Champagne Gold has been eliminated per brand guidelines.
+ * Light mode: Paper canvas, Ink text, Crimson primary, Olive accents
+ * Dark mode: Obsidian canvas, desaturated Crimson tints, soft-white text
  */
 
 export const palette = {
@@ -13,23 +11,24 @@ export const palette = {
   crimsonSoft: '#A8324F',
   crimsonMuted: 'rgba(138, 21, 56, 0.7)',
 
-  // Accent
-  onyx: '#18181B',
-  onyxSoft: '#27272A',
+  // Brand Accents
+  olive: '#64735a',
 
+  // Canvas & Ink
+  paper: '#faf9f6',
+  ink: '#302c2a',
+  
   // Highlight
   roseWater: '#FDECEF',
   roseWaterDim: '#F8D7DC',
 
   // Neutrals — Light
-  alabaster: '#F8F7F4',
   white: '#FFFFFF',
   stone50: '#FAFAF9',
   stone200: '#E7E5E4',
   stone400: '#A8A29E',
   stone500: '#6D6661',
   stone700: '#44403C',
-  stone900: '#1C1917',
 
   // Neutrals — Dark
   obsidian: '#0A0A0C',
@@ -38,7 +37,6 @@ export const palette = {
   obsidianMuted: '#A1A1AA',
 
   // Semantic
-  emerald: '#22C55E',
   error: '#BA1A1A',
   errorContainer: '#FFD9DD',
 
@@ -62,6 +60,8 @@ export type ThemeColors = {
   accent: string;
   accentSoft: string;
   onAccent: string;
+  
+  olive: string;
 
   highlight: string;
   highlightDim: string;
@@ -78,7 +78,7 @@ export type ThemeColors = {
 };
 
 export const lightColors: ThemeColors = {
-  background: palette.alabaster,
+  background: palette.paper,
   surface: palette.white,
   surfaceElevated: palette.white,
   card: palette.white,
@@ -90,14 +90,16 @@ export const lightColors: ThemeColors = {
   primaryMuted: palette.crimsonMuted,
   onPrimary: palette.white,
 
-  accent: palette.onyx,
-  accentSoft: palette.onyxSoft,
+  accent: palette.ink,
+  accentSoft: palette.stone700,
   onAccent: palette.white,
+  
+  olive: palette.olive,
 
   highlight: palette.roseWater,
   highlightDim: palette.roseWaterDim,
 
-  foreground: palette.stone900,
+  foreground: palette.ink,
   foregroundSecondary: palette.stone700,
   muted: palette.stone500,
 
@@ -121,9 +123,11 @@ export const darkColors: ThemeColors = {
   primaryMuted: 'rgba(225, 29, 72, 0.45)',
   onPrimary: palette.white,
 
-  accent: palette.white,    // Onyx flips to white in dark mode
+  accent: palette.white,
   accentSoft: '#E2E8F0',
-  onAccent: palette.onyx,
+  onAccent: palette.ink,
+  
+  olive: '#8b9c80', // Lighter olive for dark mode
 
   highlight: 'rgba(225, 29, 72, 0.12)',
   highlightDim: 'rgba(225, 29, 72, 0.20)',

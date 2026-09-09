@@ -1,10 +1,13 @@
 import { useFonts } from 'expo-font';
-import { Outfit_600SemiBold } from '@expo-google-fonts/outfit/600SemiBold';
-import { Geist_400Regular } from '@expo-google-fonts/geist/400Regular';
+import { Manrope_600SemiBold, Manrope_700Bold } from '@expo-google-fonts/manrope';
+import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 
 export function useCustomFonts() {
   return useFonts({
-    Outfit_600SemiBold,
-    Geist_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
   });
 }

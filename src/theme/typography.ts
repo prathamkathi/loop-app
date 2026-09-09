@@ -1,53 +1,57 @@
 /**
  * Loop Design System — Typography
  *
- * Display / Headline: Outfit (geometric, modern-luxe)
- * Body / Label / Data: Geist (clear, technical fintech edge)
- *
- * All sizes follow the DESIGN.md editorial scale.
- * Line heights are generous (1.3–1.6) to reinforce the premium, unhurried feel.
+ * Display / Headline: Manrope (elegant, modern, editorial)
+ * Body / Label / Data: DM Sans (clear, highly readable)
  */
 
 import { Platform, TextStyle } from 'react-native';
 
-const outfitFamily = Platform.select({
-  web: 'Outfit_600SemiBold, sans-serif',
-  ios: 'Outfit_600SemiBold',
-  android: 'Outfit_600SemiBold',
-  default: 'Outfit_600SemiBold',
+const headingFamily = Platform.select({
+  web: 'Manrope_600SemiBold, sans-serif',
+  ios: 'Manrope_600SemiBold',
+  android: 'Manrope_600SemiBold',
+  default: 'Manrope_600SemiBold',
 });
 
-const geistFamily = Platform.select({
-  web: 'Geist_400Regular, sans-serif',
-  ios: 'Geist_400Regular',
-  android: 'Geist_400Regular',
-  default: 'Geist_400Regular',
+const bodyFamily = Platform.select({
+  web: 'DMSans_400Regular, sans-serif',
+  ios: 'DMSans_400Regular',
+  android: 'DMSans_400Regular',
+  default: 'DMSans_400Regular',
+});
+
+const labelFamily = Platform.select({
+  web: 'DMSans_500Medium, sans-serif',
+  ios: 'DMSans_500Medium',
+  android: 'DMSans_500Medium',
+  default: 'DMSans_500Medium',
 });
 
 export const typography = {
   // Headings
   displayMd: { // text-3xl font-semibold tracking-tight
-    fontFamily: outfitFamily,
+    fontFamily: headingFamily,
     fontSize: 30,
     fontWeight: '600',
     letterSpacing: -0.75,
     lineHeight: 36,
   } as TextStyle,
   titleXl: { // text-2xl font-semibold leading-tight
-    fontFamily: outfitFamily,
+    fontFamily: headingFamily,
     fontSize: 24,
     fontWeight: '600',
     lineHeight: 32,
   } as TextStyle,
   titleLg: { // text-lg font-semibold tracking-tight leading-snug
-    fontFamily: outfitFamily,
+    fontFamily: headingFamily,
     fontSize: 18,
     fontWeight: '600',
     letterSpacing: -0.45,
     lineHeight: 25,
   } as TextStyle,
   titleMd: { // text-lg font-medium leading-snug
-    fontFamily: outfitFamily,
+    fontFamily: headingFamily,
     fontSize: 18,
     fontWeight: '500',
     lineHeight: 25,
@@ -55,19 +59,19 @@ export const typography = {
   
   // Body
   bodyMd: { // text-base
-    fontFamily: geistFamily,
+    fontFamily: bodyFamily,
     fontSize: 16,
     fontWeight: '400',
     lineHeight: 24,
   } as TextStyle,
   bodySm: { // text-sm
-    fontFamily: geistFamily,
+    fontFamily: bodyFamily,
     fontSize: 14,
     fontWeight: '400',
     lineHeight: 20,
   } as TextStyle,
   bodyXs: { // text-xs
-    fontFamily: geistFamily,
+    fontFamily: bodyFamily,
     fontSize: 12,
     fontWeight: '400',
     lineHeight: 16,
@@ -75,7 +79,7 @@ export const typography = {
   
   // Labels
   labelCaps: { // text-xs font-semibold uppercase tracking-[0.22em]
-    fontFamily: geistFamily,
+    fontFamily: labelFamily,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -83,31 +87,31 @@ export const typography = {
     lineHeight: 16,
   } as TextStyle,
   labelMd: { // text-sm font-semibold
-    fontFamily: geistFamily,
+    fontFamily: labelFamily,
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
   } as TextStyle,
   titleSm: {
-    fontFamily: outfitFamily,
+    fontFamily: headingFamily,
     fontSize: 16,
     fontWeight: '600',
     lineHeight: 22,
   } as TextStyle,
   labelLg: {
-    fontFamily: geistFamily,
+    fontFamily: labelFamily,
     fontSize: 15,
     fontWeight: '600',
     lineHeight: 20,
   } as TextStyle,
   labelSm: { // text-xs font-medium
-    fontFamily: geistFamily,
+    fontFamily: labelFamily,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
   } as TextStyle,
   caption: {
-    fontFamily: geistFamily,
+    fontFamily: bodyFamily,
     fontSize: 11,
     fontWeight: '400',
     lineHeight: 15,

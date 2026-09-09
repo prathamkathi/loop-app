@@ -182,12 +182,14 @@ export default function EventDetailModal({ event, saved, onToggleSave, onClose }
   return (
     <>
       <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={handleClose}
-          accessibilityRole="button"
-          accessibilityLabel="Close event details modal"
-        />
+        <BlurView intensity={25} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Close event details modal"
+          />
+        </BlurView>
         <Animated.View
           onStartShouldSetResponder={() => true}
           style={[

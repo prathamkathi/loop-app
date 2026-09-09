@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MagnifyingGlass, X, BookmarkSimple, ArrowClockwise, SlidersHorizontal, ArrowRight } from 'phosphor-react-native';
 import { useTheme, typography, radii } from '../theme';
 import EventCard from '../components/EventCard';
+import FilterPills from '../components/FilterPills';
 import type { EventItem } from '../data/events';
 import { CATEGORIES } from '../data/categories';
 import { filterEvents, isPastEvent, type DiscoveryView, type TimeHorizon } from '../utils/eventDiscovery';
@@ -79,12 +80,7 @@ export default function HomeScreen({ interests, saved, liveEvents, loading, erro
         <Text style={[typography.labelSm, { color: horizon === item.id ? colors.onAccent : colors.foregroundSecondary }]}>{item.label}</Text>
       </Pressable>)}
     </ScrollView>}
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>
-      {['all', ...CATEGORIES.filter((item) => item !== 'All')].map((item) => <Pressable key={item} onPress={() => setCategory(item)} accessibilityRole="button" accessibilityState={{ selected: category === item }}
-        style={[styles.category, { backgroundColor: category === item ? colors.highlight : 'transparent', borderColor: category === item ? colors.primary : 'transparent' }]}>
-        <Text style={[typography.labelSm, { color: category === item ? colors.primary : colors.muted }]}>{item === 'all' ? 'All categories' : item}</Text>
-      </Pressable>)}
-    </ScrollView>
+    <FilterPills selectedCategory={category === 'all' ? null : category} onSelectCategory={(c) => setCategory(c || 'all')} />
     {error && <View accessibilityRole="alert" style={[styles.notice, { backgroundColor: colors.highlight }]}>
       <Text style={[typography.bodySm, { color: colors.foregroundSecondary, flex: 1 }]}>{error}</Text>
       <Pressable onPress={refresh} disabled={refreshing} accessibilityRole="button" accessibilityLabel="Retry loading events" style={styles.iconButton}><ArrowClockwise size={22} color={colors.primary} /></Pressable>
